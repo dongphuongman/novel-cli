@@ -7,6 +7,8 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestReadChapterFinal(t *testing.T) {
@@ -175,7 +177,7 @@ func TestDraftChapterWrite(t *testing.T) {
 		t.Fatalf("UpdatePhase: %v", err)
 	}
 
-	tool := NewDraftChapterTool(store)
+	tool := NewDraftChapterTool(store, lang.Resolve("zh"))
 	args, _ := json.Marshal(map[string]any{
 		"chapter": 1,
 		"content": "这是整章的正文内容，一次写完。",
@@ -236,7 +238,7 @@ func TestDraftChapterAppend(t *testing.T) {
 		t.Fatalf("SaveDraft: %v", err)
 	}
 
-	tool := NewDraftChapterTool(store)
+	tool := NewDraftChapterTool(store, lang.Resolve("zh"))
 	args, _ := json.Marshal(map[string]any{
 		"chapter": 2,
 		"content": "后半部分。",
@@ -336,7 +338,7 @@ func TestDraftChapterRejectsCompleted(t *testing.T) {
 	_ = s.Progress.StartChapter(1)
 	_ = s.Progress.MarkChapterComplete(1, 3000, "", "")
 
-	tool := NewDraftChapterTool(s)
+	tool := NewDraftChapterTool(s, lang.Resolve("zh"))
 	args, _ := json.Marshal(map[string]any{
 		"chapter": 1,
 		"content": "试图覆盖已提交的章节",

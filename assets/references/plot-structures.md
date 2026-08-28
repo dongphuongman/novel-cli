@@ -1,259 +1,259 @@
-# 情节结构模板
+# Plot structure templates
 
-常见的故事结构模板，可用于规划小说章节。
+Common story-structure templates for planning a novel's chapters.
 
-## 三幕式结构（Three-Act Structure）
+## Three-Act Structure
 
-最经典的故事结构，适用于大多数短篇小说。
+The most classic story structure, suited to most short fiction.
 
-### 第一幕：设置（Act 1 - Setup）约 25%
+### Act 1 — Setup (about 25%)
 
-| 章节 | 内容 |
+| Chapter | Content |
 |-----|------|
-| 第1章 | 介绍主角日常生活（现状） |
-| 第2章 | 激励事件（Inciting Incident）- 打破现状的事件 |
-| 第3章 | 主角拒绝召唤，但最终决定行动 |
+| Ch. 1 | Introduce the protagonist's ordinary life (the status quo) |
+| Ch. 2 | The inciting incident — the event that breaks the status quo |
+| Ch. 3 | The protagonist refuses the call, then decides to act |
 
-**第一幕悬念示例：**
-- "门开了，进来的人是三年前死去的人。"
-- "她收到的信件，署名是自己。"
+**Act 1 hooks, for example:**
+- "The door opened, and the person who came in had died three years ago."
+- "The letter she received was signed in her own name."
 
-### 第二幕：对抗（Act 2 - Confrontation）约 50%
+### Act 2 — Confrontation (about 50%)
 
-| 章节 | 内容 |
+| Chapter | Content |
 |-----|------|
-| 第4-5章 | 主角进入新世界，遭遇挑战 |
-| 第6章 | 中点（Midpoint）- 重大转折/信息揭示 |
-| 第7-8章 | 困难升级，盟友可能背叛 |
+| Ch. 4–5 | The protagonist enters the new world and meets resistance |
+| Ch. 6 | The midpoint — a major turn or a revelation |
+| Ch. 7–8 | The difficulties escalate; an ally may betray them |
 
-**第二幕悬念示例：**
-- "导师竟然是幕后黑手。"
-- "唯一的盟友失踪了。"
+**Act 2 hooks, for example:**
+- "The mentor was behind it all along."
+- "The only ally has disappeared."
 
-### 第三幕：结局（Act 3 - Resolution）约 25%
+### Act 3 — Resolution (about 25%)
 
-| 章节 | 内容 |
+| Chapter | Content |
 |-----|------|
-| 第9章 | 一切看似失败，最低点 |
-| 第10章 | 高潮（Climax）- 最终对决 |
-| 终章 | 结局，展示新常态 |
+| Ch. 9 | Everything appears lost; the low point |
+| Ch. 10 | The climax — the final confrontation |
+| Final ch. | The resolution, showing the new normal |
 
 ---
 
-## 英雄之旅（Hero's Journey）
+## The Hero's Journey
 
-神话学家约瑟夫·坎贝尔的经典结构，适合冒险/奇幻题材。
+The classic structure from the mythologist Joseph Campbell; suits adventure and fantasy.
 
-### 阶段分解
+### Stage breakdown
 
-| 阶段 | 章节 | 内容 |
+| Stage | Chapter | Content |
 |-----|------|------|
-| 1. 平凡世界 | 第1章 | 介绍主角日常生活 |
-| 2. 冒险召唤 | 第1-2章 | 激励事件发生 |
-| 3. 拒绝召唤 | 第2章 | 主角最初犹豫 |
-| 4. 遇见导师 | 第2-3章 | 获得指导/装备 |
-| 5. 跨越门槛 | 第3章 | 离开舒适区 |
-| 6. 考验盟友敌人 | 第4-5章 | 新世界探索 |
-| 7. 接近洞穴 | 第5-6章 | 准备面对大挑战 |
-| 8. 苦难煎熬 | 第6-7章 | 接近死亡/重大失败 |
-| 9. 奖赏 | 第7-8章 | 获得力量/信息 |
-| 10. 返回之路 | 第8章 | 回归途中受阻 |
-| 11. 复活 | 第9章 | 最终考验/蜕变 |
-| 12. 满载而归 | 第10章 | 回归，带着收获 |
+| 1. The ordinary world | Ch. 1 | Introduce the protagonist's daily life |
+| 2. The call to adventure | Ch. 1–2 | The inciting incident |
+| 3. Refusal of the call | Ch. 2 | The protagonist's initial hesitation |
+| 4. Meeting the mentor | Ch. 2–3 | Guidance or equipment is gained |
+| 5. Crossing the threshold | Ch. 3 | Leaving the comfort zone |
+| 6. Tests, allies, enemies | Ch. 4–5 | Exploring the new world |
+| 7. Approach to the inmost cave | Ch. 5–6 | Preparing for the great challenge |
+| 8. The ordeal | Ch. 6–7 | Near-death or a major failure |
+| 9. The reward | Ch. 7–8 | Power or information is gained |
+| 10. The road back | Ch. 8 | Obstruction on the way home |
+| 11. The resurrection | Ch. 9 | The final test and transformation |
+| 12. Return with the elixir | Ch. 10 | The return, carrying what was won |
 
 ---
 
-## 悬疑小说结构
+## Mystery structure
 
-适合侦探/推理/惊悚题材。
+Suits detective, whodunnit and thriller material.
 
-### 第一幕：谜题出现
+### Act 1: the puzzle appears
 
-| 章节 | 内容 | 悬念钩子 |
+| Chapter | Content | Hook |
 |-----|------|---------|
-| 第1章 | 发现尸体/事件发生 | 谁干的？ |
-| 第2章 | 侦探接手案件 | 为什么这个案子特殊？ |
-| 第3章 | 初步调查，发现线索 | 线索指向谁？ |
+| Ch. 1 | The body is found / the event happens | Who did it? |
+| Ch. 2 | The detective takes the case | What makes this case unusual? |
+| Ch. 3 | Preliminary investigation, first clues | Who do the clues point to? |
 
-### 第二幕：调查深入
+### Act 2: the investigation deepens
 
-| 章节 | 内容 | 悬念钩子 |
+| Chapter | Content | Hook |
 |-----|------|---------|
-| 第4章 | 审讯嫌疑人，各有嫌疑 | 谁在撒谎？ |
-| 第5章 | 新线索出现，指向意外方向 | 我们是不是一开始就错了？ |
-| 第6章 | 第二起事件，模式浮现 | 这是连环案件？ |
-| 第7章 | 侦探陷入危险 | 侦探会成为下一个目标吗？ |
+| Ch. 4 | Interviews with suspects, each with something to hide | Who is lying? |
+| Ch. 5 | A new clue points somewhere unexpected | Were we wrong from the start? |
+| Ch. 6 | A second incident; a pattern surfaces | Is this a series? |
+| Ch. 7 | The detective is in danger | Is the detective the next target? |
 
-### 第三幕：真相揭示
+### Act 3: the truth
 
-| 章节 | 内容 | 悬念钩子 |
+| Chapter | Content | Hook |
 |-----|------|---------|
-| 第8章 | 重大突破/反转 | 我们信任的人有问题？ |
-| 第9章 | 最终对决 | 真相是什么？代价是什么？ |
-| 第10章 | 案件解决，遗留疑问 | 真的结束了吗？ |
+| Ch. 8 | A major breakthrough or reversal | Is the person we trusted the problem? |
+| Ch. 9 | The final confrontation | What is the truth, and what does it cost? |
+| Ch. 10 | The case closes, with questions left | Is it really over? |
 
 ---
 
-## 言情小说结构
+## Romance structure
 
-适合爱情题材。
+Suits love stories.
 
-### 第一幕：相遇
+### Act 1: meeting
 
-| 章节 | 内容 | 情感节点 |
+| Chapter | Content | Emotional beat |
 |-----|------|---------|
-| 第1章 | 介绍主角 A，现状/问题 | 读者共情 A |
-| 第2章 | 介绍主角 B，现状/问题 | 读者共情 B |
-| 第3章 | A 和 B 相遇（第一印象不佳） | 两人注定在一起，但目前有冲突 |
+| Ch. 1 | Introduce protagonist A, their situation and problem | The reader empathizes with A |
+| Ch. 2 | Introduce protagonist B, their situation and problem | The reader empathizes with B |
+| Ch. 3 | A and B meet (a poor first impression) | They belong together, but right now they clash |
 
-### 第二幕：发展
+### Act 2: development
 
-| 章节 | 内容 | 情感节点 |
+| Chapter | Content | Emotional beat |
 |-----|------|---------|
-| 第4-5章 | 被迫在一起，了解对方 | 发现有吸引力的地方 |
-| 第6章 | 吸引力增强，亲密时刻 | 接近 |
-| 第7-8章 | 误解/秘密/障碍出现 | 推远 |
-| 第9章 | 危机，关系破裂 | 看起来无望 |
+| Ch. 4–5 | Forced together, learning about each other | Finding what attracts them |
+| Ch. 6 | Attraction grows; a moment of closeness | Drawing near |
+| Ch. 7–8 | A misunderstanding, a secret or an obstacle appears | Pushed apart |
+| Ch. 9 | Crisis; the relationship breaks | It looks hopeless |
 
-### 第三幕：和解
+### Act 3: reconciliation
 
-| 章节 | 内容 | 情感节点 |
+| Chapter | Content | Emotional beat |
 |-----|------|---------|
-| 第10章 | 意识到真爱，克服障碍 | 高潮 |
-| 终章 | 在一起，展示新生活 | 圆满 |
+| Ch. 10 | Recognizing real love, overcoming the obstacle | The climax |
+| Final ch. | Together, showing the new life | Fulfilment |
 
 ---
 
-## 惊悚/动作结构
+## Thriller / action structure
 
-适合快节奏、紧张刺激题材。
+Suits fast, high-tension material.
 
-### 短篇结构（5-6章）
+### Short structure (5–6 chapters)
 
 ```text
-第1章：危机出现 → 钩子：主角被追杀/威胁
-第2章：应对计划 → 钩子：计划失败，情况恶化
-第3章：追逐/对抗 → 钩子：被逼入绝境
-第4章：逆转机会 → 钩子：发现新希望，但时间紧迫
-第5章：最终对抗 → 钩子：生死一瞬
-第6章：结局 → 展示后果
+Ch. 1: the crisis arrives    → hook: the protagonist is hunted or threatened
+Ch. 2: a plan to respond     → hook: the plan fails and things get worse
+Ch. 3: pursuit / confrontation → hook: driven into a corner
+Ch. 4: a chance to turn it   → hook: new hope, but time is short
+Ch. 5: the final confrontation → hook: a hair's breadth from death
+Ch. 6: resolution            → showing the aftermath
 ```
 
-### 特点
+### Characteristics
 
-- 节奏快，每章都有动作
-- 高密度事件
-- 时间压力持续存在
-- 悬念强度递增
+- Fast pacing, action in every chapter
+- A high density of events
+- Time pressure never lets up
+- Suspense intensity keeps rising
 
 ---
 
-## 反转结构（Twist-Based）
+## Twist-based structure
 
-适合心理惊悚/悬疑题材。
+Suits psychological thrillers and mysteries.
 
-### 章节分布
+### Chapter distribution
 
 ```text
-第1-2章：建立"真实"情况
-第3-4章：出现疑点，但不明显
-第5-6章：第一次小反转（重新理解）
-第7-8章：第二次反转（再次反转）
-第9-10章：最终反转（一切颠覆）
+Ch. 1–2: establish the "real" situation
+Ch. 3–4: doubts appear, but not obviously
+Ch. 5–6: the first small twist (re-understanding)
+Ch. 7–8: the second twist (turned again)
+Ch. 9–10: the final twist (everything overturned)
 ```
 
-### 关键
+### What matters
 
-- 前期埋下看似无辜的线索
-- 每次反转都合乎逻辑（回看有迹可循）
-- 避免机械降神
+- Plant seemingly innocent clues early
+- Every twist holds up logically (on a reread the trail is there)
+- Avoid deus ex machina
 
 ---
 
-## 多线叙事结构
+## Multi-strand narrative structure
 
-适合复杂剧情，多主角。
+Suits complex plots with several protagonists.
 
-### 交叉剪辑模式
+### Cross-cutting pattern
 
 ```text
-第1章：主角A故事
-第2章：主角B故事
-第3章：主角A故事（推进）
-第4章：主角B故事（推进）
-第5章：线索交汇
+Ch. 1: protagonist A's story
+Ch. 2: protagonist B's story
+Ch. 3: protagonist A's story (advancing)
+Ch. 4: protagonist B's story (advancing)
+Ch. 5: the threads converge
 ...
 ```
 
-### 时间线模式
+### Timeline pattern
 
 ```text
-第1章：现在（时间A）
-第2章：过去（时间A-5年）
-第3章：现在（时间A+1天）
-第4章：过去（时间A-5年+1月）
+Ch. 1: the present (time A)
+Ch. 2: the past (time A minus 5 years)
+Ch. 3: the present (time A plus 1 day)
+Ch. 4: the past (time A minus 5 years, plus 1 month)
 ...
 ```
 
-### 收敛原则
+### Principle of convergence
 
-- 各线最终必须交汇
-- 早期看似无关的事件后来有关联
-- 收敛时产生"原来如此"的效果
-
----
-
-## 短篇小说快速结构
-
-### 3章微型结构
-
-```text
-第1章：激励事件 + 决定行动
-第2章：尝试 + 失败 + 升级
-第3章：最终尝试 + 成功/失败 + 结局
-```
-
-### 5章标准结构
-
-```text
-第1章：现状 + 激励事件
-第2章：拒绝 + 跨越门槛
-第3章：挑战 + 盟友/敌人
-第4章：低谷 + 觉醒
-第5章：高潮 + 结局
-```
+- Every strand must ultimately meet
+- Events that looked unrelated early on turn out to be connected
+- The convergence produces the "so that's what that was" effect
 
 ---
 
-## 章节情节模板
+## Fast structures for short fiction
 
-### 单章内部结构
+### 3-chapter miniature
 
 ```text
-开头（10%）：钩子 + 上下文连接
-发展（60%）：事件推进 + 冲突
-高潮（20%）：本章最高点
-结尾（10%）：悬念钩子 + 下章铺垫
+Ch. 1: inciting incident + the decision to act
+Ch. 2: attempt + failure + escalation
+Ch. 3: final attempt + success or failure + resolution
 ```
 
-### 无效章节结构
+### 5-chapter standard
 
 ```text
-开头：漫长铺垫/背景说明
-中间：日常活动/对话流水账
-结尾：平淡结束/无悬念
+Ch. 1: status quo + inciting incident
+Ch. 2: refusal + crossing the threshold
+Ch. 3: challenge + allies and enemies
+Ch. 4: the low point + the awakening
+Ch. 5: climax + resolution
 ```
 
 ---
 
-## 结构选择指南
+## Chapter-level plot template
 
-| 故事类型 | 推荐结构 | 章节数 |
+### Structure inside a single chapter
+
+```text
+Opening (10%): the hook + the link to what came before
+Development (60%): events advance + conflict
+Climax (20%): this chapter's high point
+Close (10%): the hook + the setup for the next chapter
+```
+
+### An ineffective chapter structure
+
+```text
+Opening: long setup / background explanation
+Middle: everyday activity / a ledger of dialogue
+Close: a flat ending with no hook
+```
+
+---
+
+## Choosing a structure
+
+| Story type | Recommended structure | Chapters |
 |---------|---------|--------|
-| 冒险/奇幻 | 英雄之旅 | 8-12章 |
-| 侦探/悬疑 | 悬疑结构 | 8-10章 |
-| 言情 | 言情结构 | 6-10章 |
-| 动作/惊悚 | 惊悚结构 | 5-8章 |
-| 心理/反转 | 反转结构 | 6-8章 |
-| 多主角 | 多线叙事 | 10-15章 |
-| 微型小说 | 3章结构 | 3章 |
+| Adventure / fantasy | Hero's Journey | 8–12 |
+| Detective / mystery | Mystery structure | 8–10 |
+| Romance | Romance structure | 6–10 |
+| Action / thriller | Thriller structure | 5–8 |
+| Psychological / twist | Twist-based | 6–8 |
+| Multiple protagonists | Multi-strand | 10–15 |
+| Flash fiction | 3-chapter | 3 |

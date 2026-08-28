@@ -27,11 +27,11 @@ func NewSaveReviewTool(store *store.Store) *SaveReviewTool {
 
 func (t *SaveReviewTool) Name() string { return "save_review" }
 func (t *SaveReviewTool) Description() string {
-	return "保存审阅结果并更新流程状态。verdict 为 accept/polish/rewrite 之一。" +
-		"Editor 依据完整上下文作出 verdict，工具只校验事实并原子更新 Progress。" +
-		"返回结构化事实：verdict / affected_chapters / next_flow / next_chapter"
+	return "Save the review result and update the flow state. verdict is one of accept/polish/rewrite. " +
+		"The editor decides the verdict from the full context; the tool only validates facts and updates Progress atomically. " +
+		"Returns structured facts: verdict / affected_chapters / next_flow / next_chapter"
 }
-func (t *SaveReviewTool) Label() string { return "保存审阅" }
+func (t *SaveReviewTool) Label() string { return "Save review" }
 
 // 写工具（同时更新 reviews/ 与 Progress 的 PendingRewrites/Flow），禁止并发。
 func (t *SaveReviewTool) ReadOnly(_ json.RawMessage) bool        { return false }
@@ -40,29 +40,29 @@ func (t *SaveReviewTool) StrictSchema() bool                     { return true }
 
 func (t *SaveReviewTool) Schema() map[string]any {
 	issueSchema := schema.Object(
-		schema.Property("type", schema.String("问题维度；可使用评审提示中的基础维度，也可写更准确的具体维度")).Required(),
-		schema.Property("severity", schema.Enum("严重程度", "critical", "error", "warning")).Required(),
-		schema.Property("description", schema.String("问题描述")).Required(),
-		schema.Property("evidence", schema.String("证据：原文片段、具体情节或状态数据")).Required(),
-		schema.Property("suggestion", llmcontract.Nullable(schema.String("修改建议；无需建议时为 null"))).Required(),
-		schema.Property("chapters", schema.Array("该问题证据实际所在的章节；弧评审必须落在任务给定区间", schema.Int("章节号"))).Required(),
-		schema.Property("requires_change", schema.Bool("该问题是否应立即触发所列章节返工，由 Editor 结合整体阅读体验判断")).Required(),
+		schema.Property("type", schema.String("The dimension this problem falls under; use a base dimension from the review prompt, or a more precise specific one")).Required(),
+		schema.Property("severity", schema.Enum("Severity", "critical", "error", "warning")).Required(),
+		schema.Property("description", schema.String("Description of the problem")).Required(),
+		schema.Property("evidence", schema.String("Evidence: a fragment of the prose, a specific plot point, or state data")).Required(),
+		schema.Property("suggestion", llmcontract.Nullable(schema.String("Suggested fix; null when no suggestion is needed"))).Required(),
+		schema.Property("chapters", schema.Array("The chapters where the evidence for this problem actually appears; for an arc review they must fall inside the range the task gave", schema.Int("Chapter number"))).Required(),
+		schema.Property("requires_change", schema.Bool("Whether this problem should immediately queue the listed chapters for rework, judged by the editor against the overall reading experience")).Required(),
 	)
 	dimensionSchema := schema.Object(
-		schema.Property("dimension", schema.String("评价维度；由当前评审任务和 rubric 决定")).Required(),
-		schema.Property("score", schema.Int("评分（0-100）")).Required(),
-		schema.Property("comment", schema.String("该维度的简要结论和证据；每个维度必填")).Required(),
+		schema.Property("dimension", schema.String("The dimension being scored, determined by the review task and the rubric")).Required(),
+		schema.Property("score", schema.Int("Score (0-100)")).Required(),
+		schema.Property("comment", schema.String("A brief conclusion and the evidence for this dimension; required for every dimension")).Required(),
 	)
 	return schema.Object(
-		schema.Property("chapter", schema.Int("审阅的章节号（全局审阅填最新章节号）")).Required(),
-		schema.Property("scope", schema.Enum("审阅范围", "chapter", "global", "arc")).Required(),
-		schema.Property("dimensions", schema.Array("分维度评分；基础 rubric 由 Editor 提示提供，可按任务补充更具体维度", dimensionSchema)).Required(),
-		schema.Property("issues", schema.Array("发现的问题", issueSchema)).Required(),
-		schema.Property("contract_status", llmcontract.Nullable(schema.Enum("章节契约完成度；不适用时为 null", "met", "partial", "missed"))).Required(),
-		schema.Property("contract_misses", schema.Array("未完成或违背的 contract 条目；无则为空数组", schema.String(""))).Required(),
-		schema.Property("contract_notes", llmcontract.Nullable(schema.String("对 contract 履行情况的简要说明；无则为 null"))).Required(),
-		schema.Property("verdict", schema.Enum("审阅结论", "accept", "polish", "rewrite")).Required(),
-		schema.Property("summary", schema.String("审阅总结")).Required(),
+		schema.Property("chapter", schema.Int("The chapter being reviewed (for a global review, the latest chapter number)")).Required(),
+		schema.Property("scope", schema.Enum("Review scope", "chapter", "global", "arc")).Required(),
+		schema.Property("dimensions", schema.Array("Per-dimension scores; the base rubric comes from the editor prompt, and more specific dimensions may be added per task", dimensionSchema)).Required(),
+		schema.Property("issues", schema.Array("Problems found", issueSchema)).Required(),
+		schema.Property("contract_status", llmcontract.Nullable(schema.Enum("How fully the chapter contract was met; null when it does not apply", "met", "partial", "missed"))).Required(),
+		schema.Property("contract_misses", schema.Array("Contract items unmet or violated; an empty array when there are none", schema.String(""))).Required(),
+		schema.Property("contract_notes", llmcontract.Nullable(schema.String("A brief note on how the contract was fulfilled; null when there is none"))).Required(),
+		schema.Property("verdict", schema.Enum("Review verdict", "accept", "polish", "rewrite")).Required(),
+		schema.Property("summary", schema.String("Review summary")).Required(),
 	)
 }
 
@@ -114,7 +114,7 @@ func (t *SaveReviewTool) Execute(_ context.Context, args json.RawMessage) (json.
 	}
 	if existing != nil {
 		if !reflect.DeepEqual(*existing, r) {
-			return nil, fmt.Errorf("第 %d 章聚合评审已存在且内容不同，拒绝覆盖: %w", r.Chapter, errs.ErrToolConflict)
+			return nil, fmt.Errorf("an aggregate review for chapter %d already exists with different content; refusing to overwrite: %w", r.Chapter, errs.ErrToolConflict)
 		}
 		return t.finishReview(r, progress, scope, artifact)
 	}

@@ -5,6 +5,8 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/rules"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // nil 模型 + 空规则目录：归一化全降级，但快照仍可产出（system_defaults 兜底）并落盘。
@@ -12,7 +14,7 @@ import (
 func newDegradedService(t *testing.T) (*Service, *store.Store) {
 	t.Helper()
 	st := store.NewStore(t.TempDir())
-	return NewService(st, nil, rules.LoadOptions{}), st
+	return NewService(st, nil, rules.LoadOptions{}, lang.Resolve("zh")), st
 }
 
 func TestService_Build_DegradesButPersists(t *testing.T) {

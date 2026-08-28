@@ -11,6 +11,8 @@ import (
 	"github.com/voocel/agentcore"
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 type StyleIndex interface {
@@ -30,10 +32,14 @@ type Service struct {
 	model      agentcore.ChatModel
 	prompt     string
 	styleIndex StyleIndex
+	// lp 必须与写入侧一致，见 Projector.lp。
+	lp lang.Profile
 }
 
-func NewService(st *store.Store, model agentcore.ChatModel, prompt string, styleIndex StyleIndex) *Service {
-	return &Service{store: st, model: model, prompt: prompt, styleIndex: styleIndex}
+func NewService(st *store.Store, model agentcore.ChatModel, prompt string, styleIndex StyleIndex, lp lang.Profile) *Service {
+	// prompt 由调用方负责挂好语言指令（见 lang.Profile.WithOutputDirective）：
+	// 在这里偷偷加工会让"哪些路径带了指令"从调用点看不出来，闸门也就查不到。
+	return &Service{store: st, model: model, prompt: prompt, styleIndex: styleIndex, lp: lp}
 }
 
 func (s *Service) Sync(ctx context.Context) (*Result, error) {
@@ -138,7 +144,7 @@ func (s *Service) applyPending(pending domain.PendingRevision) (*Result, error) 
 		if err != nil {
 			return nil, err
 		}
-		if err := NewProjector(s.store).Apply(records); err != nil {
+		if err := NewProjector(s.store, s.lp).Apply(records); err != nil {
 			return nil, fmt.Errorf("重建章节派生状态: %w", err)
 		}
 		if len(pending.Items) > 0 {

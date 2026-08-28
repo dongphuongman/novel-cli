@@ -28,6 +28,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/flow"
 	storepkg "github.com/voocel/ainovel-cli/internal/store"
 	"github.com/voocel/ainovel-cli/internal/tools"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // scriptedChatModel 按回调产出响应的最小 ChatModel。
@@ -104,7 +106,7 @@ func TestInterventionDispatchTaskPreservesOriginalAuthority(t *testing.T) {
 	if !strings.Contains(got, original) {
 		t.Fatalf("用户原始干预未被逐字保留: %q", got)
 	}
-	if !strings.Contains(got, "修改授权的唯一来源") {
+	if !strings.Contains(got, "the sole source of authorization") {
 		t.Fatalf("缺少授权边界说明: %q", got)
 	}
 }
@@ -191,7 +193,8 @@ func testTextMsg(text string) agentcore.Message {
 	}
 }
 
-var chapterRe = regexp.MustCompile(`写第 (\d+) 章`)
+// 同时匹配 Write / Rewrite / Polish chapter N（大小写不敏感，Rewrite 内含 write）。
+var chapterRe = regexp.MustCompile(`(?i)(?:write|polish) chapter (\d+)`)
 
 // scriptedWriterModel 按对话内已有的 tool 结果数决定下一步,
 // 走完整 plan → draft → check → commit 序列(真实工具,真实落盘)。
@@ -313,8 +316,8 @@ func TestEngine_ReviewPermitWritesExactlyOneNewChapter(t *testing.T) {
 	writer := subagent.Config{
 		Name: "writer", Description: "test writer", Model: scriptedWriterModel(), SystemPrompt: "test",
 		Tools: []agentcore.Tool{
-			tools.NewPlanChapterTool(st), tools.NewDraftChapterTool(st),
-			tools.NewCheckConsistencyTool(st), tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st)),
+			tools.NewPlanChapterTool(st), tools.NewDraftChapterTool(st, lang.Resolve("zh")),
+			tools.NewCheckConsistencyTool(st), tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st, lang.Resolve("zh"))),
 		},
 		MaxTurns: 10, StopAfterTools: []string{"commit_chapter"},
 	}
@@ -401,9 +404,9 @@ func TestEngine_WritesBookToCompletion(t *testing.T) {
 		SystemPrompt: "test",
 		Tools: []agentcore.Tool{
 			tools.NewPlanChapterTool(st),
-			tools.NewDraftChapterTool(st),
+			tools.NewDraftChapterTool(st, lang.Resolve("zh")),
 			tools.NewCheckConsistencyTool(st),
-			tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st)),
+			tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st, lang.Resolve("zh"))),
 		},
 		MaxTurns:       10,
 		StopAfterTools: []string{"commit_chapter"},
@@ -1002,9 +1005,9 @@ func TestEngine_PauseWithEditorDispatchWaitsForRewriteQueue(t *testing.T) {
 		SystemPrompt: "test",
 		Tools: []agentcore.Tool{
 			tools.NewPlanChapterTool(st),
-			tools.NewDraftChapterTool(st),
+			tools.NewDraftChapterTool(st, lang.Resolve("zh")),
 			tools.NewCheckConsistencyTool(st),
-			tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st)),
+			tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st, lang.Resolve("zh"))),
 		},
 		MaxTurns: 10, StopAfterTools: []string{"commit_chapter"},
 	}
@@ -1070,9 +1073,9 @@ func TestEngine_BoundaryHoldDoesNotDispatchAnotherWorker(t *testing.T) {
 		SystemPrompt: "test",
 		Tools: []agentcore.Tool{
 			tools.NewPlanChapterTool(st),
-			tools.NewDraftChapterTool(st),
+			tools.NewDraftChapterTool(st, lang.Resolve("zh")),
 			tools.NewCheckConsistencyTool(st),
-			tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st)),
+			tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st, lang.Resolve("zh"))),
 		},
 		MaxTurns: 10, StopAfterTools: []string{"commit_chapter"},
 	}
@@ -1123,8 +1126,8 @@ func TestEngine_TargetChapterHoldStopsAtRequestedChapter(t *testing.T) {
 	writer := subagent.Config{
 		Name: "writer", Description: "test writer", Model: scriptedWriterModel(), SystemPrompt: "test",
 		Tools: []agentcore.Tool{
-			tools.NewPlanChapterTool(st), tools.NewDraftChapterTool(st),
-			tools.NewCheckConsistencyTool(st), tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st)),
+			tools.NewPlanChapterTool(st), tools.NewDraftChapterTool(st, lang.Resolve("zh")),
+			tools.NewCheckConsistencyTool(st), tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st, lang.Resolve("zh"))),
 		},
 		MaxTurns: 10, StopAfterTools: []string{"commit_chapter"},
 	}

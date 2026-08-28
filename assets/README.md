@@ -1,25 +1,25 @@
-# assets 内容地图
+# assets content map
 
-给系统加"一段话 / 一篇资料 / 一条规则"之前，先查下表确定归属，再看接线方式。
+Before adding "a paragraph / a document / a rule" to the system, check the table below to decide where it belongs, then look at how it is wired in.
 
-| 目录 | 装什么 | 谁消费 | 接线方式 |
+| Directory | What it holds | Who consumes it | How it is wired |
 |---|---|---|---|
-| `prompts/` | Worker system prompt（writer / editor / architect×2）、Arbiter 裁定 prompt 与一次性任务 prompt（import / simulation / revision） | `agents/build.go`、`internal/arbiter`、imp / sim / revision runner | `load.go` Prompts 字段。注意：simulation_guidance 由 `load.go` 加载时注入，md 文件里看不到 |
-| `references/` | 题材无关的写作知识材料。不进 system prompt，由 novel_context 按角色 / 章节裁剪后注入 `reference_pack` | writer / editor / architect | **三处接线**：`tools.References` 加字段 + `load.go` loadReferences 读取 + `novel_context.go` writerReferences / architectReferences 注入。放进目录不会自动加载 |
-| `references/genres/<style>/` | 题材专属知识（style-references / arc-templates） | 同上，`style != default` 时加载 | `load.go` loadReferences |
-| `rules/` | 已废弃的旧内置规则目录；机械基线已迁到代码，用户规则来自 `~/.ainovel/rules/*.md` / `./.ainovel/rules/*.md` 的自然语言快照 | `userrules.Service` 归一化为 `meta/user_rules.json`；`novel_context` 注入；`commit_chapter` 检查 | 内置基线见 `internal/rules/snapshot.go` 的 `SystemDefaults()`；用户 `.md` 零格式、零 YAML，按自然语言归一化 |
-| `styles/<style>.md` | 题材写作风格指令 | 拼进 **writer** 的 system prompt（`agents/build.go`） | 文件名即 `config.style` 取值。与 `references/genres/<style>/` 是同一题材概念的两种载体：前者是风格指令，后者是知识材料 |
+| `prompts/` | Worker system prompts (writer / editor / architect×2), Arbiter decision prompts and one-shot task prompts (import / simulation / revision) | `agents/build.go`, `internal/arbiter`, the imp / sim / revision runners | The Prompts fields in `load.go`. Note: simulation_guidance is injected by `load.go` at load time, so it does not appear in the md files |
+| `references/` | Genre-independent writing knowledge. It does not go into the system prompt; novel_context trims it by role and chapter and injects it into `reference_pack` | writer / editor / architect | **Three wiring points**: add a field to `tools.References` + read it in `load.go` loadReferences + inject it in `novel_context.go` writerReferences / architectReferences. Dropping a file into the directory does not load it automatically |
+| `references/genres/<style>/` | Genre-specific knowledge (style-references / arc-templates) | As above, loaded when `style != default` | `load.go` loadReferences |
+| `rules/` | The deprecated built-in rules directory; the mechanical baseline has moved into code, and user rules come from natural-language snapshots in `~/.ainovel/rules/*.md` / `./.ainovel/rules/*.md` | `userrules.Service` normalizes them into `meta/user_rules.json`; `novel_context` injects them; `commit_chapter` checks them | The built-in baseline lives in `SystemDefaults()` in `internal/rules/snapshot.go`; the user's `.md` files carry no formatting and no YAML and are normalized from natural language |
+| `styles/<style>.md` | Genre writing-style instructions | Assembled into the **writer** system prompt (`agents/build.go`) | The filename is the value of `config.style`. This and `references/genres/<style>/` are two carriers of the same genre concept: the former is style instruction, the latter is knowledge material |
 
-## 新内容归属判断（五问）
+## Deciding where new content belongs (five questions)
 
-1. 这个流程必须被**保证**？→ 不写 prompt，写代码约束（StopAfterTools / 工具守卫 / Flow Router）
-2. 这是裁定判据？→ 查表型流程写 `internal/flow/router.go`；语义判断写 `prompts/arbiter-*.md`
-3. 这是某个角色的审美 / 执行标准？→ `prompts/<role>.md`
-4. 这是可机械枚举的默认规则（禁词 / 阈值）？→ `internal/rules/snapshot.go` 的 `SystemDefaults()`；用户自定义规则写进 `.ainovel/rules/*.md`，由归一化快照消费（字数/篇幅是语义软约束，走 preferences，不做机械规则）
-5. 这是写作知识材料？→ `references/`（记得三处接线）
+1. Must this process be **guaranteed**? → Do not write a prompt; write a code constraint (StopAfterTools / a tool guard / the Flow Router)
+2. Is this a decision criterion? → Table-driven flow goes in `internal/flow/router.go`; semantic judgment goes in `prompts/arbiter-*.md`
+3. Is this one role's craft or execution standard? → `prompts/<role>.md`
+4. Is this a mechanically enumerable default rule (banned words / thresholds)? → `SystemDefaults()` in `internal/rules/snapshot.go`; user-defined rules go in `.ainovel/rules/*.md` and are consumed via the normalized snapshot (length is a soft semantic constraint, so it goes through preferences and is never a mechanical rule)
+5. Is this writing knowledge? → `references/` (remember all three wiring points)
 
-## 一致性保障
+## Keeping things consistent
 
-prompt 引用的信封路径（`working_memory.*` 等）必须与 `novel_context` 保持一致。工具参数形状只在工具 Schema 中定义；prompt 只补充 Schema 无法表达的业务语义，不再复制 JSON 参数清单和形状示例。
+The envelope paths a prompt references (`working_memory.*` and the rest) must stay consistent with `novel_context`. The shape of a tool's arguments is defined only in the tool's Schema; a prompt adds only the business semantics the Schema cannot express, and no longer duplicates the JSON argument list or shape examples.
 
-prompt 可以描述单个 Worker 的执行方法，但全局路由、状态迁移和恢复逻辑只以代码为准。能够从 Store 事实确定的步骤放进 Router/Tool；需要理解小说内容或用户意图的判断才留给模型。
+A prompt may describe how an individual worker executes, but global routing, state transitions and recovery logic are defined by the code alone. Any step that can be determined from Store facts belongs in the Router or a Tool; only judgments that require understanding the novel's content or the user's intent are left to the model.

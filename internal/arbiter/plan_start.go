@@ -19,13 +19,13 @@ type PlanStartDecision struct {
 
 func (d *PlanStartDecision) Validate() error {
 	if d.Planner != "architect_long" && d.Planner != "architect_short" {
-		return fmt.Errorf("planner 非法: %q（可选 architect_long / architect_short）", d.Planner)
+		return fmt.Errorf("invalid planner: %q (allowed: architect_long / architect_short)", d.Planner)
 	}
 	if strings.TrimSpace(d.Task) == "" {
-		return fmt.Errorf("task 不能为空")
+		return fmt.Errorf("task cannot be empty")
 	}
 	if strings.TrimSpace(d.Reason) == "" {
-		return fmt.Errorf("reason 不能为空")
+		return fmt.Errorf("reason cannot be empty")
 	}
 	return nil
 }
@@ -33,11 +33,11 @@ func (d *PlanStartDecision) Validate() error {
 // planStartContract 紧邻 PlanStartDecision:字段全 required,planner 是封闭枚举。
 var planStartContract = llmcontract.Contract{
 	Name:        "arbiter_plan_start",
-	Description: "启动裁定:选规划师并产出完整任务文本",
+	Description: "Startup arbitration: choose the planner and produce the complete task text",
 	Schema: schema.Object(
-		schema.Property("planner", schema.Enum("规划师", "architect_long", "architect_short")).Required(),
-		schema.Property("task", schema.String("交给规划师的完整任务(含扩充后的需求)")).Required(),
-		schema.Property("reason", schema.String("选择理由")).Required(),
+		schema.Property("planner", schema.Enum("Planner", "architect_long", "architect_short")).Required(),
+		schema.Property("task", schema.String("The complete task handed to the planner (including any expanded requirement)")).Required(),
+		schema.Property("reason", schema.String("Reason for the choice")).Required(),
 	),
 }
 

@@ -7,21 +7,29 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/store"
 	"github.com/voocel/ainovel-cli/internal/stylestat"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // StyleStatsIndex 把 Store 中的已完成章节同步到增量统计器。
 // 首次 Snapshot 全量恢复一次；之后只加载新增章节，重写由 commit_chapter 主动刷新。
 type StyleStatsIndex struct {
 	store *store.Store
+	lp    lang.Profile
 
 	mu        sync.Mutex
 	tracker   *stylestat.Tracker
 	completed map[int]struct{}
 }
 
-func NewStyleStatsIndex(store *store.Store) *StyleStatsIndex {
-	return &StyleStatsIndex{store: store}
+// lp 决定统计口径（模式表/断句/n-gram 单位）。它是本书级事实，
+// 构造后不变——中途换语言等于换一本书的统计基线。
+func NewStyleStatsIndex(store *store.Store, lp lang.Profile) *StyleStatsIndex {
+	return &StyleStatsIndex{store: store, lp: lp}
 }
+
+// Lang 暴露本索引的语言档案，供共享同一索引的工具复用同一口径。
+func (s *StyleStatsIndex) Lang() lang.Profile { return s.lp }
 
 func (s *StyleStatsIndex) Snapshot(
 	completedChapters []int,
@@ -36,7 +44,7 @@ func (s *StyleStatsIndex) Snapshot(
 	}
 
 	if s.tracker == nil {
-		tracker := stylestat.NewTracker()
+		tracker := stylestat.NewTracker(s.lp)
 		for _, chapter := range completed {
 			text, err := s.loadChapter(chapter)
 			if err != nil {
@@ -94,10 +102,10 @@ func (s *StyleStatsIndex) ChapterCommitted(chapter int, text string) {
 func (s *StyleStatsIndex) loadChapter(chapter int) (string, error) {
 	text, err := s.store.Drafts.LoadChapterText(chapter)
 	if err != nil {
-		return "", fmt.Errorf("读取第 %d 章终稿: %w", chapter, err)
+		return "", fmt.Errorf("read the final text of chapter %d: %w", chapter, err)
 	}
 	if text == "" {
-		return "", fmt.Errorf("第 %d 章已标记完成但终稿不存在", chapter)
+		return "", fmt.Errorf("chapter %d is marked complete but has no final text", chapter)
 	}
 	return text, nil
 }
@@ -108,10 +116,10 @@ func normalizeCompletedChapters(chapters []int) ([]int, map[int]struct{}, error)
 	set := make(map[int]struct{}, len(normalized))
 	for _, chapter := range normalized {
 		if chapter <= 0 {
-			return nil, nil, fmt.Errorf("已完成章节号必须大于 0，实际为 %d", chapter)
+			return nil, nil, fmt.Errorf("a completed chapter number must be greater than 0, got %d", chapter)
 		}
 		if _, exists := set[chapter]; exists {
-			return nil, nil, fmt.Errorf("已完成章节重复：第 %d 章", chapter)
+			return nil, nil, fmt.Errorf("duplicate completed chapter: %d", chapter)
 		}
 		set[chapter] = struct{}{}
 	}

@@ -4,12 +4,18 @@ import (
 	"slices"
 	"sort"
 	"sync"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // Tracker 按章节维护全书风格统计。首次载入每章一次；新增或重写时只分析变化章节。
 // Snapshot 会缓存派生结果，同一书状态下 Writer/Editor 的重复读取不再重算。
 type Tracker struct {
 	mu sync.Mutex
+
+	// lp 是本书的创作语言档案，决定模式表、断句与短结尾阈值。
+	// 一旦构造即固定：换语言等于换一本书的统计口径，不允许中途漂移。
+	lp lang.Profile
 
 	chapters      map[int]chapterStats
 	patternTotals []int
@@ -38,10 +44,13 @@ type sentenceAggregate struct {
 	chapters int
 }
 
-func NewTracker() *Tracker {
+// NewTracker 构造本书的增量统计器。lp 零值安全（等价中文），
+// 但生产路径应显式传入 bootstrap.Config.Lang()。
+func NewTracker(lp lang.Profile) *Tracker {
 	return &Tracker{
+		lp:            lp,
 		chapters:      make(map[int]chapterStats),
-		patternTotals: make([]int, len(patternDefs)),
+		patternTotals: make([]int, len(lp.StylePatterns())),
 		sentences:     make(map[string]sentenceAggregate),
 	}
 }
@@ -58,7 +67,7 @@ func (t *Tracker) Upsert(chapter int, text string) {
 		}
 		t.subtract(previous)
 	}
-	current := analyzeChapter(text)
+	current := analyzeChapter(text, t.lp)
 	t.add(current)
 	t.chapters[chapter] = current
 	t.version++
@@ -107,8 +116,8 @@ func (t *Tracker) ensure() {
 	if t.chapters == nil {
 		t.chapters = make(map[int]chapterStats)
 	}
-	if len(t.patternTotals) != len(patternDefs) {
-		t.patternTotals = make([]int, len(patternDefs))
+	if len(t.patternTotals) != len(t.lp.StylePatterns()) {
+		t.patternTotals = make([]int, len(t.lp.StylePatterns()))
 	}
 	if t.sentences == nil {
 		t.sentences = make(map[string]sentenceAggregate)
@@ -167,7 +176,7 @@ func (t *Tracker) snapshot(titles, stopwords []string) *Stats {
 			continue
 		}
 		stats.Patterns = append(stats.Patterns, PatternStat{
-			Name:       patternDefs[i].name,
+			Name:       t.lp.StylePatterns()[i].Name,
 			Total:      total,
 			PerChapter: round1(float64(total) / float64(n)),
 		})
@@ -178,7 +187,7 @@ func (t *Tracker) snapshot(titles, stopwords []string) *Stats {
 	for _, chapter := range ids[recentStart:] {
 		recent = append(recent, t.chapters[chapter].text)
 	}
-	stats.TopPhrases = minePhrases(recent, stopwords)
+	stats.TopPhrases = minePhrases(recent, stopwords, t.lp)
 
 	for sentence, aggregate := range t.sentences {
 		if aggregate.chapters < 3 {
@@ -207,7 +216,7 @@ func (t *Tracker) snapshot(titles, stopwords []string) *Stats {
 			continue
 		}
 		endingLengths = append(endingLengths, chapter.endingRunes)
-		if chapter.endingRunes <= shortEndingRunes {
+		if chapter.endingRunes <= t.lp.ShortEndingLimit() {
 			shortEndings++
 		}
 	}
@@ -220,30 +229,30 @@ func (t *Tracker) snapshot(titles, stopwords []string) *Stats {
 	}
 
 	stats.OpeningTimeRate = round2(float64(t.openingHits) / float64(n))
-	stats.TitleFormats = titleFormats(titles)
+	stats.TitleFormats = titleFormats(titles, t.lp)
 	return stats
 }
 
-func analyzeChapter(text string) chapterStats {
+func analyzeChapter(text string, lp lang.Profile) chapterStats {
 	stats := chapterStats{
 		text:      text,
-		patterns:  make([]int, len(patternDefs)),
-		sentences: chapterSentenceCounts(text),
+		patterns:  make([]int, len(lp.StylePatterns())),
+		sentences: chapterSentenceCounts(text, lp),
 	}
-	for i, def := range patternDefs {
-		stats.patterns[i] = len(def.re.FindAllStringIndex(text, -1))
+	for i, def := range lp.StylePatterns() {
+		stats.patterns[i] = len(def.Re.FindAllStringIndex(text, -1))
 	}
 	if ending := lastNonEmptyLine(text); ending != "" {
 		stats.endingRunes = len([]rune(ending))
 		stats.hasEnding = true
 	}
-	stats.openingTime = openingTimeRe.MatchString(firstParagraph(text))
+	stats.openingTime = lp.OpeningTimeRe().MatchString(firstParagraph(text))
 	return stats
 }
 
-func chapterSentenceCounts(text string) map[string]int {
+func chapterSentenceCounts(text string, lp lang.Profile) map[string]int {
 	counts := make(map[string]int)
-	for _, sentence := range sentenceSplit.Split(text, -1) {
+	for _, sentence := range lp.SplitSentences(text) {
 		sentence = trimWrappedQuotes(sentence)
 		if len([]rune(sentence)) < 12 {
 			continue

@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -8,6 +9,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/voocel/agentcore"
 	"github.com/voocel/ainovel-cli/internal/host"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
 )
 
 type modelRuntime interface {
@@ -34,35 +37,41 @@ type modelRoleOption struct {
 	Label string
 }
 
-var modelRoleOptions = []modelRoleOption{
-	{Key: "default", Label: "默认"},
+// 函数而非 var：见 theme.go statusDisplay 的说明（init 期语言未定）。
+func modelRoleOptions() []modelRoleOption {
+	return []modelRoleOption{
+		{Key: "default", Label: i18n.T("mdl.default")},
 
-	{Key: "architect", Label: "Architect"},
-	{Key: "writer", Label: "Writer"},
-	{Key: "editor", Label: "Editor"},
+		{Key: "architect", Label: "Architect"},
+		{Key: "writer", Label: "Writer"},
+		{Key: "editor", Label: "Editor"},
+	}
 }
 
 type thinkingOption struct{ Key, Label string }
 
-var allThinkingOptions = []thinkingOption{
-	{"", "默认(继承)"},
-	{"off", "关闭"},
-	{"low", "低"},
-	{"medium", "中"},
-	{"high", "高"},
-	{"xhigh", "极高"},
-	{"max", "最高"},
+// 函数而非 var：见 theme.go statusDisplay 的说明（init 期语言未定）。
+func allThinkingOptions() []thinkingOption {
+	return []thinkingOption{
+		{"", i18n.T("mdl.effort.inherit")},
+		{"off", i18n.T("mdl.effort.off")},
+		{"low", i18n.T("mdl.effort.low")},
+		{"medium", i18n.T("mdl.effort.medium")},
+		{"high", i18n.T("mdl.effort.high")},
+		{"xhigh", i18n.T("mdl.effort.xhigh")},
+		{"max", i18n.T("mdl.effort.max")},
+	}
 }
 
 func thinkingOptionsFor(rt modelRuntime, role string) []thinkingOption {
 	levels := rt.AvailableThinking(role)
 	if len(levels) == 0 {
-		return []thinkingOption{allThinkingOptions[0]}
+		return []thinkingOption{allThinkingOptions()[0]}
 	}
 	out := make([]thinkingOption, 0, len(levels))
 	for _, level := range levels {
 		key := string(level)
-		for _, option := range allThinkingOptions {
+		for _, option := range allThinkingOptions() {
 			if option.Key == key {
 				out = append(out, option)
 				break
@@ -70,7 +79,7 @@ func thinkingOptionsFor(rt modelRuntime, role string) []thinkingOption {
 		}
 	}
 	if len(out) == 0 {
-		return []thinkingOption{allThinkingOptions[0]}
+		return []thinkingOption{allThinkingOptions()[0]}
 	}
 	return out
 }
@@ -105,11 +114,11 @@ func newModelSwitchState(rt modelRuntime, roleHint string) *modelSwitchState {
 		providers: rt.ConfiguredProviders(),
 	}
 	if len(state.providers) == 0 {
-		state.message = "当前没有可用 provider"
+		state.message = i18n.T("mdl.err.noprovider")
 	}
 
 	roleHint = normalizeRoleKey(roleHint)
-	for i, opt := range modelRoleOptions {
+	for i, opt := range modelRoleOptions() {
 		if opt.Key == roleHint {
 			state.roleIdx = i
 			break
@@ -131,11 +140,11 @@ func normalizeRoleKey(role string) string {
 }
 
 func (s *modelSwitchState) role() string {
-	return modelRoleOptions[s.roleIdx].Key
+	return modelRoleOptions()[s.roleIdx].Key
 }
 
 func (s *modelSwitchState) roleLabel() string {
-	return modelRoleOptions[s.roleIdx].Label
+	return modelRoleOptions()[s.roleIdx].Label
 }
 
 func (s *modelSwitchState) provider() string {
@@ -172,7 +181,7 @@ func (s *modelSwitchState) thinkingKey() string {
 
 func (s *modelSwitchState) thinkingLabel() string {
 	if s.thinkingIdx < 0 || s.thinkingIdx >= len(s.thinking) {
-		return allThinkingOptions[0].Label
+		return allThinkingOptions()[0].Label
 	}
 	return s.thinking[s.thinkingIdx].Label
 }
@@ -185,7 +194,7 @@ func (s *modelSwitchState) moveFocus(delta int) {
 func (s *modelSwitchState) cycle(delta int, rt modelRuntime) {
 	switch s.focus {
 	case modelFocusRole:
-		total := len(modelRoleOptions)
+		total := len(modelRoleOptions())
 		s.roleIdx = (s.roleIdx + delta + total) % total
 		s.syncSelection(rt)
 	case modelFocusProvider:
@@ -249,10 +258,10 @@ func (s *modelSwitchState) syncThinking(rt modelRuntime) {
 
 func (s *modelSwitchState) apply(rt modelRuntime) error {
 	if len(s.providers) == 0 {
-		return fmt.Errorf("当前没有可用 provider")
+		return errors.New(i18n.T("mdl.err.noprovider"))
 	}
 	if len(s.models) == 0 {
-		return fmt.Errorf("provider %q 没有已配置模型", s.provider())
+		return fmt.Errorf(i18n.T("mdl.err.nomodel"), s.provider())
 	}
 	wantThinking := s.thinkingKey()
 	if err := rt.SwitchModel(s.role(), s.provider(), s.model()); err != nil {
@@ -311,16 +320,22 @@ func renderModelSwitchBar(width int, state *modelSwitchState) string {
 	title := lipgloss.NewStyle().
 		Foreground(colorMuted).
 		Bold(true).
-		Render("/model 切换模型")
+		Render(i18n.T("mdl.title"))
 
-	row1 := renderModelField("角色", state.roleLabel(), state.focus == modelFocusRole)
-	row2 := renderModelField("Provider", state.provider(), state.focus == modelFocusProvider)
-	row3 := renderModelField("模型", state.modelLabel(), state.focus == modelFocusModel)
-	row4 := renderModelField("推理强度", state.thinkingLabel(), state.focus == modelFocusThinking)
+	// 标签列宽按本次实际标签算，不写死：中文"推理强度"占 4 格，越南语
+	// "Cường độ suy luận" 占 17 格——固定宽度会被 lipgloss 折行，直接把面板
+	// 边框撑破（实机跑出来的缺陷，单测看不见）。
+	roleLabel, modelLabel, effortLabel := i18n.T("mdl.role"), i18n.T("cfg.model"), i18n.T("mdl.effort")
+	labelW := modelFieldLabelWidth(roleLabel, "Provider", modelLabel, effortLabel)
+
+	row1 := renderModelField(labelW, roleLabel, state.roleLabel(), state.focus == modelFocusRole)
+	row2 := renderModelField(labelW, "Provider", state.provider(), state.focus == modelFocusProvider)
+	row3 := renderModelField(labelW, modelLabel, state.modelLabel(), state.focus == modelFocusModel)
+	row4 := renderModelField(labelW, effortLabel, state.thinkingLabel(), state.focus == modelFocusThinking)
 	hint := lipgloss.NewStyle().
 		Foreground(colorDim).
 		Italic(true).
-		Render("Tab 切字段   ←→ 切选项   Enter 应用   Esc 取消")
+		Render(i18n.T("mdl.hint"))
 	lines := []string{
 		row1,
 		row2,
@@ -369,13 +384,32 @@ func renderModelSwitchBar(width int, state *modelSwitchState) string {
 	return strings.Join(append(append([]string{topBorder}, body...), bottomBorder), "\n")
 }
 
-func renderModelField(label, value string, focused bool) string {
+// modelFieldLabelBaseWidth 是历史上写死的标签列宽。留作下限，让中文界面的
+// 版式逐格不变——这次修的是"标签放不下"，不该顺手把没坏的排版也改了。
+const modelFieldLabelBaseWidth = 12
+
+// modelFieldLabelWidth 返回容得下全部标签的列宽（含冒号与一个间隔）。
+//
+// 用 lipgloss.Width 而不是 len：它按终端显示格数算，汉字占 2 格、越南语声调
+// 组合字符占 1 格，len 在这两种情况下都会给出错误答案。
+func modelFieldLabelWidth(labels ...string) int {
+	widest := modelFieldLabelBaseWidth
+	for _, label := range labels {
+		// 冒号后留一格，避免标签与取值贴死
+		if w := lipgloss.Width(label+":") + 1; w > widest {
+			widest = w
+		}
+	}
+	return widest
+}
+
+func renderModelField(labelWidth int, label, value string, focused bool) string {
 	if strings.TrimSpace(value) == "" {
-		value = "未设置"
+		value = i18n.T("cfg.unset")
 	}
 	labelText := lipgloss.NewStyle().
 		Foreground(colorMuted).
-		Width(12).
+		Width(labelWidth).
 		Render(label + ":")
 	style := lipgloss.NewStyle().Padding(0, 1).Foreground(bodyTextColor)
 	if focused {

@@ -53,12 +53,12 @@ func TestLoad_NoOverrides(t *testing.T) {
 
 func TestInterventionPromptsKeepScopeContract(t *testing.T) {
 	prompts := loadPrompts()
-	for _, phrase := range []string{"上下文不等于修改授权", "最小充分范围", "分析范围不等于修改范围"} {
+	for _, phrase := range []string{"context is not authorization to modify", "minimal sufficient scope", "analysis scope is not modification scope"} {
 		if !strings.Contains(prompts.ArbiterIntervention, phrase) {
 			t.Fatalf("Arbiter 干预提示缺少范围契约 %q", phrase)
 		}
 	}
-	for _, phrase := range []string{"用户原始干预", "分析范围不等于修改范围", "最小充分章节集合"} {
+	for _, phrase := range []string{"User's original intervention", "analysis scope is not modification scope", "minimal sufficient set of chapters"} {
 		if !strings.Contains(prompts.Editor, phrase) {
 			t.Fatalf("Editor 提示缺少范围契约 %q", phrase)
 		}
@@ -71,7 +71,7 @@ func TestStructuredArbiterPromptsContainOnlySemantics(t *testing.T) {
 		"plan_start": prompts.ArbiterPlanStart,
 		"failure":    prompts.ArbiterFailure,
 	} {
-		for _, duplicate := range []string{"```json", "不要 Markdown", "输出一个 JSON 对象"} {
+		for _, duplicate := range []string{"```json", "not Markdown", "output a JSON object"} {
 			if strings.Contains(prompt, duplicate) {
 				t.Fatalf("%s 提示词仍重复维护输出格式 %q", name, duplicate)
 			}
@@ -166,7 +166,7 @@ func TestOverrideVoice_SharesAssemblyPath(t *testing.T) {
 		t.Fatal("占位符必须被消耗")
 	}
 	// 协议部分不受 voice 覆盖影响
-	if !strings.Contains(got, "## 执行协议") {
+	if !strings.Contains(got, "## Execution protocol") {
 		t.Fatal("协议模板不得被 voice 覆盖破坏")
 	}
 }

@@ -10,6 +10,8 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/store"
 	"github.com/voocel/ainovel-cli/internal/tools"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // testDeps 构造三个语义函数同用一个 mock 档位的最小 Deps。
@@ -17,7 +19,7 @@ func testDeps(st *store.Store, m callModel) Deps {
 	c := Caller{Model: m}
 	return Deps{
 		Store:         st,
-		CommitChapter: tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st)),
+		CommitChapter: tools.NewCommitChapterTool(st, tools.NewStyleStatsIndex(st, lang.Resolve("zh"))),
 		Segment:       c,
 		Analyze:       c,
 		Synthesize:    c,
@@ -157,7 +159,7 @@ func TestRunRejectsDifferentSource(t *testing.T) {
 			runErr = ev.Err
 		}
 	}
-	if runErr == nil || !strings.Contains(runErr.Error(), "内容不同") {
+	if runErr == nil || !strings.Contains(runErr.Error(), "differs from it") {
 		t.Fatalf("不同源文件应被明确拒绝，得 %v", runErr)
 	}
 }

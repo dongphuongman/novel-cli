@@ -1,6 +1,7 @@
 package host
 
 import (
+	"github.com/voocel/ainovel-cli/internal/i18n"
 	"strings"
 	"unicode/utf8"
 )
@@ -21,22 +22,32 @@ import (
 var toolDisplays = map[string]toolDisplay{
 	"draft_chapter": {nakedKey: "content"},
 
-	"plan_chapter":        {header: "✻ 规划"},
-	"edit_chapter":        {header: "✻ 打磨"},
-	"commit_chapter":      {header: "✻ 章节提交"},
-	"save_review":         {header: "✻ 审阅"},
-	"save_arc_summary":    {header: "✻ 弧摘要"},
-	"save_volume_summary": {header: "✻ 卷摘要"},
-	"save_foundation":     {header: "✻ 设定"},
-	"revise_outline":      {header: "✻ 修订大纲"},
-	"read_chapter":        {header: "✻ 读章节"},
-	"check_consistency":   {header: "✻ 一致性检查"},
-	"novel_context":       {header: "✻ 查询上下文"},
+	"plan_chapter":        {headerKey: "tool.hdr.plan"},
+	"edit_chapter":        {headerKey: "tool.hdr.polish"},
+	"commit_chapter":      {headerKey: "tool.hdr.commit"},
+	"save_review":         {headerKey: "tool.hdr.review"},
+	"save_arc_summary":    {headerKey: "tool.hdr.arcsummary"},
+	"save_volume_summary": {headerKey: "tool.hdr.volsummary"},
+	"save_foundation":     {headerKey: "tool.hdr.foundation"},
+	"revise_outline":      {headerKey: "tool.hdr.reviseoutline"},
+	"read_chapter":        {headerKey: "tool.hdr.readchapter"},
+	"check_consistency":   {headerKey: "tool.hdr.consistency"},
+	"novel_context":       {headerKey: "tool.hdr.context"},
 }
 
 type toolDisplay struct {
-	header   string
-	nakedKey string
+	headerKey string // i18n key；空表示该工具不画 header
+	nakedKey  string
+}
+
+// header 在**使用时**解析文案，而不是在包初始化时定型——
+// /config 可以热切换界面语言，定型会让切换后的流式输出停留在旧语言。
+// 装饰符号留在代码里：它是版式的一部分，不该进词表被译丢。
+func (d toolDisplay) header() string {
+	if d.headerKey == "" {
+		return ""
+	}
+	return "✻ " + i18n.T(d.headerKey)
 }
 
 // jsonFieldExtractor 是流式 JSON tokenizer。逐字节驱动状态机，把 LLM 的工具
@@ -229,8 +240,8 @@ func (e *jsonFieldExtractor) emitKeyLine(out *strings.Builder, key string) {
 		return
 	}
 	if !e.started {
-		if e.cfg.header != "" {
-			out.WriteString(e.cfg.header)
+		if hdr := e.cfg.header(); hdr != "" {
+			out.WriteString(hdr)
 			out.WriteByte('\n')
 		}
 		e.started = true
@@ -249,8 +260,8 @@ func (e *jsonFieldExtractor) emitArrayItem(out *strings.Builder) {
 		return
 	}
 	if !e.started {
-		if e.cfg.header != "" {
-			out.WriteString(e.cfg.header)
+		if hdr := e.cfg.header(); hdr != "" {
+			out.WriteString(hdr)
 			out.WriteByte('\n')
 		}
 		e.started = true
@@ -347,8 +358,8 @@ func (e *jsonFieldExtractor) closeContainer(out *strings.Builder) {
 	if len(e.stack) == 0 {
 		// 空 args（如 novel_context 不传参）兜底：emitKeyLine 没机会输出 header，
 		// 这里补一次，避免落到"既没标题也没内容"。
-		if !e.started && e.cfg.nakedKey == "" && e.cfg.header != "" {
-			out.WriteString(e.cfg.header)
+		if hdr := e.cfg.header(); !e.started && e.cfg.nakedKey == "" && hdr != "" {
+			out.WriteString(hdr)
 			out.WriteByte('\n')
 			e.started = true
 		}

@@ -1,0 +1,1743 @@
+<title>ainovel-cli Codebase Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+/* ============ tokens ============ */
+:root{
+  --ground:#f1f4f3;
+  --surface:#ffffff;
+  --surface-2:#e7edeb;
+  --line:#d5dedb;
+  --line-2:#b6c4c0;
+  --ink:#111b19;
+  --ink-2:#3b4a47;
+  --ink-3:#687a76;
+  --det:#186454;
+  --det-ink:#0f3f34;
+  --det-bg:rgba(24,100,84,.09);
+  --sem:#8f5d18;
+  --sem-ink:#653f0c;
+  --sem-bg:rgba(143,93,24,.10);
+  --warn:#a33d29;
+  --warn-bg:rgba(163,61,41,.09);
+  --shadow:0 1px 2px rgba(17,27,25,.05), 0 8px 24px -16px rgba(17,27,25,.28);
+
+  --measure:70ch;
+  --f-display:"Newsreader",Georgia,"Songti SC","Noto Serif CJK SC",serif;
+  --f-body:"IBM Plex Sans",-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0e1618;
+    --surface:#141e20;
+    --surface-2:#1b2729;
+    --line:#263436;
+    --line-2:#3a4c4e;
+    --ink:#e4ecea;
+    --ink-2:#b2c1bd;
+    --ink-3:#849591;
+    --det:#57c2a3;
+    --det-ink:#8fd9c2;
+    --det-bg:rgba(87,194,163,.13);
+    --sem:#dda85c;
+    --sem-ink:#eec894;
+    --sem-bg:rgba(221,168,92,.13);
+    --warn:#e28a75;
+    --warn-bg:rgba(226,138,117,.13);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0e1618;
+  --surface:#141e20;
+  --surface-2:#1b2729;
+  --line:#263436;
+  --line-2:#3a4c4e;
+  --ink:#e4ecea;
+  --ink-2:#b2c1bd;
+  --ink-3:#849591;
+  --det:#57c2a3;
+  --det-ink:#8fd9c2;
+  --det-bg:rgba(87,194,163,.13);
+  --sem:#dda85c;
+  --sem-ink:#eec894;
+  --sem-bg:rgba(221,168,92,.13);
+  --warn:#e28a75;
+  --warn-bg:rgba(226,138,117,.13);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+/* ============ base ============ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{animation:none!important;transition:none!important}}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--det);text-decoration:none;border-bottom:1px solid color-mix(in srgb, var(--det) 35%, transparent)}
+a:hover{border-bottom-color:var(--det)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--det);outline-offset:3px;border-radius:2px}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--surface-2);padding:.1em .36em;border-radius:3px;color:var(--ink)}
+strong{font-weight:600;color:var(--ink)}
+
+/* ============ shell ============ */
+.shell{max-width:1280px;margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem)}
+.layout{display:grid;grid-template-columns:1fr;gap:0}
+@media (min-width:1080px){
+  .layout{grid-template-columns:15.5rem minmax(0,1fr);gap:clamp(2rem,4vw,4.5rem);align-items:start}
+}
+
+/* ============ masthead ============ */
+.masthead{border-bottom:1px solid var(--line);background:var(--surface);}
+.masthead-inner{
+  max-width:1280px;margin:0 auto;padding:clamp(2.75rem,7vw,5rem) clamp(1rem,4vw,2.5rem) clamp(2rem,4vw,3rem);
+  display:flex;flex-direction:column;gap:1.5rem;
+}
+.eyebrow{
+  font-family:var(--f-mono);font-size:.7rem;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;flex-wrap:wrap;gap:.6rem .9rem;align-items:center;
+}
+.eyebrow .dot{width:4px;height:4px;border-radius:50%;background:var(--line-2)}
+h1{
+  font-family:var(--f-display);font-weight:500;font-size:clamp(2.4rem,6.2vw,4rem);
+  line-height:1.04;letter-spacing:-.022em;margin:0;text-wrap:balance;
+}
+h1 em{font-style:italic;color:var(--det);font-weight:400}
+.lede{font-size:clamp(1.02rem,1.9vw,1.2rem);color:var(--ink-2);max-width:60ch;margin:0;line-height:1.6}
+.statstrip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));
+  border-top:1px solid var(--line);margin-top:.75rem;
+}
+.stat{padding:1rem 1.25rem 1rem 0;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat .n{font-family:var(--f-display);font-size:1.75rem;font-weight:500;line-height:1;font-variant-numeric:tabular-nums;display:block}
+.stat .l{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-top:.45rem;display:block}
+
+/* ============ nav ============ */
+.sidenav{display:none}
+@media (min-width:1080px){
+  .sidenav{
+    display:block;position:sticky;top:2rem;max-height:calc(100vh - 4rem);overflow-y:auto;
+    padding:2.5rem 0 3rem;font-size:.845rem;
+  }
+}
+.sidenav .navtitle{
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-3);padding-bottom:.7rem;margin-bottom:.7rem;border-bottom:1px solid var(--line);
+}
+.sidenav ol{list-style:none;margin:0;padding:0;counter-reset:nav}
+.sidenav li{counter-increment:nav}
+.sidenav a{
+  display:grid;grid-template-columns:1.85rem 1fr;gap:.2rem;padding:.32rem 0;
+  color:var(--ink-2);border-bottom:0;line-height:1.35;
+}
+.sidenav a::before{
+  content:counter(nav,decimal-leading-zero);font-family:var(--f-mono);font-size:.72rem;color:var(--ink-3);
+}
+.sidenav a:hover{color:var(--det)}
+
+/* ============ content ============ */
+main{padding:clamp(2.25rem,5vw,3.5rem) 0 6rem;min-width:0}
+section{padding-top:clamp(2.25rem,5vw,3.25rem);scroll-margin-top:2rem}
+section + section{border-top:1px solid var(--line);margin-top:clamp(2.25rem,5vw,3.25rem)}
+.sechead{display:flex;gap:1rem;align-items:baseline;margin-bottom:1.4rem}
+.secnum{
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;color:var(--ink-3);
+  padding-top:.45rem;flex:none;font-variant-numeric:tabular-nums;
+}
+h2{
+  font-family:var(--f-display);font-weight:500;font-size:clamp(1.55rem,3.2vw,2.15rem);
+  line-height:1.14;letter-spacing:-.015em;margin:0;text-wrap:balance;
+}
+h3{
+  font-family:var(--f-body);font-weight:600;font-size:1.02rem;letter-spacing:-.005em;
+  margin:2.25rem 0 .7rem;color:var(--ink);
+}
+h4{font-family:var(--f-mono);font-weight:500;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:1.75rem 0 .6rem}
+p{margin:0 0 1rem;max-width:var(--measure)}
+ul,ol{max-width:var(--measure);padding-left:1.15rem;margin:0 0 1.15rem}
+li{margin-bottom:.42rem}
+li::marker{color:var(--ink-3)}
+.note{
+  border-left:2px solid var(--line-2);padding:.15rem 0 .15rem 1.05rem;
+  color:var(--ink-2);font-size:.94rem;max-width:var(--measure);margin:1.25rem 0;
+}
+.note strong{color:var(--ink)}
+
+/* plane tags */
+.tag{
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;
+  padding:.16rem .45rem;border-radius:3px;white-space:nowrap;font-weight:500;
+}
+.tag.det{background:var(--det-bg);color:var(--det-ink)}
+.tag.sem{background:var(--sem-bg);color:var(--sem-ink)}
+.tag.neu{background:var(--surface-2);color:var(--ink-3)}
+:root[data-theme="dark"] .tag.det,:root[data-theme="dark"] .tag.sem{color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag.det{color:var(--det-ink)} :root:not([data-theme="light"]) .tag.sem{color:var(--sem-ink)}}
+
+/* ============ tables ============ */
+.tablewrap{overflow-x:auto;margin:1.35rem 0 1.6rem;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.875rem;min-width:34rem}
+th,td{text-align:left;padding:.62rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{
+  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;background:var(--surface-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td code{background:transparent;padding:0;color:var(--ink);font-size:.83em}
+td.num{font-variant-numeric:tabular-nums;text-align:right;font-family:var(--f-mono);font-size:.82em;color:var(--ink-2)}
+table.compact td,table.compact th{padding:.48rem .8rem}
+
+/* ============ code blocks ============ */
+pre{
+  font-family:var(--f-mono);font-size:.8rem;line-height:1.62;
+  background:var(--surface);border:1px solid var(--line);border-radius:6px;
+  padding:1rem 1.15rem;overflow-x:auto;margin:1.3rem 0;color:var(--ink-2);
+}
+pre b{color:var(--ink);font-weight:500}
+pre .c{color:var(--ink-3)}
+pre .d{color:var(--det)}
+pre .s{color:var(--sem)}
+
+/* ============ diagram ============ */
+.diagram{
+  border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  padding:clamp(1rem,2.5vw,1.75rem);margin:1.5rem 0 1.75rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.55rem;
+}
+.dbox{
+  border:1px solid var(--line-2);border-radius:5px;padding:.7rem .9rem;background:var(--surface-2);
+}
+.dbox.det{border-color:color-mix(in srgb,var(--det) 45%,transparent);background:var(--det-bg)}
+.dbox.sem{border-color:color-mix(in srgb,var(--sem) 45%,transparent);background:var(--sem-bg)}
+.dbox .t{font-weight:600;font-size:.87rem;display:flex;gap:.55rem;align-items:center;flex-wrap:wrap}
+.dbox .s{font-size:.79rem;color:var(--ink-2);margin-top:.22rem;line-height:1.5}
+.dbox .s code{font-size:.9em;background:transparent;padding:0}
+.drow{display:grid;gap:.55rem;grid-template-columns:1fr}
+@media (min-width:640px){.drow.c3{grid-template-columns:repeat(3,1fr)}.drow.c4{grid-template-columns:repeat(4,1fr)}.drow.c2{grid-template-columns:repeat(2,1fr)}}
+.darrow{
+  font-family:var(--f-mono);font-size:.7rem;color:var(--ink-3);text-align:center;
+  letter-spacing:.06em;padding:.1rem 0;
+}
+.legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.78rem;color:var(--ink-2);margin-top:.4rem}
+.legend span{display:flex;align-items:center;gap:.42rem}
+.swatch{width:.7rem;height:.7rem;border-radius:2px;flex:none}
+.swatch.det{background:var(--det)}
+.swatch.sem{background:var(--sem)}
+.swatch.neu{background:var(--line-2)}
+
+/* ============ cards ============ */
+.cards{display:grid;gap:.85rem;grid-template-columns:1fr;margin:1.4rem 0 1.6rem}
+@media (min-width:680px){.cards.c2{grid-template-columns:repeat(2,1fr)}.cards.c3{grid-template-columns:repeat(3,1fr)}}
+.card{
+  border:1px solid var(--line);border-radius:6px;padding:1rem 1.05rem;background:var(--surface);
+}
+.card h5{margin:0 0 .45rem;font-size:.9rem;font-weight:600;font-family:var(--f-body)}
+.card p{margin:0;font-size:.85rem;color:var(--ink-2);max-width:none;line-height:1.58}
+.card .k{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:.5rem}
+
+/* laws */
+.laws{counter-reset:law;list-style:none;padding:0;max-width:var(--measure)}
+.laws li{
+  counter-increment:law;position:relative;padding-left:2.6rem;margin-bottom:1rem;
+}
+.laws li::before{
+  content:counter(law);position:absolute;left:0;top:.05rem;
+  font-family:var(--f-display);font-size:1.35rem;color:var(--det);line-height:1;
+  width:2rem;text-align:left;
+}
+.laws b{display:block;font-weight:600;margin-bottom:.15rem}
+.laws span{font-size:.9rem;color:var(--ink-2)}
+
+/* footer */
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:2rem 0 3.5rem;color:var(--ink-3);font-size:.82rem}
+footer p{max-width:var(--measure)}
+footer .fmono{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em}
+</style>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="eyebrow">
+      <span>ainovel-cli</span><span class="dot"></span>
+      <span>Go 1.25.5</span><span class="dot"></span>
+      <span>v0.7.7</span><span class="dot"></span>
+      <span>Tài liệu codebase</span>
+    </div>
+    <h1>Động cơ <em>tất định</em> viết tiểu thuyết dài bằng AI</h1>
+    <p class="lede">
+      Một vòng lặp Engine tuần tự và tất định, ba Worker sáng tác tự chủ, một vài hàm Arbiter phân xử ngữ nghĩa
+      theo yêu cầu, và một tầng sự thật nằm trên hệ thống tệp. Từ một câu yêu cầu đến trọn bộ tiểu thuyết
+      200–500 chương, không cần can thiệp thủ công.
+    </p>
+    <div class="statstrip">
+      <div class="stat"><span class="n">48.2k</span><span class="l">dòng Go (không tính test)</span></div>
+      <div class="stat"><span class="n">322</span><span class="l">tệp .go</span></div>
+      <div class="stat"><span class="n">797</span><span class="l">hàm test</span></div>
+      <div class="stat"><span class="n">26</span><span class="l">package internal</span></div>
+      <div class="stat"><span class="n">16</span><span class="l">công cụ agent</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<div class="layout">
+
+  <nav class="sidenav" aria-label="Mục lục">
+    <div class="navtitle">Mục lục</div>
+    <ol>
+      <li><a href="#gioi-thieu">Dự án là gì</a></li>
+      <li><a href="#triet-ly">Triết lý kiến trúc</a></li>
+      <li><a href="#ban-do">Bản đồ kiến trúc</a></li>
+      <li><a href="#engine">Vòng lặp Engine</a></li>
+      <li><a href="#router">Flow Router</a></li>
+      <li><a href="#arbiter">Arbiter</a></li>
+      <li><a href="#workers">Ba Worker</a></li>
+      <li><a href="#tools">Tầng công cụ</a></li>
+      <li><a href="#du-lieu">Mô hình dữ liệu</a></li>
+      <li><a href="#ngon-ngu">Tầng ngôn ngữ sáng tác</a></li>
+      <li><a href="#giao-dien">Tầng ngôn ngữ giao diện</a></li>
+      <li><a href="#store">Store &amp; thư mục</a></li>
+      <li><a href="#context">Quản lý ngữ cảnh</a></li>
+      <li><a href="#rolling">Lập kế hoạch cuộn</a></li>
+      <li><a href="#khoi-phuc">Khôi phục sau sự cố</a></li>
+      <li><a href="#van-hanh">Vận hành &amp; can thiệp</a></li>
+      <li><a href="#cau-hinh">Cấu hình</a></li>
+      <li><a href="#pipelines">Import / Export / Sync</a></li>
+      <li><a href="#quan-sat">Quan sát &amp; chẩn đoán</a></li>
+      <li><a href="#eval">Hệ thống đánh giá</a></li>
+      <li><a href="#packages">Bản đồ package</a></li>
+      <li><a href="#build">Build, test, phát hành</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <!-- 1 -->
+  <section id="gioi-thieu">
+    <div class="sechead"><span class="secnum">01</span><h2>Dự án này là gì</h2></div>
+    <p>
+      <code>ainovel-cli</code> là một CLI viết bằng Go, chạy toàn bộ quy trình sáng tác một cuốn tiểu thuyết dài:
+      từ một câu yêu cầu của người dùng, hệ thống tự dựng thế giới, thiết kế nhân vật, lập dàn ý phân tầng,
+      viết từng chương, tự phê bình, viết lại chương kém, tóm tắt theo cung/quyển và kết thúc tác phẩm.
+    </p>
+    <p>
+      Điểm khác biệt so với cách làm "một prompt khổng lồ + một agent": các quyết định được <strong>phân loại theo bản chất</strong>
+      rồi đặt vào đúng tầng. Việc chuyển trạng thái có thể liệt kê được thì viết bằng mã tất định; phán đoán ngữ nghĩa
+      có ranh giới rõ thì gọi LLM như một hàm; sáng tác mở thì giao hẳn cho vòng lặp LLM tự chủ.
+    </p>
+
+    <div class="cards c3">
+      <div class="card">
+        <span class="k">Hai chế độ chạy</span>
+        <h5>TUI &amp; Headless</h5>
+        <p>TUI dựng bằng Bubble Tea để quan sát và can thiệp thời gian thực; <code>--headless</code> chạy nền trên server, NAS hoặc CI.</p>
+      </div>
+      <div class="card">
+        <span class="k">Ràng buộc</span>
+        <h5>Một thư mục = một cuốn sách</h5>
+        <p>Sản phẩm nằm ở <code>{cwd}/output/novel/</code>. Đổi thư mục là đổi sách; quay lại thư mục cũ là tự khôi phục từ checkpoint gần nhất.</p>
+      </div>
+      <div class="card">
+        <span class="k">Phụ thuộc chính</span>
+        <h5>agentcore + litellm</h5>
+        <p><code>agentcore</code> là nhân agent (tool-calling, streaming, nén ngữ cảnh); <code>litellm</code> là cổng thống nhất tới các nhà cung cấp LLM.</p>
+      </div>
+    </div>
+
+    <h3>Bốn mục tiêu, theo thứ tự ưu tiên</h3>
+    <ol>
+      <li><strong>Ổn định</strong> — một câu đầu vào, viết trọn 200–500 chương mà không tự đứt giữa chừng vì lý do kiến trúc.</li>
+      <li><strong>Chất lượng lặp được</strong> — prompt, tài liệu tham chiếu, chiều đánh giá, chiến lược ngữ cảnh chỉnh được độc lập, không kéo theo kiến trúc.</li>
+      <li><strong>Khôi phục được</strong> — sập, mất mạng, tạm dừng đều tiếp tục được từ checkpoint gần nhất.</li>
+      <li><strong>Quan sát được</strong> — tiến độ, sản phẩm và thời gian của từng bước từng chương đều tra được.</li>
+    </ol>
+  </section>
+
+  <!-- 2 -->
+  <section id="triet-ly">
+    <div class="sechead"><span class="secnum">02</span><h2>Triết lý kiến trúc</h2></div>
+    <p>
+      Câu tóm tắt của dự án: <strong>tầng sự thật thì tất định, tầng ngữ nghĩa thì tự chủ.</strong>
+      Mô hình được tự do ở nơi không thể kiểm chứng (viết gì, viết thế nào) và bị ràng buộc ở nơi kiểm chứng được
+      (thứ tự, idempotency, giai đoạn).
+    </p>
+
+    <h3>Tam phân pháp — quyết định về đúng chỗ của nó</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Loại quyết định</th><th>Đặt ở đâu</th><th>Ví dụ</th><th>Đảm bảo</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag det">Liệt kê được</span></td>
+            <td>Mã tất định — <code>flow.Route</code></td>
+            <td>"Viết xong một chương thì phái ai tiếp"</td>
+            <td>Hàm thuần, test đặc tả vét cạn hàng vạn tổ hợp, không tốn lượt LLM</td>
+          </tr>
+          <tr>
+            <td><span class="tag sem">Ngữ nghĩa có ranh giới</span></td>
+            <td>Hàm LLM — <code>internal/arbiter</code></td>
+            <td>Chọn nhà quy hoạch, phân loại can thiệp, lối ra khi thất bại</td>
+            <td>Sự thật vào, quyết định có cấu trúc ra, kiểm tra cơ học chặn hậu, ghi nhật ký phán quyết</td>
+          </tr>
+          <tr>
+            <td><span class="tag sem">Sáng tác mở</span></td>
+            <td>Vòng lặp LLM — Worker</td>
+            <td>Viết một chương, một lần thẩm định, một lần quy hoạch</td>
+            <td>Tự chủ hoàn toàn trong phạm vi lượt chạy; hàng rào là sự thật đã ghi đĩa</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Hai mặt phẳng đối xứng nhau — đây là kỷ luật xuyên suốt, mọi điểm quyết định mới đều phải theo hình dạng này:</p>
+<pre><span class="c">Mặt phẳng tất định:</span>  <b>flow.LoadState</b>   → <b>flow.Route</b>     → Instruction   <span class="c">(test đặc tả vét cạn)</span>
+<span class="c">Mặt phẳng ngữ nghĩa:</span> <b>arbiter.Collect*</b> → <b>arbiter.Decide*</b> → XxxDecision    <span class="c">(decisions.jsonl + eval hồi quy)</span>
+                     └─ thu thập (IO) ─┘└─ lõi (phát lại offline) ─┘└─ Engine thực thi ─┘</pre>
+
+    <h3>Bốn "thiết luật" không được vi phạm</h3>
+    <ol class="laws">
+      <li>
+        <b>Công cụ chỉ trả sự thật, không trả lệnh điều phối.</b>
+        <span><code>commit_chapter</code> trả về các trường có cấu trúc như <code>arc_end</code>, <code>needs_expansion</code>;
+        tuyệt đối không kèm chuỗi chỉ thị kiểu <code>[hệ thống] hãy làm X</code>.</span>
+      </li>
+      <li>
+        <b>Định tuyến thuộc về Flow Router, thực thi thuộc về Engine.</b>
+        <span><code>Route(state) → *Instruction</code> là hàm thuần. Engine đọc sự thật, suy ra lệnh, rồi gọi Worker
+        trực tiếp bằng mã (<code>subagent.Runner.Run</code>) — không có tầng chuyển tiếp qua LLM.</span>
+      </li>
+      <li>
+        <b>Phán xử ngữ nghĩa đi qua Arbiter, mỗi lần phán xử đều ghi đĩa.</b>
+        <span>Mọi phán quyết vào <code>meta/decisions.jsonl</code> để kiểm toán và phát lại offline.</span>
+      </li>
+      <li>
+        <b>Hard-code ranh giới, không hard-code phán đoán không liệt kê được.</b>
+        <span>Mã chỉ cố định các bất biến chứng minh được (quyền, giai đoạn, thứ tự, idempotency). Cấm dùng từ khóa,
+        ngưỡng điểm hay bảng luật để thay thế cho việc mô hình thực sự hiểu.</span>
+      </li>
+    </ol>
+
+    <div class="note">
+      <strong>Hệ quả thiết kế quan trọng:</strong> vì bất biến sống ở tầng công cụ chứ không ở prompt, người dùng
+      được phép sửa thoải mái tầng văn phong (voice layer) và tầng luật viết (rules) mà không thể làm hỏng máy trạng thái.
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="ban-do">
+    <div class="sechead"><span class="secnum">03</span><h2>Bản đồ kiến trúc</h2></div>
+
+    <div class="diagram">
+      <div class="dbox">
+        <div class="t">Entry <span class="tag neu">internal/entry</span></div>
+        <div class="s"><code>tui/</code> (Bubble Tea) · <code>headless/</code> · <code>startup/</code> — nhận input, hiển thị; không ra quyết định nghiệp vụ</div>
+      </div>
+      <div class="darrow">↓ prompt / steer</div>
+
+      <div class="dbox det">
+        <div class="t">Host &amp; Engine <span class="tag det">tất định</span> <span class="tag neu">internal/host</span></div>
+        <div class="s">Vòng đời (<code>StartPrepared</code> / <code>Resume</code> / <code>Continue</code> / <code>Steer</code> / <code>Abort</code>) ·
+        vòng lặp <code>engine.run</code> · điều phối can thiệp · chiếu sự kiện · ngân sách &amp; usage · quản lý model</div>
+      </div>
+
+      <div class="drow c2">
+        <div class="dbox det">
+          <div class="t">Flow Router <span class="tag det">hàm thuần</span></div>
+          <div class="s"><code>internal/flow</code> — <code>LoadState</code> (IO) rồi <code>Route</code> (thuần) trả về <code>*Instruction</code></div>
+        </div>
+        <div class="dbox sem">
+          <div class="t">Arbiter <span class="tag sem">LLM-as-function</span></div>
+          <div class="s"><code>internal/arbiter</code> — 4 kịch bản, mỗi kịch bản một cặp <code>Collect*</code> / <code>Decide*</code></div>
+        </div>
+      </div>
+      <div class="darrow">↓ subagent.Runner.Run(agent, task) — tiến độ chuyển tiếp qua ctx ToolProgress</div>
+
+      <div class="drow c3">
+        <div class="dbox sem">
+          <div class="t">Architect</div>
+          <div class="s">short / long — tiền đề, dàn ý, nhân vật, luật thế giới, mở rộng cung &amp; quyển</div>
+        </div>
+        <div class="dbox sem">
+          <div class="t">Writer</div>
+          <div class="s">plan → draft → check → commit, trọn một chương trong một lượt chạy</div>
+        </div>
+        <div class="dbox sem">
+          <div class="t">Editor</div>
+          <div class="s">thẩm định bảy chiều, tóm tắt cung / quyển, đưa chương vào hàng đợi viết lại</div>
+        </div>
+      </div>
+      <div class="darrow">↓ gọi công cụ (IO + checkpoint)</div>
+
+      <div class="dbox det">
+        <div class="t">Tools <span class="tag det">16 công cụ</span> <span class="tag neu">internal/tools</span></div>
+        <div class="s">Ghi một tệp là nguyên tử (<code>temp + fsync + rename</code>) · lỗi tường minh · phát lại idempotent ·
+        <code>commit_chapter</code> dùng Saga bền vững</div>
+      </div>
+      <div class="darrow">↓</div>
+
+      <div class="dbox det">
+        <div class="t">Store <span class="tag neu">internal/store</span></div>
+        <div class="s">Progress · Checkpoints · Outline · Drafts · Summaries · Characters · World · Signals ·
+        Decisions · hồ phản hồi dàn ý · bản ghi vi phạm luật</div>
+      </div>
+
+      <div class="legend">
+        <span><i class="swatch det"></i> mặt phẳng tất định (mã)</span>
+        <span><i class="swatch sem"></i> mặt phẳng ngữ nghĩa (LLM)</span>
+        <span><i class="swatch neu"></i> tầng trung lập</span>
+      </div>
+    </div>
+
+    <h3>Ai làm gì — và tuyệt đối không làm gì</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tầng</th><th>Làm</th><th>Không làm</th></tr></thead>
+        <tbody>
+          <tr><td>Entry</td><td>Hiển thị, nhận đầu vào</td><td>Quyết định nghiệp vụ</td></tr>
+          <tr><td>Host / Engine</td><td>Vòng đời, thực thi Route, chạy Worker, biên canh gác, điều phối can thiệp</td><td>Phán đoán văn học; ghi trực tiếp sự thật sáng tác</td></tr>
+          <tr><td>Arbiter</td><td>Phán xử ngữ nghĩa, trả quyết định có cấu trúc</td><td>Tự sáng tác; tự thực thi hành động</td></tr>
+          <tr><td>Workers</td><td>Nghĩ, viết, thẩm định</td><td>Đọc/ghi Store trực tiếp — bắt buộc qua công cụ</td></tr>
+          <tr><td>Tools</td><td>IO nguyên tử một tệp, lỗi tường minh, idempotent</td><td>Kèm chỉ thị điều phối liên agent</td></tr>
+          <tr><td>Store</td><td>Ghi xuống hệ thống tệp</td><td>Logic nghiệp vụ</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Phụ thuộc một chiều: <code>entry → host → agents/arbiter → tools → store → domain</code>.
+      <code>flow</code> là package chính sách thuần nằm trên <code>store</code> và dưới <code>host</code>.
+      Ngang hàng và độc lập: <code>errs/</code> ai cũng tham chiếu được; <code>diag/</code> đăng ký nghe luồng sự kiện của host
+      và chỉ đọc <code>store/</code>.
+    </p>
+  </section>
+
+  <!-- 4 -->
+  <section id="engine">
+    <div class="sechead"><span class="secnum">04</span><h2>Vòng lặp Engine</h2></div>
+    <p>
+      Toàn bộ luồng điều khiển của hệ thống nằm trong một goroutine tuần tự tại <code>internal/host/engine.go</code>.
+      Hủy <code>ctx</code> chính là "tạm dừng" — checkpoint đảm bảo không mất dữ liệu.
+    </p>
+<pre>for {
+    <span class="c">// 1. Áp dụng hành động can thiệp ở trạng thái điều khiển (rút cạn hàng đợi)</span>
+    applyPendingOps()
+    <span class="c">// 2. Tiêu thụ hold + đối soát giấy phép thẩm định</span>
+    advanceGate.HandleBoundary()
+
+    <span class="c">// 3. Lấy lệnh: can thiệp phái việc ?? Route(LoadState) ?? bù phán quyết khởi động</span>
+    inst := takeNext() ?? <b>flow.Route(flow.LoadState(store))</b> ?? planStartFallback()
+    if inst == nil { return }   <span class="c">// hoàn thành sách / dừng ngữ nghĩa, chờ Continue</span>
+
+    precheck(inst)        <span class="c">// giai đoạn kết sách thì bỏ lệnh; writer nhắm chương chưa mở rộng → đổi phái architect</span>
+    advanceGate.Allow(inst)  <span class="c">// chỉ chặn chương mới tiến tới chưa được cấp phép</span>
+    trackDeadlock(inst)      <span class="c">// cùng Agent+Task lặp lại: 3 lần hỏi Arbiter, 5 lần ngắt cứng</span>
+
+    <b>runWorker(inst)</b>          <span class="c">// subagent.Runner.Run + chuyển tiếp tiến độ + sự kiện DISPATCH</span>
+
+    <span class="c">// Phân loại lỗi: lỗi tất định → tạm dừng ngay;</span>
+    <span class="c">// lần hỏng đầu → thử lại một lần; hỏng tiếp → Arbiter (retry/reroute/abort)</span>
+}</pre>
+
+    <h3>Kỷ luật của vòng lặp</h3>
+    <ul>
+      <li><strong>Trạng thái điều khiển chỉ đổi tại biên vòng lặp.</strong> Các hành động <code>hold</code> / <code>reopen</code> / <code>dispatch</code>
+      xếp hàng chờ commit tại biên; <code>answer</code> và <code>rules</code> thực thi tức thì.</li>
+      <li><strong>Bế tắc có giới hạn tường minh.</strong> Nếu sau một lượt mà Route vẫn sinh ra cùng <code>Agent+Task</code>,
+      tức hậu điều kiện định tuyến chưa thỏa: 3 lần hỏi Arbiter, 5 lần ngắt cứng và tạm dừng.</li>
+      <li><strong>Không có "tự động chạy tiếp".</strong> Khi Engine dừng, <code>runEnded</code> chỉ đọc sự thật trong store để
+      quyết trạng thái cuối (<code>completed</code> / <code>idle</code> / <code>paused</code>). Mọi logic tự khởi động lại bị cấm — đây là một bài học lịch sử được ghi thành luật.</li>
+      <li><strong>Lệnh do Arbiter phái đi phải đối soát <code>Expect</code></strong> (Phase / Flow / QueueHead) trước khi chạy;
+      không khớp thì bỏ và gửi lại can thiệp gốc vào đường phán xử đầy đủ.</li>
+    </ul>
+
+    <h3>Phân tầng xử lý lỗi</h3>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Loại lỗi</th><th>Tầng xử lý</th><th>Hành động</th></tr></thead>
+        <tbody>
+          <tr><td>Timeout mạng / EOF khi stream</td><td>Tools</td><td>Thử lại 3 lần</td></tr>
+          <tr><td>Provider 429 / 503</td><td>litellm</td><td>Failover sang provider dự phòng</td></tr>
+          <tr><td>Xác thực / model không tồn tại</td><td>Tools</td><td>Ném lên dạng terminal</td></tr>
+          <tr><td>Thiếu artifact tiền đề</td><td>Tools</td><td>Ném <code>conflict</code>; LLM gọi <code>novel_context</code> rồi thử lại</td></tr>
+          <tr><td>Tham số công cụ sai</td><td>Tools</td><td>Ném <code>validation</code>; LLM tự sửa tham số</td></tr>
+          <tr><td>Lỗi retryable (stream-idle…)</td><td>subagent</td><td><code>MaxRetries=7</code>, thử lại tại chỗ, không thoát khỏi Worker</td></tr>
+          <tr><td>Worker hỏng (guard leo thang, hard_stop)</td><td>Engine</td><td>Lỗi tất định → dừng; còn lại thử lại 1 lần → Arbiter</td></tr>
+          <tr><td>Bế tắc (lệnh lặp lại)</td><td>Engine</td><td>3 lần Arbiter, 5 lần ngắt cứng</td></tr>
+          <tr><td>Phản hồi rỗng / suy nghĩ quá lâu</td><td>litellm</td><td><code>StreamIdleTimeout = 5 phút</code>, watchdog kích hoạt thử lại</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="router">
+    <div class="sechead"><span class="secnum">05</span><h2>Flow Router — bảng quyết định</h2></div>
+    <p>
+      <code>internal/flow/router.go</code> chứa toàn bộ quyết định "bước tiếp theo phái ai". <code>Route</code> là hàm thuần:
+      vào <code>State</code>, ra <code>*Instruction</code>, không IO, không gọi Store. Mọi sự thật mà nó cần phải được khai báo
+      tường minh trong <code>State</code> và nạp một lần bởi <code>LoadState</code>.
+    </p>
+<pre>type Instruction struct {
+    Agent   string <span class="c">// architect_long / architect_short / writer / editor</span>
+    Task    string <span class="c">// mô tả nhiệm vụ cho subagent</span>
+    Reason  string <span class="c">// lý do định tuyến — dùng cho sự kiện, log, phán xử thất bại</span>
+    Chapter int    <span class="c">// chương liên quan (viết tiếp / viết lại / mài giũa); 0 = không liên quan</span>
+}</pre>
+    <p>
+      Mười một nhánh loại trừ lẫn nhau, khớp từ trên xuống, nhánh đầu tiên trúng thì trả về ngay.
+      Trả <code>nil</code> là hợp lệ: nghĩa là không suy ra được lệnh tất định nào, Engine sẽ tự xử theo ngữ cảnh gọi.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Điều kiện</th><th>Kết quả</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><code>Phase = Complete</code></td><td><code>nil</code> — Host sinh tổng kết tất định</td></tr>
+          <tr><td class="num">2</td><td>Giai đoạn quy hoạch, thiếu mục thiết lập, đã biết <code>PlanningTier</code></td><td>Phái lại đúng nhà quy hoạch đó để bù mục thiếu</td></tr>
+          <tr><td class="num">3</td><td><code>PendingRewrites</code> không rỗng</td><td><code>writer</code> viết lại / mài giũa theo hàng đợi</td></tr>
+          <tr><td class="num">4</td><td><code>Flow = Reviewing</code></td><td><code>nil</code> — nhánh ngủ đông, giữ cho đối xứng với Steering</td></tr>
+          <tr><td class="num">5</td><td><code>Flow = Steering</code></td><td><code>nil</code> — Arbiter đang phán xử, Engine không giành quyền</td></tr>
+          <tr><td class="num">6</td><td>Sửa tay bên ngoài làm hỏng artifact tổng hợp</td><td><code>editor</code> dựng lại tóm tắt cung / quyển</td></tr>
+          <tr><td class="num">7</td><td>Sửa tay bên ngoài ảnh hưởng quy hoạch tiếp theo</td><td><code>architect</code> xử lý trước khi viết tiếp</td></tr>
+          <tr><td class="num">8</td><td>Sách phân tầng chạm cuối cung</td><td>Thẩm định → tóm tắt → mở rộng cung / nối quyển</td></tr>
+          <tr><td class="num">9</td><td>Sách phẳng, đến hạn thẩm định toàn cục</td><td><code>editor</code> (global review)</td></tr>
+          <tr><td class="num">10</td><td>Sách phẳng, dàn ý đã cạn</td><td><code>architect</code> quyết kết thúc hay nối dàn ý</td></tr>
+          <tr><td class="num">11</td><td>Còn lại</td><td><code>writer</code> viết <code>next_chapter</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <strong>Kỷ luật thay đổi:</strong> mỗi lần sửa bảng quyết định phải sửa test đặc tả trước, rồi mới sửa cài đặt.
+      Bảng này được cố định bằng test vét cạn hàng vạn tổ hợp trạng thái.
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="arbiter">
+    <div class="sechead"><span class="secnum">06</span><h2>Arbiter — LLM như một hàm</h2></div>
+    <p>
+      <code>internal/arbiter</code> (khoảng 500 dòng) là toàn bộ tầng phán xử ngữ nghĩa. Mỗi kịch bản có một cặp
+      <code>Collect*Facts</code> (biên IO) và <code>Decide*</code> (không IO ngoài request model, nên phát lại offline được),
+      cộng một kiểu <code>Decision</code> riêng — hành động không thuộc kịch bản thì <em>không biểu diễn được về mặt kiểu dữ liệu</em>.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Kịch bản</th><th>Kích hoạt khi</th><th>Miền quyết định</th></tr></thead>
+        <tbody>
+          <tr><td><code>plan_start</code></td><td>Khởi động sách mới</td><td>Chọn nhà quy hoạch <code>short</code>/<code>long</code> + mở rộng yêu cầu quá ngắn</td></tr>
+          <tr><td><code>intervention</code></td><td>Người dùng can thiệp</td><td>Tổ hợp <code>answer</code> / <code>rules</code> / <code>hold</code> / <code>reopen</code> / <code>dispatch</code></td></tr>
+          <tr><td><code>worker_failure</code></td><td>Worker báo lỗi mà phân loại tất định không có lối ra</td><td><code>retry</code> / <code>reroute</code> / <code>abort</code></td></tr>
+          <tr><td><code>deadlock</code></td><td>Cùng một lệnh lặp lại mà không tiến triển</td><td><code>retry</code> / <code>reroute</code> / <code>abort</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Đầu ra của Arbiter cũng không đáng tin</h3>
+    <p>
+      Sau khi qua JSON Schema, hàm <code>Validate</code> vẫn kiểm tra cơ học dựa trên sự thật: ràng buộc <code>phase</code>,
+      <code>reopen</code> chỉ hợp lệ khi sách đã hoàn thành, số chương không được vượt biên. Đường thất bại được thiết kế bảo thủ:
+      can thiệp thì không sinh ghi đĩa, khởi động thì báo lỗi tường minh, còn failure/deadlock thì tạm dừng.
+    </p>
+    <p>
+      Việc gọi model có cấu trúc đi qua <code>internal/llmcontract</code> — tầng hợp đồng thống nhất tự chọn giữa
+      JSON Schema gốc của provider và hợp đồng bằng prompt tùy theo năng lực model, rồi tự chữa lỗi bằng cách phản hồi
+      chính xác nguyên nhân cho model. <code>internal/llmretry</code> lo phần thử lại ở tầng request.
+    </p>
+  </section>
+
+  <!-- 7 -->
+  <section id="workers">
+    <div class="sechead"><span class="secnum">07</span><h2>Ba Worker sáng tác</h2></div>
+    <p>
+      <code>agents.BuildWorkers</code> (<code>internal/agents/build.go</code>) lắp ba loại Worker thành một
+      <code>subagent.Runner</code>. Engine gọi <code>Run(agent, task)</code> trực tiếp; mỗi lần gọi là một
+      <code>agentcore.AgentLoop</code> trọn vẹn với context riêng, model riêng, cơ chế thử lại riêng.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Vai</th><th>Trách nhiệm</th><th>Công cụ</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Architect</strong><br><code>architect_short</code><br><code>architect_long</code></td>
+            <td>Sinh tên sách, giới thiệu, tiền đề, dàn ý, hồ sơ nhân vật, luật thế giới; mở rộng cung/quyển tại biên</td>
+            <td><code>novel_context</code> <code>save_book</code> <code>save_foundation</code> <code>revise_outline</code> <code>resolve_outline_feedback</code> <code>audit_foundation</code></td>
+          </tr>
+          <tr>
+            <td><strong>Writer</strong></td>
+            <td>Tự chủ hoàn tất một chương: cấu tứ, viết, tự kiểm, nộp bản cuối</td>
+            <td><code>novel_context</code> <code>read_chapter</code> <code>plan_chapter</code> <code>draft_chapter</code> <code>edit_chapter</code> <code>check_consistency</code> <code>commit_chapter</code></td>
+          </tr>
+          <tr>
+            <td><strong>Editor</strong></td>
+            <td>Đọc chính văn, thẩm định ở hai tầng cấu trúc và thẩm mỹ, sinh tóm tắt cung/quyển</td>
+            <td><code>novel_context</code> <code>read_chapter</code> <code>save_review</code> <code>save_arc_summary</code> <code>save_volume_summary</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Vì sao không phải một agent duy nhất</h3>
+    <p>Một prompt khổng lồ chạy hết một cuốn sách là khả thi trên lý thuyết, nhưng ba thứ chặn tính ổn định:</p>
+    <ul>
+      <li><strong>Nổ ngữ cảnh</strong> — 200 chương thì nén mạnh đến đâu cũng thoái hóa.</li>
+      <li><strong>Nhiễu trách nhiệm</strong> — quy hoạch nghiêm cẩn, viết lách bay bổng và thẩm định phê phán làm loãng nhau trong cùng một prompt.</li>
+      <li><strong>Mất lợi tức model dị chủng</strong> — chọn model riêng cho từng vai là không gian tối ưu chi phí đáng kể. Cho Writer chạy Sonnet thay vì Opus tiết kiệm cả một bậc độ lớn trên truyện 200 chương.</li>
+    </ul>
+
+    <h3>Bốn tầng ràng buộc quy trình bằng mã (không dựa vào prompt)</h3>
+    <p>
+      Bài học lịch sử: trước đây quy trình của Writer được ràng buộc bằng câu "hãy làm theo đúng thứ tự sau" trong
+      <code>writer.md</code>. LLM thường xuyên vi phạm — bỏ qua <code>plan</code> nhảy thẳng sang <code>draft</code>, hoặc viết chính văn
+      vào cửa sổ chat mà không ghi đĩa. <strong>Ràng buộc quy trình bằng prompt là không ổn định</strong>, và model càng mạnh
+      càng có thể "sáng tạo trong việc không tuân thủ".
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tầng</th><th>Nơi cài đặt</th><th>Tác dụng</th></tr></thead>
+        <tbody>
+          <tr><td><code>StopAfterTools</code><br><code>StopAfterToolResult</code></td><td><code>agents/build.go</code></td><td>Công cụ then chốt thành công thì thoát lượt Worker ngay. Writer dừng khi <code>commit_chapter</code> trúng; Editor dừng theo <code>save_review</code> / <code>save_*_summary</code></td></tr>
+          <tr><td><code>CheckpointDeltaGuard</code></td><td><code>agents/guard/</code></td><td>Lấy checkpoint baseline làm mốc: chưa thấy checkpoint mới đúng bước thì từ chối <code>end_turn</code>. Chặn liên tiếp 3 lần thì leo thang thành <code>terminate</code></td></tr>
+          <tr><td>Trường <code>next_step</code> nội tuyến</td><td>Giá trị trả về của mỗi công cụ</td><td>Mỗi sự thật tự mang gợi ý bước kế — LLM nhìn sự thật là biết đi tiếp thế nào</td></tr>
+          <tr><td>Kiểm tra quyền &amp; tiền đề trong công cụ</td><td><code>edit_chapter</code>, <code>commit_chapter</code>…</td><td>Chặn vật lý ở tầng dữ liệu: sửa bản nháp theo điểm, sửa chương chưa vào hàng đợi, nộp rỗng đều bị từ chối</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Kiểm thử hợp đồng với agentcore</h3>
+    <p>
+      <code>internal/agents/agentcore_contract_test.go</code> giữ 6 khẳng định thực thi được về hành vi khung mà dự án phụ thuộc:
+      thoát trạng thái cuối vẫn hỏi <code>StopGuard</code>, <code>Error</code>/<code>Aborted</code> không chạm guard, chuỗi lỗi
+      <code>Escalate</code> khớp được bằng <code>errors.Is</code>, <code>ErrUnknownAgent</code> có kiểu.
+      <strong>Trước khi nâng phiên bản agentcore, toàn bộ phải xanh</strong> — chú thích thì lỗi thời, test thì không.
+    </p>
+  </section>
+
+  <!-- 8 -->
+  <section id="tools">
+    <div class="sechead"><span class="secnum">08</span><h2>Tầng công cụ — giao diện duy nhất tới sự thật</h2></div>
+    <p>
+      Mọi tương tác với hệ thống tệp, Progress và Checkpoint đều đi qua công cụ. Ghi <em>một</em> tệp là thay thế nguyên tử
+      bằng <code>temp + fsync + rename</code>; ghi <em>nhiều</em> tệp thì không giả vờ là giao dịch cơ sở dữ liệu —
+      nộp chương dùng Saga <code>PendingCommit</code> bền vững, còn thao tác cấu trúc dùng phát lại idempotent tất định
+      và phơi bày lỗi tường minh.
+    </p>
+
+    <h4>Công cụ đọc</h4>
+    <p>
+      <code>novel_context(scope)</code> và <code>read_chapter(n)</code> gọi được bất cứ lúc nào, không phụ thuộc trạng thái tiền đề,
+      trả đủ dữ liệu để LLM tự quyết. <code>novel_context(chapter=N)</code> còn tiêm thêm các vi phạm luật cơ học của chương đó;
+      nhánh architect được tiêm tóm tắt cung của quyển đã xong và quyển hiện tại, ảnh chụp nhân vật, hồ phản hồi dàn ý và trạng thái foundation.
+    </p>
+
+    <h4>Công cụ ghi</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Công cụ</th><th>Artifact</th><th>Step</th></tr></thead>
+        <tbody>
+          <tr><td><code>save_book</code></td><td><code>meta/book.json</code> + <code>book.md</code></td><td><code>book</code></td></tr>
+          <tr><td><code>save_foundation</code></td><td><code>foundation/*.json</code></td><td><code>premise</code> / <code>outline</code> / <code>layered_outline</code> / <code>characters</code> / <code>world_rules</code> / <code>expand_arc</code> / <code>append_volume</code> / <code>update_compass</code> / <code>complete_book</code></td></tr>
+          <tr><td><code>revise_outline</code></td><td>Dàn ý đã ghi</td><td>sửa dàn ý</td></tr>
+          <tr><td><code>resolve_outline_feedback</code></td><td>Hồ phản hồi dàn ý</td><td>tiêu thụ phản hồi</td></tr>
+          <tr><td><code>audit_foundation</code></td><td>Trạng thái foundation</td><td>kiểm tra nhất quán liên tệp</td></tr>
+          <tr><td><code>plan_chapter</code></td><td><code>drafts/chXX.plan.json</code></td><td><code>plan</code></td></tr>
+          <tr><td><code>draft_chapter</code></td><td><code>drafts/chXX.draft.md</code></td><td><code>draft</code></td></tr>
+          <tr><td><code>edit_chapter</code></td><td><code>drafts/chXX.draft.md</code></td><td><code>edit</code></td></tr>
+          <tr><td><code>check_consistency</code></td><td>không có (chỉ đọc, trả nội tuyến)</td><td><code>consistency_check</code></td></tr>
+          <tr><td><code>commit_chapter</code></td><td><code>chapters/chXX.md</code> + Progress</td><td><code>commit</code></td></tr>
+          <tr><td><code>save_review</code></td><td><code>reviews/chXX.json</code></td><td><code>review</code></td></tr>
+          <tr><td><code>save_arc_summary</code></td><td><code>summaries/arc-vNNaNN.json</code></td><td><code>arc_summary</code></td></tr>
+          <tr><td><code>save_volume_summary</code></td><td><code>summaries/vol-vNN.json</code></td><td><code>volume_summary</code></td></tr>
+          <tr><td><code>reopen_book</code></td><td>Progress <span class="tag neu">chỉ Engine gọi</span></td><td>mở lại sách đã kết thúc</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Idempotency — nền móng của mô hình khôi phục</h3>
+    <p>
+      Trước khi thực thi, mỗi công cụ ghi đều kiểm tra checkpoint: nếu checkpoint mới nhất của scope hiện tại có
+      <code>Step + Digest</code> trùng với lần này, nó trả thẳng sản phẩm đã có. Nhờ đó việc thử lại và việc phái lại
+      sau khi khôi phục đều an toàn — và đó chính là lý do mô hình "Engine đọc store rồi chạy tiếp" đứng vững.
+    </p>
+    <div class="note">
+      <code>commit_chapter</code> kiêm luôn phát hiện hoàn thành cung / quyển / toàn sách và trả về sự thật có cấu trúc.
+      <code>save_review</code> <strong>không</strong> phán xét ngưỡng văn học — nó chỉ kiểm tra sự thật thẩm định rồi ánh xạ
+      nguyên tử <code>verdict</code> của Editor thành Flow và hàng đợi viết lại.
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section id="du-lieu">
+    <div class="sechead"><span class="secnum">09</span><h2>Mô hình dữ liệu</h2></div>
+    <p>
+      <code>internal/domain</code> là package dữ liệu thuần: không IO, không phụ thuộc tầng trên.
+      Tầng sự thật cố ý giữ phẳng — chỉ có ba loại: <strong>Progress</strong> (chỉ mục tiến độ),
+      <strong>Checkpoint</strong> (nhật ký chỉ ghi thêm) và <strong>Artifact</strong> (sản phẩm sáng tác).
+    </p>
+
+    <h3>Progress — trạng thái vận hành</h3>
+<pre>type Progress struct {
+    Phase             Phase           <span class="c">// init / premise / outline / writing / complete</span>
+    CurrentChapter    int
+    TotalChapters     int
+    CompletedChapters []int
+    TotalWordCount    int
+    ChapterWordCounts map[int]int
+    InProgressChapter int             <span class="c">// chương đang viết dở</span>
+    Flow              FlowState       <span class="c">// writing / reviewing / rewriting / polishing / steering</span>
+    PendingRewrites   []int
+    StrandHistory     []string        <span class="c">// chuỗi dominant_strand — chống trùng lặp cấu trúc</span>
+    HookHistory       []string        <span class="c">// chuỗi hook_type</span>
+    CurrentVolume, CurrentArc int     <span class="c">// phân tầng truyện dài</span>
+    Layered           bool
+}</pre>
+    <p>
+      Logic điều khiển chỉ đọc các trường sự thật trên và <strong>không phụ thuộc bất kỳ "dấu thời gian cập nhật" nào</strong> —
+      thông tin thời gian do <code>Checkpoint.OccurredAt</code> gánh.
+    </p>
+
+    <h3>Hai máy trạng thái</h3>
+    <div class="cards c2">
+      <div class="card">
+        <span class="k">Phase — chỉ tiến, không lùi</span>
+        <h5>Giai đoạn lớn</h5>
+        <p style="font-family:var(--f-mono);font-size:.78rem;line-height:1.8;color:var(--ink)">
+          init → premise → outline → writing → complete<br>
+          &nbsp;&nbsp;\──────→ outline ────────↑<br>
+          &nbsp;&nbsp;\────────────→ writing
+        </p>
+        <p style="margin-top:.6rem">Cho phép cập nhật cùng trạng thái (<code>writing → writing</code>) và tiến tới; cấm lùi
+        (<code>writing → premise</code>, <code>complete → writing</code>).</p>
+      </div>
+      <div class="card">
+        <span class="k">Flow — chuyển đổi tự do có kiểm soát</span>
+        <h5>Luồng đang hoạt động</h5>
+        <p style="font-family:var(--f-mono);font-size:.78rem;line-height:1.8;color:var(--ink)">
+          writing&nbsp;&nbsp; → reviewing / rewriting / polishing / steering<br>
+          reviewing → writing / rewriting / polishing / steering<br>
+          rewriting → writing / steering<br>
+          polishing → writing / steering<br>
+          steering&nbsp; → writing / reviewing / rewriting / polishing
+        </p>
+        <p style="margin-top:.6rem">Cấm những bước nhảy phi lý, ví dụ <code>rewriting → reviewing</code>. Ràng buộc nằm ở
+        <code>domain/transitions.go</code>.</p>
+      </div>
+    </div>
+
+    <h3>Checkpoint</h3>
+<pre>type Scope      struct { Kind ScopeKind; Chapter, Volume, Arc int }
+type Checkpoint struct {
+    Seq        int64       <span class="c">// tăng đơn điệu</span>
+    Scope      Scope       <span class="c">// chapter / arc / volume / global</span>
+    Step       string      <span class="c">// plan / draft / commit / review / arc_summary / ...</span>
+    Artifact   string
+    Digest     string
+    OccurredAt time.Time
+}</pre>
+    <p>
+      Lưu tại <code>meta/checkpoints.jsonl</code>, chỉ ghi thêm. Ghi lại cùng <code>Scope + Step + Digest</code> được coi là
+      idempotent và không sinh dòng mới.
+    </p>
+
+    <h3>RunMeta — ý định vận hành của người dùng</h3>
+    <p>
+      <code>meta/run.json</code> mang <em>ý định</em> chứ không phải sự thật sáng tác: <code>PlanningTier</code>,
+      <code>PlanStart</code> (phán quyết khởi động đã cố định — căn cứ duy nhất để khôi phục giai đoạn quy hoạch),
+      <code>PendingSteer</code> (bảo vệ can thiệp khi sập, một khe duy nhất đang bay),
+      <code>AdvanceMode</code> / <code>AdvancePermitChapter</code>, và <code>AdvanceHold</code>.
+      Toàn bộ trường ý định được giữ nguyên qua các lần khởi động lại.
+    </p>
+
+    <h3>Sự thật phụ trợ</h3>
+    <ul>
+      <li><strong>Signals</strong> — <code>PendingCommit</code>, chỉ đọc lúc khởi động/khôi phục, không đọc lúc chạy.</li>
+      <li><strong>Decisions</strong> (<code>meta/decisions.jsonl</code>) — bản ghi kiểm toán mỗi lần Arbiter phán xử.
+      Đây <em>không</em> phải nguồn khôi phục; khôi phục chỉ dựa vào Progress / Checkpoint / RunMeta.</li>
+      <li><strong>Sự thật thế giới tăng trưởng</strong> — dòng thời gian và thay đổi trạng thái nhân vật ghi thêm vào
+      <code>timeline.jsonl</code> và <code>meta/state_changes.jsonl</code>; <code>timeline.md</code> chỉ là hình chiếu dựng lại được.</li>
+      <li><strong>Hồ phản hồi dàn ý</strong> (<code>meta/outline_feedback.jsonl</code>) — phản hồi của Writer được Architect
+      tiêu thụ trong lần thao tác cấu trúc kế tiếp.</li>
+      <li><strong>Bản ghi vi phạm cơ học</strong> (<code>meta/rule_violations.jsonl</code>) — kết quả kiểm tra theo
+      user rules lúc commit; là siêu dữ liệu chất lượng best-effort, không đồng cấp nhất quán với việc nộp chương.</li>
+    </ul>
+  </section>
+
+  <!-- 10 -->
+  <section id="ngon-ngu">
+    <div class="sechead"><span class="secnum">10</span><h2>Tầng ngôn ngữ sáng tác</h2></div>
+    <p>
+      <code>internal/lang</code> là nguồn sự thật duy nhất cho mọi hành vi phụ thuộc ngôn ngữ.
+      Nó chỉ cố định <strong>sự thật ngôn ngữ chứng minh được</strong> — một "từ" đếm thế nào, câu ngắt ở đâu,
+      tiêu đề chương trông ra sao, chuỗi cố định nào là sáo ngữ AI của ngôn ngữ đó. Nó không phán đoán văn học:
+      viết hay hay dở vẫn thuộc về Worker và Editor.
+    </p>
+
+    <div class="note">
+      <strong>Vì sao phải có tầng này.</strong> Trước đây <code>WordCount</code>, các regex của <code>stylestat</code>
+      và blacklist của <code>rules.SystemDefaults</code> đều ngầm giả định "chính văn là tiếng Trung giản thể".
+      Khi chuyển sang tiếng Việt hoặc tiếng Anh, những kiểm tra này <strong>không báo lỗi — chúng chỉ trả về 0</strong>.
+      Phòng tuyến cơ học im lặng ngừng hoạt động, còn <code>/diag</code> vẫn báo xanh. Đó nguy hiểm hơn nhiều so với việc hỏng ra mặt.
+    </div>
+
+    <h3>Những gì phụ thuộc ngôn ngữ</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Hành vi</th><th>Tiếng Trung</th><th>Tiếng Việt / Anh</th><th>Hỏng thế nào nếu dùng chung</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>CountWords</code></td>
+            <td>Đếm ký tự (1 chữ = 1 từ)</td>
+            <td>Đếm từ theo khoảng trắng</td>
+            <td>"3000 từ" tiếng Việt ≈ 15.000 ký tự → luật số từ và <code>WordCountAnomaly</code> lệch ~5 lần</td>
+          </tr>
+          <tr>
+            <td><code>StylePatterns</code></td>
+            <td>8 mẫu, tách câu theo <code>。！？</code></td>
+            <td>8 mẫu riêng mỗi ngôn ngữ, tách theo <code>.!?…</code></td>
+            <td>Khớp <strong>0 lần</strong> — thống kê chống "mùi AI" toàn sách ngừng hoạt động trong im lặng</td>
+          </tr>
+          <tr>
+            <td>Khai thác cụm từ</td>
+            <td>n-gram <strong>ký tự</strong>, 3–6</td>
+            <td>n-gram <strong>từ</strong>, 2–5</td>
+            <td>Cắt "anh ấy" theo ký tự chỉ ra mảnh vụn "nh ấ" → danh sách "khẩu ngữ" toàn nhiễu</td>
+          </tr>
+          <tr>
+            <td><code>DefaultRules</code></td>
+            <td>Sáo ngữ + từ mỏi tiếng Trung</td>
+            <td>Bảng tương ứng mỗi ngôn ngữ</td>
+            <td>Blacklist sai ngôn ngữ = không có blacklist</td>
+          </tr>
+          <tr>
+            <td>Tiêu đề chương / quyển</td>
+            <td><code>第 N 章</code> · <code>第 N 卷</code></td>
+            <td><code>Chương N:</code> · <code>Chapter N:</code></td>
+            <td>Xuất bản tiểu thuyết tiếng Việt mà mục lục ghi <code>目录</code></td>
+          </tr>
+          <tr>
+            <td>EPUB <code>dc:language</code></td>
+            <td><code>zh-CN</code></td>
+            <td><code>vi</code> · <code>en</code></td>
+            <td>Trình đọc chọn sai font, sai quy tắc ngắt dòng</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Đường đi của một giá trị cấu hình</h3>
+<pre>config.json <b>"language": "vi"</b>
+  → bootstrap.Config.Lang() → <b>lang.Resolve</b> → Profile
+     ├─ agents/build.go   → <span class="s">OutputDirective</span> nối vào system prompt cả 3 Worker
+     ├─ tools/            → <span class="d">CountWords</span> tại commit_chapter &amp; draft_chapter
+     ├─ stylestat         → <span class="d">StylePatterns / SplitSentences / GramMode</span>
+     ├─ rules             → <span class="d">DefaultRules</span> → kiểm tra cơ học lúc commit
+     ├─ revision          → đếm lại sau <span class="d">/sync</span> theo cùng một thước đo
+     └─ host/exp          → <span class="d">ChapterLabel / VolumeLabel / BCP47</span></pre>
+
+    <h3>Ba kỷ luật của tầng này</h3>
+    <ul>
+      <li>
+        <strong>Zero-value an toàn.</strong> <code>Profile</code> chứa <code>*regexp.Regexp</code>; gọi method trên giá trị rỗng
+        sẽ panic. Mọi method đi qua <code>resolved()</code> để giá trị rỗng thoái hóa về tiếng Trung thay vì sập —
+        đúng tư thế thất bại của dự án: quay về mặc định an toàn đã biết, và người dùng nhận ra ngay ở chương đầu.
+      </li>
+      <li>
+        <strong>Tương thích ngược từng byte.</strong> <code>language</code> trống → <code>zh</code>, và
+        <code>OutputDirective()</code> trả chuỗi rỗng cho tiếng Trung, nên prompt không đổi một byte —
+        giữ nguyên hiệu quả bộ nhớ đệm prompt (§11 yêu cầu tiền tố ổn định theo byte). Sách cũ chạy tiếp không khác gì.
+      </li>
+      <li>
+        <strong>Nhãn thuộc ngôn ngữ, khoảng cách thuộc định dạng.</strong> <code>ChapterLabel(n)</code> trả về
+        <code>第 7 章</code> / <code>Chương 7</code>; còn TXT dùng hai dấu cách làm rãnh thị giác, EPUB dùng một —
+        đó là quyết định của bộ xuất bản, không phải của tầng ngôn ngữ.
+      </li>
+    </ul>
+
+    <div class="note">
+      Tầng này <strong>không</strong> đụng đến ngôn ngữ giao diện. Nó đổi <em>sản phẩm</em> (chính văn, dàn ý, tóm tắt,
+      bản xuất), còn chữ trên TUI là chuyện khác.
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section id="giao-dien">
+    <div class="sechead"><span class="secnum">11</span><h2>Tầng ngôn ngữ giao diện</h2></div>
+    <p>
+      <code>internal/i18n</code> lo chữ bạn đọc trên terminal: vỏ TUI, wizard cài đặt, trợ giúp lệnh, thanh trạng thái.
+      Nó là cơ sở trình bày thuần tuý — <strong>không bao giờ tham gia luồng điều khiển</strong> và không trả về lỗi:
+      thiếu một câu dịch thì rơi về tiếng Trung rồi rơi về chính cái key, chứ không để việc sáng tác gián đoạn.
+    </p>
+
+    <div class="note">
+      <strong>Hai chiều ngôn ngữ, cố ý tách rời.</strong> <code>language</code> quyết định sản phẩm
+      (<a href="#ngon-ngu">§10</a>), <code>ui_language</code> quyết định giao diện. Một người Việt hoàn toàn có thể
+      dùng giao diện tiếng Việt để viết một cuốn tiểu thuyết tiếng Trung. Gộp hai thứ lại là ép người dùng chọn giữa
+      "đọc hiểu giao diện" và "viết thứ mình muốn viết".
+    </div>
+
+    <h3>Cấu tạo</h3>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Thành phần</th><th>Vai trò</th></tr></thead>
+        <tbody>
+          <tr><td><code>i18n.T(key, args…)</code></td><td>Lấy một câu; có tham số thì mở qua <code>fmt.Sprintf</code></td></tr>
+          <tr><td><code>catalog/{zh,vi,en}.json</code></td><td>492 key mỗi ngôn ngữ, nhúng thẳng vào binary bằng <code>go:embed</code></td></tr>
+          <tr><td><code>i18n.Use(locale)</code></td><td>Đặt ngôn ngữ tiến trình; giữ bằng <code>atomic</code> nên đổi nóng không tranh chấp với vòng render của TUI</td></tr>
+          <tr><td><code>Resolve("auto")</code></td><td>Suy từ <code>LC_ALL</code> &gt; <code>LC_MESSAGES</code> &gt; <code>LANG</code>; nhận không ra thì về <code>zh</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <code>auto</code> là <strong>chọn tham gia</strong>, không phải mặc định: người dùng cũ không viết
+      <code>ui_language</code> sẽ không đột nhiên thấy giao diện tiếng Anh chỉ vì <code>$LANG=en_US</code>.
+    </p>
+
+    <h3>Ba cái bẫy, mỗi cái một test canh</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Bẫy</th><th>Vì sao nguy hiểm</th><th>Test canh</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Thiếu bản dịch</td>
+            <td>Không báo lỗi — chỉ đột ngột hiện tiếng Trung, và chỉ người không đọc được tiếng Trung mới thấy</td>
+            <td><code>TestCatalogsHaveIdenticalKeys</code> — ba từ điển phải trùng khít tập key</td>
+          </tr>
+          <tr>
+            <td>Lệch động từ định dạng</td>
+            <td>Dịch làm rơi mất <code>%s</code> → giao diện in ra <code>%!s(MISSING)</code>, tệ hơn cả không dịch</td>
+            <td><code>TestFormatVerbsMatchAcrossCatalogs</code> — đối chiếu từng động từ, đúng thứ tự</td>
+          </tr>
+          <tr>
+            <td>Dịch lúc <code>init</code></td>
+            <td>Biến cấp package chốt cứng ngôn ngữ trước khi đọc xong cấu hình — giá trị đó vĩnh viễn không đổi theo</td>
+            <td><code>TestNoInitTimeTranslation</code> — cấm <code>i18n.T</code> trong <code>var</code>/<code>const</code> cấp package</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      Cái bẫy thứ ba là một <strong>lỗi có thật đã xảy ra trong lúc làm</strong>: toàn bộ giao diện đã sang tiếng Việt,
+      riêng huy hiệu trạng thái góc phải vẫn là tiếng Trung — vì <code>statusDisplay</code> là <code>map</code> cấp package,
+      được tính lúc <code>init</code>, trong khi <code>i18n.Use</code> phải đợi đọc xong cấu hình. Không lỗi, không cảnh báo,
+      chỉ lặng lẽ không theo. Test giờ chặn đúng hình dạng đó.
+    </div>
+
+    <h3>Ranh giới: ai đọc câu này?</h3>
+    <p>
+      Không phải chuỗi tiếng Trung nào cũng là thiếu sót. Ba nhóm, ba câu trả lời khác nhau:
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Nhóm</th><th>Người đọc</th><th>Xử lý</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>fmt.Errorf</code> tới <code>die()</code> · TUI · wizard</td>
+            <td>Người dùng</td>
+            <td><strong>Dịch.</strong> Gồm cả lỗi cấu hình tầng sâu và lỗi phân tích flag</td>
+          </tr>
+          <tr>
+            <td><code>slog.*</code></td>
+            <td>Người bảo trì</td>
+            <td><strong>Giữ tiếng Trung.</strong> <code>tui.log</code> và <code>meta/diag-export.md</code> là thứ người dùng dán vào GitHub issue để người bảo trì lần ra vấn đề. Dịch vài trong 71 câu chỉ làm phân mảnh ngữ liệu, không giúp được ai</td>
+          </tr>
+          <tr>
+            <td>Văn bản gửi model</td>
+            <td>LLM</td>
+            <td><strong>Giữ tiếng Trung.</strong> Mô tả công cụ, <code>next_step</code>, task của Arbiter và Route — cùng ngôn ngữ với <code>assets/prompts/</code>, là hợp đồng chứ không phải giao diện</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Đúng <strong>hai</strong> chuỗi tiếng Trung còn nằm trong tầng người dùng, mỗi chuỗi có một dòng lý do trong
+      danh sách trắng của <code>coverage_test.go</code>: một câu <code>slog.Warn</code> và một câu mở đầu gửi cho model.
+      Danh sách trắng biến "vì sao không dịch" thành quyết định có ghi chép; một mục hết hiệu lực cũng làm test đỏ,
+      nên nó không phình ra được.
+    </p>
+
+    <h3>Cái bẫy thứ tư: thứ tự</h3>
+    <p>
+      Dịch xong một câu lỗi vẫn có thể vô dụng — nếu nó được in ra <em>trước</em> khi <code>i18n.Use</code> kịp chạy.
+      Và đó chính là trường hợp của lỗi cấu hình: <code>LoadConfig</code> tự nó báo lỗi, trong khi ngôn ngữ giao diện
+      lại nằm trong chính cái config chưa đọc được.
+    </p>
+    <p>
+      Lời giải là <code>bootstrap.ProbeUILanguage()</code>: một lần thăm dò chỉ-đọc, <strong>chỉ lấy đúng trường
+      <code>ui_language</code></strong>, chạy ở dòng đầu tiên của <code>main()</code> — trước cả phân tích flag.
+      Nó <strong>không bao giờ thất bại</strong>: JSON hỏng, thiếu tệp, thiếu quyền đều lặng lẽ về mặc định.
+      Việc thăm dò ngôn ngữ tuyệt đối không được trở thành điểm hỏng thứ hai ngay tại lúc mọi thứ đang hỏng.
+      Nếu tệp hỏng lại đúng là tệp chứa <code>ui_language</code> thì đành về tiếng Trung — giới hạn dưới trung thực.
+    </p>
+  </section>
+
+  <!-- 12 -->
+  <section id="store">
+    <div class="sechead"><span class="secnum">12</span><h2>Store &amp; cấu trúc thư mục đầu ra</h2></div>
+    <p>
+      <code>internal/store</code> (23 tệp, ~5.100 dòng) theo kiến trúc <strong>1 nền IO + nhiều store con + 1 gốc tổ hợp</strong>.
+      Mỗi store con giữ một thực thể IO riêng và một <code>sync.RWMutex</code> riêng, nên các miền chính
+      (Progress, Outline, Drafts, Summaries…) đọc/ghi không chặn nhau. <code>WorldStore</code> gộp vài miền nhỏ tần suất thấp
+      dùng chung một khóa.
+    </p>
+<pre>output/{novel_name}/
+├── book.md                  <span class="c">tên sách + giới thiệu (hình chiếu đọc được)</span>
+├── chapters/                <span class="c">bản cuối (Markdown)</span>
+│   ├── 01.md …
+├── drafts/                  <span class="c">bản nháp + plan từng chương</span>
+├── summaries/               <span class="c">tóm tắt chương / cung / quyển (JSON)</span>
+├── reviews/                 <span class="c">báo cáo thẩm định</span>
+├── premise.md               <span class="c">tiền đề câu chuyện</span>
+├── outline.json             <span class="c">dàn ý phẳng (chỉ các chương đã mở rộng)</span>
+├── layered_outline.json     <span class="c">dàn ý phân tầng (chế độ truyện dài)</span>
+├── characters.json          <span class="c">hồ sơ nhân vật</span>
+├── world_rules.json         <span class="c">luật thế giới</span>
+├── timeline.jsonl / .md     <span class="c">dòng thời gian (log ghi thêm + hình chiếu)</span>
+└── meta/
+    ├── book.json            <span class="c">nguồn sự thật duy nhất về tác phẩm</span>
+    ├── progress.json        <span class="c">trạng thái tiến độ</span>
+    ├── run.json             <span class="c">RunMeta — ý định vận hành</span>
+    ├── compass.json         <span class="c">kim chỉ nam hướng kết cục (truyện dài)</span>
+    ├── foreshadow.json      <span class="c">sổ cái phục bút</span>
+    ├── state_changes.jsonl  <span class="c">thay đổi trạng thái nhân vật</span>
+    ├── style_rules.json     <span class="c">luật văn phong chắt lọc tại biên cung</span>
+    ├── decisions.jsonl      <span class="c">kiểm toán phán quyết Arbiter</span>
+    ├── checkpoints.jsonl    <span class="c">checkpoint mức step</span>
+    ├── snapshots/           <span class="c">ảnh chụp trạng thái nhân vật</span>
+    ├── sessions/            <span class="c">log phiên subagent</span>
+    └── import/              <span class="c">workspace của pipeline nhập truyện</span></pre>
+  </section>
+
+  <!-- 11 -->
+  <section id="context">
+    <div class="sechead"><span class="secnum">13</span><h2>Quản lý ngữ cảnh</h2></div>
+    <p>
+      Đây là bài toán sống còn của truyện 500+ chương. Hệ thống chia làm hai đường: đường làm việc bình thường
+      (<code>novel_context</code> lắp ráp dữ liệu có cấu trúc vào prompt của lượt hiện tại) và đường quá tải
+      (<code>ContextManager</code> phát hiện áp lực token rồi nén theo thứ tự chi phí tăng dần).
+    </p>
+
+    <h3>Ba tầng tóm tắt</h3>
+<pre>Quyển (Volume) ──→ tóm tắt quyển           <span class="c">(khoảng cách xa)</span>
+└── Cung (Arc) ──→ tóm tắt cung + ảnh chụp nhân vật + luật văn phong   <span class="c">(trung)</span>
+    └── Chương ──→ tóm tắt chương (cửa sổ trượt 3 chương gần nhất)     <span class="c">(gần)</span></pre>
+
+    <h3>Bốn cấp nén, từ rẻ đến đắt</h3>
+    <div class="diagram">
+      <div class="drow c4">
+        <div class="dbox det"><div class="t">ToolResultMicrocompact</div><div class="s">Dọn kết quả công cụ cũ</div></div>
+        <div class="dbox det"><div class="t">LightTrim</div><div class="s">Cắt bớt văn bản dài</div></div>
+        <div class="dbox det"><div class="t">StoreSummaryCompact</div><div class="s">Thay tin nhắn cũ bằng tóm tắt sẵn có trong store — <strong>không tốn lượt LLM</strong></div></div>
+        <div class="dbox sem"><div class="t">FullSummary</div><div class="s">Tóm tắt bằng LLM, chốt chặn cuối</div></div>
+      </div>
+    </div>
+    <ul>
+      <li><strong>StoreSummaryCompact</strong> dành riêng cho Writer: dùng tóm tắt chương, ảnh chụp nhân vật và sổ cái phục bút
+      đã có sẵn trong store để thay thế tin nhắn cũ — chi phí LLM bằng không.</li>
+      <li><strong>FullSummary tùy biến cho tiểu thuyết</strong>: prompt tóm tắt hướng tới tính liên tục tự sự, yêu cầu tường minh
+      giữ lại trạng thái nhân vật, manh mối phục bút, mục cần sửa theo thẩm định và neo văn phong.</li>
+      <li><strong>Gói khôi phục sau nén</strong> (<code>agents/ctxpack/restore.go</code>): sau <code>FullSummary</code>, tự tiêm lại
+      kế hoạch chương hiện tại, dàn ý và ảnh chụp nhân vật để Writer không bị "mất trí nhớ".</li>
+      <li><strong>Cầu chì</strong>: nén hỏng liên tiếp thì tự bỏ qua và cảnh báo tường minh, theo chế độ nửa mở — lượt sau tự thử lại.</li>
+      <li><strong>Ước lượng token cho tiếng Trung</strong>: <code>runes × 1.5</code> thay vì <code>bytes/4</code>, tránh kích hoạt nén trễ.</li>
+    </ul>
+
+    <h3>Gợi ý chương liên quan</h3>
+    <p>
+      Mỗi lần viết, hệ thống truy ngược lịch sử theo bốn chiều — <strong>phục bút</strong>, <strong>nhân vật xuất hiện</strong>,
+      <strong>thay đổi trạng thái</strong> và <strong>quan hệ</strong> — rồi gợi ý cho Writer đọc lại theo nhu cầu, kèm dự báo
+      chương kế để thiết kế móc câu và nối phục bút.
+    </p>
+
+    <h3>Bộ nhớ đệm prompt</h3>
+    <p>
+      Đòn bẩy chi phí thứ hai sau việc chọn model. Ba tầng chia việc: <strong>litellm</strong> chỉ dịch giao thức,
+      <strong>agentcore</strong> quyết định đặt điểm cache và định danh, <strong>ainovel</strong> chỉ cần một dòng cấu hình.
+      Lợi ích của cache phụ thuộc vào <strong>tiền tố request ổn định theo byte</strong>, được bảo đảm bởi ba kỷ luật:
+      byte của <code>tools</code> tất định (mọi vòng lặp map đều sắp xếp trước), lịch sử chỉ ghi thêm, và nội dung động
+      luôn nối vào đuôi. Định danh cache theo công thức <em>một sách một nền, một vai một tên, một phiên một khóa</em>.
+      Việc phát hiện đứt chuỗi cache (<code>host/usage.go</code>) là <strong>thuần quan sát, không tự sửa</strong> — số đếm vào
+      <code>usage.json</code> và bảng cache trên TUI.
+    </p>
+  </section>
+
+  <!-- 12 -->
+  <section id="rolling">
+    <div class="sechead"><span class="secnum">14</span><h2>Lập kế hoạch cuộn cho truyện dài</h2></div>
+    <p>
+      Cách làm truyền thống là quy hoạch hết mọi chương một lần — đến 300+ chương thì dàn ý rỗng tuếch và nhịp truyện
+      giống như chạy cho kịp tiến độ. Hệ thống dùng mô hình <strong>kim chỉ nam + tầm nhìn cuộn</strong>, mô phỏng
+      quy trình thật của tác giả truyện mạng.
+    </p>
+    <div class="diagram">
+      <div class="drow c3">
+        <div class="dbox sem">
+          <div class="t">Quy hoạch ban đầu</div>
+          <div class="s">Hướng kết cục (kim chỉ nam) · 2 quyển khởi động · chương chi tiết của cung 1 · nhân vật + thế giới quan</div>
+        </div>
+        <div class="dbox sem">
+          <div class="t">Khi kết thúc một cung</div>
+          <div class="s">Editor thẩm định cung → tóm tắt cung + ảnh chụp nhân vật → Architect mở rộng cung kế → Writer viết tiếp</div>
+        </div>
+        <div class="dbox sem">
+          <div class="t">Khi kết thúc một quyển</div>
+          <div class="s">Editor thẩm định quyển → tóm tắt quyển → Architect tự tạo quyển kế và cập nhật kim chỉ nam</div>
+        </div>
+      </div>
+    </div>
+    <ul>
+      <li><strong>Kim chỉ nam (Compass)</strong> — hướng kết cục + các tuyến dài đang hoạt động + ước lượng quy mô, cập nhật tại mỗi biên quyển.</li>
+      <li><strong>Cung khung xương</strong> — chỉ có <code>goal</code> và số chương ước lượng; đến nơi mới mở rộng chi tiết.</li>
+      <li><strong>Tinh chỉnh dần</strong> — mỗi lần mở rộng đều tham chiếu tóm tắt trước đó, ảnh chụp nhân vật và luật văn phong.</li>
+      <li><strong>Mẫu nhịp phổ quát</strong> — cung trưởng thành đột phá / thi đấu đối kháng / thám hiểm phát hiện / ân oán xung đột / chuyển tiếp thường nhật.</li>
+    </ul>
+
+    <h3>Quyển kết — hội tụ về cái kết</h3>
+    <p>
+      Quy hoạch cuộn giải được bài toán "mở và cuộn", nhưng biến "khi nào kết thúc" thành một phán xử mở tại mỗi biên quyển.
+      Nếu không thiết kế tường minh sẽ sinh hai kiểu bế tắc: viết đủ số mà không kết được, hoặc kể xong mà con số không cho dừng.
+      Vì thế <strong>quyển kết là khái niệm hạng nhất</strong>: hoàn thành sách = một lần phán xử hướng đi + một đoạn trượt tất định.
+    </p>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Bước</th><th>Ai quyết</th><th>Nội dung</th></tr></thead>
+        <tbody>
+          <tr><td>Tuyên bố</td><td><span class="tag sem">LLM</span> Architect</td><td>Cuối quyển chọn một trong ba: <code>append_volume</code> (tiếp) / <code>append_volume</code> với <code>"final": true</code> (quyển kết) / <code>complete_book</code></td></tr>
+          <tr><td>Thực thi</td><td><span class="tag det">mã</span> tra bảng sự thật</td><td>Quyển cuối viết xong cấu trúc <em>và</em> đủ bộ ba thu dọn (thẩm định cung / tóm tắt cung / tóm tắt quyển) thì tự <code>MarkComplete</code></td></tr>
+          <tr><td>Gỡ bỏ</td><td><span class="tag det">mã</span> suy từ dữ liệu</td><td>Tuyên bố rồi lại nối quyển mới chưa đánh dấu → trạng thái hội tụ tự gỡ. Không có công cụ hoàn tác</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>estimated_scale</code> trong phán định kết thúc là <strong>bằng chứng, không phải quyền phủ quyết</strong>.</p>
+  </section>
+
+  <!-- 13 -->
+  <section id="khoi-phuc">
+    <div class="sechead"><span class="secnum">15</span><h2>Khôi phục sau sự cố</h2></div>
+    <p>
+      Viết một cuốn tiểu thuyết dài có thể mất nhiều giờ đến nhiều ngày; sập nguồn, mất mạng, <kbd>Ctrl+C</kbd> là chuyện thường.
+      Nguyên tắc: <strong>chỉ khôi phục sự thật, không khôi phục phiên</strong> — không có session nào cần khôi phục cả.
+    </p>
+<pre>Tiến trình khởi động
+  → resumeLabel (nhãn UI thuần)
+  → cảnh báo bất nhất
+  → AdvanceGate đối soát
+  → nếu có PendingSteer: chạy đường phán xử can thiệp <b>đồng bộ</b> trước, rồi mới kéo Engine dậy
+  → ngược lại: engine.start(nil) — chỉ nạp lại sự thật, <b>Route tự tính lại từ store</b></pre>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Thời điểm đứt</th><th>Hành vi khôi phục</th></tr></thead>
+        <tbody>
+          <tr><td>Giai đoạn quy hoạch</td><td>Kiểm tra thiết lập đã lưu, tự bù mục còn thiếu theo <code>PlanStartRecord</code></td></tr>
+          <tr><td>Đang viết một chương (có nháp chưa nộp)</td><td>Viết tiếp từ chương đó, đọc lại nháp đã có</td></tr>
+          <tr><td>Đang thẩm định</td><td>Kích hoạt lại Editor</td></tr>
+          <tr><td>Hàng đợi viết lại / mài giũa chưa cạn</td><td>Tiếp tục xử lý các chương đang chờ</td></tr>
+          <tr><td>Mở rộng cung/quyển bị đứt</td><td>Tự phát hiện cung/quyển còn khung xương, phái Architect mở rộng</td></tr>
+          <tr><td>Can thiệp chưa hoàn tất</td><td>Tiêm lại lệnh can thiệp lần trước từ <code>PendingSteer</code></td></tr>
+          <tr><td>Đang viết bình thường</td><td>Tiếp tục từ chương kế</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <strong>Trường hợp đặc biệt được ghi thành luật:</strong> nếu phán quyết khởi động <em>chưa từng hoàn tất</em>
+      (model hỏng ngay lúc khởi động), <code>planStartFallback</code> sẽ phán xử bù tại chỗ dựa trên <code>StartPrompt</code>.
+      Đây là lần thử lại của phán quyết đầu tiên, không vi phạm nguyên tắc "khôi phục thì không phán xử lại".
+      Phán xử bù thất bại sẽ tạm dừng tường minh và báo cho người dùng — cấm dừng im lặng.
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section id="van-hanh">
+    <div class="sechead"><span class="secnum">16</span><h2>Vận hành &amp; can thiệp</h2></div>
+
+    <h3>Khởi động</h3>
+<pre><span class="c"># Cài đặt (macOS / Linux, không cần Go)</span>
+curl -fsSL https://raw.githubusercontent.com/voocel/ainovel-cli/main/scripts/install.sh | sh
+go install github.com/voocel/ainovel-cli/cmd/ainovel-cli@latest
+
+ainovel-cli                 <span class="c"># TUI; lần đầu tự vào luồng hướng dẫn cấu hình</span>
+ainovel-cli --version
+ainovel-cli update [version]
+
+<span class="c"># Headless — cho server, NAS, CI. Không có luồng hướng dẫn lần đầu.</span>
+ainovel-cli --headless --prompt "viết một bộ huyền huyễn phương Đông…"
+ainovel-cli --headless --prompt-file prompt.txt
+ainovel-cli --headless       <span class="c"># tiếp tục tác vụ dở trong cùng thư mục</span>
+
+ainovel-cli eval --cases evals/cases/smoke --ci   <span class="c"># harness đánh giá offline</span></pre>
+    <p>
+      Ở chế độ headless, output stream của model đi vào <code>stdout</code>, sự kiện vận hành vào <code>stderr</code>,
+      log đầy đủ nằm ở <code>logs/headless.log</code> trong thư mục tác phẩm.
+    </p>
+
+    <h3>Lệnh trong TUI</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Lệnh</th><th>Công dụng</th></tr></thead>
+        <tbody>
+          <tr><td><code>/help</code></td><td>Xem danh sách lệnh</td></tr>
+          <tr><td><code>/model [role]</code></td><td>Đổi model và cường độ suy luận cho từng vai</td></tr>
+          <tr><td><code>/config</code></td><td>Thêm hoặc sửa Provider, model, cửa sổ ngữ cảnh</td></tr>
+          <tr><td><code>/diag</code></td><td>Chẩn đoán sức khỏe sáng tác + xuất báo cáo đã ẩn danh</td></tr>
+          <tr><td><code>/review on|off</code></td><td>Bật/tắt chế độ nghiệm thu từng chương</td></tr>
+          <tr><td><code>/next</code></td><td>Cấp phép cho đúng một chương mới sau khi nghiệm thu</td></tr>
+          <tr><td><code>/start &lt;path&gt;</code></td><td>Tạo sách mới từ tệp thiết lập hoặc dàn ý có sẵn</td></tr>
+          <tr><td><code>/import &lt;path&gt;</code></td><td>Nhập ngữ nghĩa một tiểu thuyết bên ngoài (xem §16)</td></tr>
+          <tr><td><code>/reopen [hướng đi]</code></td><td>Mở lại sách đã kết thúc để viết tiếp</td></tr>
+          <tr><td><code>/cocreate</code></td><td>Tạm dừng, đồng sáng tác kế hoạch cho giai đoạn tiếp theo</td></tr>
+          <tr><td><code>/simulate</code></td><td>Đọc <code>./simulate</code> để dựng hoặc cập nhật chân dung mô phỏng văn phong</td></tr>
+          <tr><td><code>/importsim &lt;file&gt;</code></td><td>Nhập chân dung có sẵn, hợp nhất theo vân tay ngữ liệu</td></tr>
+          <tr><td><code>/sync [--check]</code></td><td>Kiểm tra hoặc tiếp nhận các chương đã hoàn thành bị sửa tay</td></tr>
+          <tr><td><code>/export [path] [from=N] [to=M]</code></td><td>Xuất chương đã hoàn thành ra TXT / EPUB</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Can thiệp thời gian thực (Steer)</h3>
+    <p>Trong lúc sáng tác, gõ thẳng ý kiến vào ô nhập — <strong>không cần tạm dừng hay khởi động lại</strong>:</p>
+<pre>❯ đẩy tuyến tình cảm lên chương 4, thêm cảnh đối đầu giữa nam và nữ chính</pre>
+    <p>Hệ thống lần lượt:</p>
+    <ol>
+      <li>Ghi lệnh can thiệp vào <code>run.json</code> (bảo vệ khi sập) — nếu ghi lần đầu thất bại thì <strong>dừng phán xử và báo lỗi tường minh</strong>, tuyệt đối không chạy tiếp khi chưa có bản ghi khôi phục.</li>
+      <li>Arbiter phán xử ngay (truy vấn thì hồi đáp trong vài giây; hành động điều khiển thì commit an toàn tại biên chương).</li>
+      <li>Thực thi theo phán quyết: sửa thiết lập → Architect; viết lại chương cũ → Editor đưa vào hàng đợi; luật viết → ghi đĩa tức thì.</li>
+      <li>Mọi hành động thành công → xóa nguyên tử <code>PendingSteer</code>.</li>
+    </ol>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Lệnh can thiệp</th><th>Phản ứng có thể có của hệ thống</th></tr></thead>
+        <tbody>
+          <tr><td>"đổi nhân vật chính thành nữ"</td><td>Sửa thiết lập nhân vật, đánh giá chương đã viết có cần viết lại</td></tr>
+          <tr><td>"đẩy tuyến tình cảm lên chương 4"</td><td>Điều chỉnh dàn ý, có thể viết lại chương 4 và các chương sau</td></tr>
+          <tr><td>"nhịp chậm quá, đẩy nhanh lên"</td><td>Điều chỉnh mật độ dàn ý các chương sau</td></tr>
+          <tr><td>"viết đến chương 20"</td><td>Viết liên tục đến khi chương 20 nộp ổn định rồi tạm dừng</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Cổng nghiệm thu từng chương</h3>
+    <p>
+      <code>ChapterAdvanceGate</code> thi hành hai loại ý định trên hai thang thời gian khác nhau:
+      <strong>chính sách bền</strong> (<code>AdvanceMode = review</code> đặt bằng <code>/review on</code>, mỗi chương mới phải được
+      <code>/next</code> cấp phép riêng) và <strong>ý định một lần</strong> (<code>AdvanceHold</code> do Arbiter ký, dừng tại biên
+      hiện tại hoặc sau khi chương mục tiêu nộp ổn định).
+    </p>
+    <p>
+      Giấy phép gắn với <em>số chương cụ thể</em>. Nó chỉ bị tiêu thụ khi chương mục tiêu đã vào <code>CompletedChapters</code>,
+      <code>PendingCommit</code> đã rỗng và checkpoint <code>commit</code> đã tồn tại — nên dù sập ở bất kỳ cửa sổ nào của Saga nộp chương,
+      cùng một giấy phép cũng không thể bị dùng cho chương kế. Viết lại, mài giũa, thẩm định và bảo trì cấu trúc
+      <strong>không</strong> tính là "chương mới" và không bị cổng chặn.
+    </p>
+  </section>
+
+  <!-- 15 -->
+  <section id="cau-hinh">
+    <div class="sechead"><span class="secnum">17</span><h2>Cấu hình</h2></div>
+    <p>
+      Cấu hình nằm ở <code>~/.ainovel/config.json</code>, có thể phủ bởi <code>./.ainovel/config.json</code> ở mức dự án
+      (thư mục dự án là bản sao gương của thư mục nhà: cùng cấu trúc, chỉ đổi gốc). Thư mục này chứa khóa API và đã có sẵn trong <code>.gitignore</code>.
+    </p>
+<pre>{
+  "provider": "openrouter",          <span class="c">// TÊN KHÓA trong "providers", không phải tên giao thức</span>
+  "model": "google/gemini-2.5-flash",
+  "reasoning_effort": "medium",      <span class="c">// off | low | medium | high | xhigh | max</span>
+  "providers": {
+    "openrouter": {
+      "api_key": "sk-or-v1-xxx",
+      "base_url": "https://openrouter.ai/api/v1",
+      "models": [
+        { "name": "google/gemini-2.5-flash", "context_window": 200000 },
+        { "name": "google/gemini-2.5-pro",   "context_window": 1000000 }
+      ]
+    },
+    "anthropic": { "api_key": "sk-ant-xxx" }
+  },
+  "roles": {
+    "writer":    { "provider": "anthropic",  "model": "claude-sonnet-4",     "reasoning_effort": "high" },
+    "architect": { "provider": "openrouter", "model": "google/gemini-2.5-pro" }
+  },
+  "style": "default",                <span class="c">// default | suspense | fantasy | romance</span>
+  "language": "zh",                  <span class="c">// zh (mặc định) | vi | en — ngôn ngữ CHÍNH VĂN</span>
+  "ui_language": "zh"                <span class="c">// zh | vi | en | auto — ngôn ngữ GIAO DIỆN, độc lập với trên</span>
+}</pre>
+
+    <h3>Quy tắc phủ đè</h3>
+    <ul>
+      <li>Trường vô hướng: sau đè trước (<code>provider</code>, <code>model</code>, <code>reasoning_effort</code>, <code>style</code>).</li>
+      <li><code>providers</code> và <code>roles</code>: hợp nhất theo khóa, trong mục cùng tên thì đè theo từng trường.</li>
+      <li>Trường không điền thì kế thừa tầng trên. <strong>Không</strong> dùng chuỗi rỗng để xóa giá trị tầng trên.</li>
+      <li>Cửa sổ ngữ cảnh giải theo thứ tự: giá trị riêng của model → <code>context_window</code> cấp cao cũ → registry model → mặc định 200K.
+      Nó chỉ ảnh hưởng thời điểm nén cục bộ, không đổi giới hạn thật của API.</li>
+    </ul>
+
+    <h3>Vai có thể cấu hình model riêng</h3>
+    <p>
+      <code>architect</code> / <code>writer</code> / <code>editor</code>, cộng ba bậc model của pipeline nhập truyện:
+      <code>import_segment</code> / <code>import_analyze</code> / <code>import_synthesize</code> (không cấu hình thì rơi về <code>architect</code>).
+      Arbiter hiện dùng thống nhất model mặc định, cố ý chưa mở cấu hình riêng.
+    </p>
+    <p>
+      Cường độ suy luận hiệu lực theo công thức <strong>ý định × năng lực</strong>: cấu hình lưu <em>ý định gốc</em> bạn chọn,
+      lúc gửi request mới bị kẹp theo năng lực model hiện tại của vai đó. Đổi sang model yếu chỉ làm giá trị hiệu lực lần đó bị hạ,
+      ý định lưu trữ không đổi — quay lại model mạnh là tự phục hồi.
+    </p>
+
+    <h3>Ngôn ngữ sáng tác</h3>
+    <p>
+      <code>language</code> quyết định ngôn ngữ của <strong>sản phẩm</strong>: chính văn, tiêu đề chương, tên nhân vật,
+      dàn ý, tóm tắt và ý kiến thẩm định. Nó cũng kéo theo toàn bộ thước đo cơ học — xem
+      <a href="#ngon-ngu">§10 Tầng ngôn ngữ sáng tác</a>. Chọn được ở bước <code>[5/5]</code> của wizard cài đặt,
+      hoặc sửa thẳng trong <code>config.json</code>. Bỏ trống hoặc viết sai đều quay về <code>zh</code>.
+    </p>
+    <p>
+      Prompt và tài liệu tham chiếu trong <code>assets/</code> vẫn là tiếng Trung — đó là ngôn ngữ làm việc giữa
+      hệ thống và model. Một chỉ thị ngôn ngữ cứng được nối vào system prompt của cả ba Worker để phân biệt rõ
+      "ngôn ngữ làm việc" với "ngôn ngữ sản phẩm".
+    </p>
+
+    <h3>Ba tầng tùy biến sáng tác — không cần sửa mã nguồn</h3>
+    <div class="cards c3">
+      <div class="card">
+        <span class="k">Tầng 1 · luật cơ học</span>
+        <h5>rules/</h5>
+        <p>Đặt tệp <code>.md</code> vào <code>~/.ainovel/rules/</code> (toàn cục) hoặc <code>./.ainovel/rules/</code> (theo sách).
+        Viết bằng văn nói bình thường — hệ thống dùng model chuẩn hóa thành ảnh chụp luật có cấu trúc
+        (khoảng số từ, từ cấm, ngưỡng từ mỏi), <code>novel_context</code> tiêm vào lúc viết, <code>commit_chapter</code> tự kiểm cơ học.</p>
+      </div>
+      <div class="card">
+        <span class="k">Tầng 2 · văn phong</span>
+        <h5>style/ (Voice Layer)</h5>
+        <p>Hai cấp phủ đè: <code>&lt;thư mục sách&gt;/style/</code> &gt; <code>~/.ainovel/style/</code>.
+        <strong>Văn bản chỉ dẫn thì nối thêm</strong> (<code>voice.md</code>, <code>anti-ai-tone.md</code>),
+        <strong>preset phong cách thì thay nguyên tệp</strong> (<code>styles/</code>, <code>genres/</code>).</p>
+      </div>
+      <div class="card">
+        <span class="k">Tầng 3 · nền tảng</span>
+        <h5>Khử "mùi AI" mặc định</h5>
+        <p>Danh sách đen cơ học dựng sẵn trong <code>rules.SystemDefaults()</code> (kiểm tra tất định lúc commit) cộng
+        tiêu chí ngữ nghĩa ở <code>assets/references/anti-ai-tone.md</code>, tiêm vào Writer để né và Editor để dẫn chứng.</p>
+      </div>
+    </div>
+    <div class="note">
+      Prompt loại <strong>giao thức thực thi</strong> cố ý <em>không</em> mở cho phủ đè. Bất biến cộng tác do tầng công cụ canh gác —
+      đó chính là lý do bạn có thể sửa văn phong thoải mái mà không làm hỏng hệ thống.
+    </div>
+  </section>
+
+  <!-- 16 -->
+  <section id="pipelines">
+    <div class="sechead"><span class="secnum">18</span><h2>Import · Export · Sync · Simulate</h2></div>
+
+    <h3>Import — biên dịch ngữ nghĩa một tiểu thuyết có sẵn</h3>
+    <p>
+      <code>internal/host/imp</code> nhập một cuốn sách bên ngoài để viết tiếp. Ranh giới chương do <strong>model phán xử theo ngữ nghĩa</strong>,
+      không dựa vào quy tắc tiêu đề hard-code; phía Go chỉ nắm tọa độ, kiểm tra phủ kín, idempotency và thứ tự.
+    </p>
+    <div class="diagram">
+      <div class="drow c2">
+        <div class="dbox det"><div class="t">ingest</div><div class="s">Chụp ảnh tệp nguồn (txt/md, UTF-8 hoặc GB18030, tự nhận diện)</div></div>
+        <div class="dbox sem"><div class="t">segment</div><div class="s">LLM nhận diện ranh giới chương → dừng lại cho người dùng đối chiếu</div></div>
+      </div>
+      <div class="drow c3">
+        <div class="dbox sem"><div class="t">analyze</div><div class="s">Trích sự thật từng chương theo lô liên tục</div></div>
+        <div class="dbox sem"><div class="t">synthesize</div><div class="s">Quy nạp phân tầng: tiền đề, nhân vật, thế giới quan, dàn ý phân tầng, kim chỉ nam</div></div>
+        <div class="dbox det"><div class="t">publish</div><div class="s">Phát hành Foundation chính thức, ghi từng chương xuống đĩa</div></div>
+      </div>
+    </div>
+<pre>/import ~/tieu-thuyet.txt              <span class="c"># chạy, dừng lại để đối chiếu, bấm y để tiếp</span>
+/import --guide=Gian tấu · X cũng là chương độc lập   <span class="c"># chỉ dẫn cắt bằng ngôn ngữ tự nhiên</span>
+/import ~/x.txt --yes                  <span class="c"># không người trực: tự nhận cắt và chạy hết</span>
+/import ~/x.txt --story=closed|open    <span class="c"># trả lời trước câu hỏi "truyện đã kết chưa"</span>
+/import ~/x.txt --continue             <span class="c"># nhập xong viết tiếp luôn, không dừng nghiệm thu</span>
+/import                                <span class="c"># không tham số: khôi phục lần nhập dở dang</span></pre>
+    <p>
+      Mỗi giai đoạn ghi sản phẩm vào workspace <code>meta/import/</code> và ràng buộc theo <strong>vân tay đầu vào</strong>:
+      chạy lại chỉ bù phần còn thiếu, không gọi lại model, không cần nhớ "đã nhập tới chương mấy".
+      Phản hồi thất bại của model được giữ nguyên bản trong <code>meta/import/failures/</code> để truy vết.
+      Chỉ nhập được vào <strong>sách rỗng</strong> (chưa có chương hoàn thành).
+    </p>
+
+    <h3>Export</h3>
+    <p>
+      <code>internal/host/exp</code> — thao tác chỉ đọc, chạy được cả khi engine đang viết. Định dạng quyết định bởi
+      <strong>đuôi đường dẫn đầu ra</strong>:
+    </p>
+    <ul>
+      <li><strong>TXT</strong> — <code>《Tên sách》</code> → phân cách quyển → chính văn. Hai loại dữ liệu nội bộ
+      <em>không</em> vào bản xuất: <code>premise</code> (bản thiết kế sáng tác, dành cho tác giả và engine) và phân cách cung
+      (dưới góc nhìn độc giả thì cung là cấu trúc nội bộ quá chi tiết).</li>
+      <li><strong>EPUB</strong> — container EPUB 3 chuẩn, có metadata, trang bìa, mục lục và XHTML tách theo chương;
+      định danh dẫn xuất ổn định từ nội dung nên xuất lại được trình đọc nhận là bản cập nhật.</li>
+      <li><strong>Ngôn ngữ</strong> — tiêu đề chương/quyển, nhãn "Bìa sách"/"Mục lục" và <code>dc:language</code>
+      đều theo <code>language</code> của sách (<a href="#ngon-ngu">§10</a>).</li>
+    </ul>
+<pre>/export                                <span class="c"># TXT mặc định → {thư mục sách}/{tên sách}.txt</span>
+/export ~/quang-ban.epub               <span class="c"># đuôi .epub → EPUB</span>
+/export from=10 to=30 --overwrite</pre>
+
+    <h3>Sync — tiếp nhận bản sửa tay</h3>
+    <p>
+      Bạn có thể sửa thẳng <code>output/novel/chapters/*.md</code>. Hệ thống nhận diện thay đổi bằng <strong>SHA-256</strong>
+      của chính văn đã tiếp nhận, không dựa vào thời gian sửa tệp (<code>internal/revision</code>).
+    </p>
+<pre>/sync --check   <span class="c"># chỉ liệt kê chương đã đổi, không gọi model</span>
+/sync           <span class="c"># tiếp nhận: dựng lại tóm tắt, dòng thời gian, phục bút, quan hệ, trạng thái, ký ức văn phong</span></pre>
+    <p>
+      Khi phát hiện sửa đổi chưa tiếp nhận, việc tiếp tục sáng tác, nhập lệnh và <code>/next</code> đều bị chặn cho tới khi
+      <code>/sync</code> chạy xong — tránh để sự thật cũ dẫn dắt chương mới. <code>/sync</code> <strong>không sửa chính văn của bạn</strong>;
+      model chỉ trích xuất lại sự thật chương và sở thích văn phong tái dùng được.
+    </p>
+
+    <h3>Simulate — chân dung mô phỏng văn phong</h3>
+    <p>
+      Đặt bài tham chiếu vào thư mục <code>simulate/</code> rồi gõ <code>/simulate</code>. Hệ thống đọc đệ quy các tệp
+      <code>.txt</code> / <code>.md</code>, dùng model architect phân tích và ghi vào <code>meta/simulation_profile.json</code>.
+      Lần chạy sau bỏ qua tệp không đổi theo <code>relative_path + sha256</code>. Chân dung được tiêm dạng compact vào
+      <code>novel_context</code> cho cả ba agent — chúng chỉ mượn cấu trúc, nhịp, móc câu và cách hút độc giả,
+      <strong>không sao chép cách diễn đạt hay thiết lập riêng của bản gốc</strong>.
+    </p>
+  </section>
+
+  <!-- 17 -->
+  <section id="quan-sat">
+    <div class="sechead"><span class="secnum">19</span><h2>Quan sát &amp; chẩn đoán</h2></div>
+    <p>
+      Nguyên tắc bất di bất dịch: <strong>tầng quan sát chỉ quan sát</strong>. UI, chẩn đoán và nhật ký sự kiện đều là
+      những kẻ tiêu thụ thụ động, chiếu ra từ luồng sự kiện và artifact chỉ-đọc. Chúng đọc sự thật, không sinh sự thật,
+      không ảnh hưởng luồng điều khiển.
+    </p>
+
+    <h3>Ba tầng dữ liệu quan sát</h3>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Tầng</th><th>Yêu cầu</th></tr></thead>
+        <tbody>
+          <tr><td><code>agentcore.ProgressPayload</code></td><td>Tầng truyền tải — văn bản lỗi phải đầy đủ và <strong>không được</strong> chứa chính sách cắt của UI</td></tr>
+          <tr><td><code>host.Event.Summary</code> / <code>.Detail</code></td><td><code>Summary</code> là ngữ nghĩa hiển thị ngắn; <code>Detail</code> là chẩn đoán đầy đủ</td></tr>
+          <tr><td>Log tệp / TUI</td><td>Log tệp ưu tiên ghi <code>Detail</code> đầy đủ; TUI chỉ đọc <code>Summary</code> và cắt theo bề rộng terminal ở khâu render cuối</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      "Log đầy đủ" nghĩa là chuỗi lỗi, tham số bất hợp lệ nguyên bản và siêu dữ liệu vòng đời không bị mất —
+      <em>không</em> phải là chép lại toàn bộ chính văn tiểu thuyết vào <code>tui.log</code>. Nội dung lớn vẫn do artifact của Store
+      và <code>meta/sessions</code> gánh.
+    </p>
+
+    <h3><code>/diag</code> — bốn chiều chẩn đoán</h3>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Chiều</th><th>Phát hiện điều gì</th></tr></thead>
+        <tbody>
+          <tr><td><code>flow</code></td><td>Vòng viết lại bị kẹt, lệnh chuyển hướng chưa tiêu thụ, trạng thái giai đoạn/luồng bất thường, nhảy số chương</td></tr>
+          <tr><td><code>quality</code></td><td>Chiều thẩm định điểm thấp kéo dài, tỉ lệ thực hiện hợp đồng, tỉ lệ viết lại, số từ chương bất thường</td></tr>
+          <tr><td><code>planning</code></td><td>Phục bút đình trệ, kim chỉ nam lỗi thời, dàn ý cạn kiệt, thiếu tóm tắt</td></tr>
+          <tr><td><code>context</code></td><td>Nhân vật biến mất, đứt gãy dòng thời gian, dữ liệu quan hệ đình trệ</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Mỗi phát hiện có ba phần: mô tả vấn đề, bằng chứng dữ liệu, và đề xuất cải thiện trỏ tới prompt/flow/config cụ thể;
+      mức nghiêm trọng chia <code>critical</code> / <code>warning</code> / <code>info</code>.
+      <code>/diag</code> đồng thời ghi ra <code>meta/diag-export.md</code> đã <strong>ẩn danh</strong> — bỏ chính văn, chỉ giữ bộ xương hành vi
+      (lời gọi công cụ, chuỗi lỗi, số lần lặp) để dán vào GitHub issue.
+    </p>
+    <div class="note">
+      <strong>Kỷ luật quan sát viên (không được nới lỏng):</strong> diag được phép chẩn đoán và đề xuất, nhưng
+      <strong>vĩnh viễn không tự ra tay</strong> — không tự sửa, không tự chạy tiếp, không đổi luồng.
+    </div>
+
+    <h3>Usage &amp; ngân sách</h3>
+    <p>
+      <code>host/usage.go</code> ghi lượng dùng token theo vai và theo model. Mỗi tin nhắn assistant trong session được gắn
+      <code>_meta:{provider,model}</code>, nên việc phát lại tính chi phí không cần suy ngược từ "ModelSet hiện tại" — đổi model
+      giữa chừng vẫn tính đúng. Registry model (<code>internal/models</code>, dữ liệu từ OpenRouter API, baseline biên dịch sẵn
+      + làm mới lúc chạy) cung cấp cửa sổ ngữ cảnh, trần đầu ra và giá.
+    </p>
+
+    <h3>Thống kê văn phong toàn sách</h3>
+    <p>
+      <code>internal/stylestat</code> giải một điểm mù cụ thể: cửa sổ thẩm định trong một cung (~10 chương) bẩm sinh không thấy
+      được các mẫu bị đóng băng ở quy mô toàn sách — tic câu cú vài chục lần mỗi chương, hình thái kết chương đồng dạng,
+      lặp lại xuyên chương. Nhìn từng chương thì chỗ nào cũng "bình thường". <strong>Thống kê thuộc về mã</strong> (tất định,
+      không ảo giác), <strong>phán xử thuộc về LLM</strong> (Editor chấm điểm chiều theo con số, Writer dựa vào đó để tự né).
+    </p>
+
+    <h3>Cảnh báo không người trực</h3>
+    <p>
+      <code>internal/notify</code> là kênh cảnh báo cho chế độ chạy nền. Định vị hợp hiến: hành động thuần quan sát —
+      cảnh báo <strong>không bao giờ</strong> can dự luồng điều khiển (không thử lại, không đổi phái, không dừng máy),
+      chỉ "hô" các sự kiện vốn đã có trong TUI ra ngoài màn hình. <code>Send</code> chạy bất đồng bộ, không bao giờ chặn Host,
+      thất bại chỉ ghi <code>slog</code>.
+    </p>
+  </section>
+
+  <!-- 18 -->
+  <section id="eval">
+    <div class="sechead"><span class="secnum">20</span><h2>Hệ thống đánh giá</h2></div>
+    <p>
+      Luận điểm cốt lõi: <strong>bộ đánh giá đã tồn tại sẵn trong dự án</strong>. Thay vì viết một bộ script kiểm tra mới,
+      <code>internal/eval</code> coi ba thứ có sẵn là bộ đánh giá — bộ chẩn đoán sự thật <code>diag</code>, bộ thống kê văn thể toàn sách
+      <code>stylestat</code>, và bảy chiều thẩm định gốc <code>ReviewEntry</code> — rồi phủ lên một lớp harness offline mỏng.
+      Một định nghĩa sự thật, không trôi dạt ở hai nơi.
+    </p>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Tệp</th><th>Vai trò</th></tr></thead>
+        <tbody>
+          <tr><td><code>case.go</code></td><td>Cấu trúc Case manifest + nạp</td></tr>
+          <tr><td><code>eval.go</code></td><td>Điều phối CLI: single / A-B / repeat</td></tr>
+          <tr><td><code>runner.go</code></td><td>Lắp driver host (chặn theo trần số chương, drain tới <code>Done</code>), phủ prompt trong bộ nhớ</td></tr>
+          <tr><td><code>collect.go</code></td><td>Chạy <code>diag.Diagnose</code> + <code>stylestat.Compute</code> + usage/tool_calls + khẳng định hợp đồng</td></tr>
+          <tr><td><code>grade.go</code></td><td>Ánh xạ Finding → cổng chặn, delta baseline/variant, quyết định cổng stylestat</td></tr>
+          <tr><td><code>report.go</code></td><td>Sinh <code>report.json</code> + <code>report.md</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre><span class="c"># CI mặc định chỉ chạy smoke, không bật judge</span>
+ainovel-cli eval --cases evals/cases/smoke \
+  --variant evals/variants/writer-anti-ai-tone \
+  --out workspace/evals/writer-anti-ai-tone --ci
+
+<span class="c"># Thay đổi prompt lớn: A/B + repeat để giảm nhiễu ngẫu nhiên</span>
+ainovel-cli eval --cases evals/cases/quality \
+  --variant evals/variants/writer-anti-ai-tone --repeat 3 --ci</pre>
+    <p>
+      Tham số đã cài đặt: <code>--cases</code>, <code>--variant</code> (truyền vào là tự chạy A/B baseline + variant),
+      <code>--repeat N</code>, <code>--config</code>, <code>--out</code>, <code>--max-chapters N</code>, <code>--timeout</code>, <code>--ci</code>.
+      <code>--judge</code> (LLM Judge, Phase 3) đang trong kế hoạch và <strong>chưa cài đặt</strong>.
+    </p>
+  </section>
+
+  <!-- 19 -->
+  <section id="packages">
+    <div class="sechead"><span class="secnum">21</span><h2>Bản đồ package</h2></div>
+    <p>24 package trong <code>internal/</code>. Số dòng dưới đây không tính tệp <code>_test.go</code>.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Package</th><th>Vai trò</th><th>Dòng</th></tr></thead>
+        <tbody>
+          <tr><td><code>host</code></td><td>Vòng đời, Engine, observer, usage, ngân sách, advance gate; kèm <code>imp/</code> <code>exp/</code> <code>sim/</code></td><td class="num">12.036</td></tr>
+          <tr><td><code>entry</code></td><td><code>tui/</code> (Bubble Tea) · <code>headless/</code> · <code>startup/</code></td><td class="num">9.056</td></tr>
+          <tr><td><code>tools</code></td><td>16 công cụ agent, IO nguyên tử, Saga nộp chương</td><td class="num">5.603</td></tr>
+          <tr><td><code>store</code></td><td>Bền vững hóa trên hệ thống tệp, khóa theo miền</td><td class="num">5.060</td></tr>
+          <tr><td><code>diag</code></td><td>Hệ thống quan sát duy nhất của engine: quy tắc, runtime, export ẩn danh</td><td class="num">1.965</td></tr>
+          <tr><td><code>bootstrap</code></td><td>Config, <code>ModelSet</code>, provider failover, wizard cài đặt</td><td class="num">1.931</td></tr>
+          <tr><td><code>eval</code></td><td>Harness đánh giá offline</td><td class="num">1.587</td></tr>
+          <tr><td><code>domain</code></td><td>Dữ liệu thuần: Phase, Flow, Progress, Checkpoint, Scope, Story, Plan, Review</td><td class="num">1.528</td></tr>
+          <tr><td><code>agents</code></td><td><code>build.go</code> lắp Worker; <code>ctxpack/</code> chiến lược nén; <code>guard/</code> hàng rào checkpoint</td><td class="num">1.463</td></tr>
+          <tr><td><code>revision</code></td><td>Quét, phân tích và chiếu lại các chương bị sửa tay</td><td class="num">1.069</td></tr>
+          <tr><td><code>models</code></td><td>Registry metadata model (cửa sổ, trần đầu ra, giá)</td><td class="num">924</td></tr>
+          <tr><td><code>llmcontract</code></td><td>Hợp đồng đầu ra có cấu trúc thống nhất + tự chữa lỗi</td><td class="num">669</td></tr>
+          <tr><td><code>rules</code></td><td>Tầng đầu vào của sở thích người dùng: hợp nhất tất định thành ảnh chụp luật</td><td class="num">654</td></tr>
+          <tr><td><code>stylestat</code></td><td>Thống kê văn thể toàn sách (Compute offline + Tracker tăng dần)</td><td class="num">632</td></tr>
+          <tr><td><code>arbiter</code></td><td>Tầng phán xử ngữ nghĩa: 4 kịch bản</td><td class="num">503</td></tr>
+          <tr><td><code>i18n</code></td><td>Tầng ngôn ngữ giao diện: từ điển nhúng zh/vi/en, giải ngôn ngữ, tra câu</td><td class="num">177</td></tr>
+          <tr><td><code>lang</code></td><td>Nguồn sự thật duy nhất của ngôn ngữ sáng tác: đếm từ, ngắt câu, mẫu văn phong, blacklist, nhãn chương/quyển</td><td class="num">428</td></tr>
+          <tr><td><code>flow</code></td><td>Chính sách định tuyến: <code>router.go</code> + <code>state.go</code> + <code>pause.go</code></td><td class="num">486</td></tr>
+          <tr><td><code>version</code></td><td>Thông tin build + tự cập nhật</td><td class="num">468</td></tr>
+          <tr><td><code>userrules</code></td><td>Chuẩn hóa luật người dùng bằng LLM + điều phối + ghi đĩa</td><td class="num">273</td></tr>
+          <tr><td><code>notify</code></td><td>Kênh cảnh báo không người trực</td><td class="num">217</td></tr>
+          <tr><td><code>utils</code></td><td>Mã hóa văn bản, trích stream, xử lý đầu vào</td><td class="num">286</td></tr>
+          <tr><td><code>chapterfacts</code></td><td>Sự thật cấp chương dùng chung</td><td class="num">142</td></tr>
+          <tr><td><code>llmretry</code></td><td>Nhân thử lại tầng request cho lời gọi model trực tiếp</td><td class="num">99</td></tr>
+          <tr><td><code>logger</code></td><td>Phiên log tệp</td><td class="num">93</td></tr>
+          <tr><td><code>errs</code></td><td>Sentinel lỗi cấp ứng dụng (dùng với <code>errors.Is</code>)</td><td class="num">23</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Thư mục assets</h3>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Đường dẫn</th><th>Nội dung</th></tr></thead>
+        <tbody>
+          <tr><td><code>assets/prompts/</code></td><td><code>arbiter-plan-start</code> · <code>arbiter-intervention</code> · <code>arbiter-failure</code> · <code>architect-short|long</code> · <code>writer</code> (mẫu giao thức, có ô giữ chỗ <code>{{VOICE}}</code>) · <code>editor</code> · <code>import-*</code> · <code>simulation-*</code> · <code>revision-analyze</code></td></tr>
+          <tr><td><code>assets/voice.md</code></td><td>Chuẩn viết lách mặc định (tầng văn phong, ba cấp phủ đè)</td></tr>
+          <tr><td><code>assets/references/</code></td><td>Kỹ thuật viết, <code>anti-ai-tone.md</code>, mẫu chương/nhân vật/dàn ý, checklist chất lượng, và <code>genres/</code> theo thể loại</td></tr>
+          <tr><td><code>assets/styles/</code></td><td><code>default</code> · <code>fantasy</code> · <code>suspense</code> · <code>romance</code> (người dùng phủ đè hoặc thêm mới)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Điều dự án cố ý KHÔNG làm</h3>
+    <ul>
+      <li>Không có task queue, không có policy engine — toàn bộ luồng điều khiển là một vòng lặp tuần tự + một bảng quyết định + vài hàm phán xử.</li>
+      <li>Không dùng cơ sở dữ liệu; tầng sự thật là hệ thống tệp phẳng.</li>
+      <li>Không cho các Worker nói chuyện trực tiếp với nhau — mọi thông tin chảy qua artifact có cấu trúc trong Store.</li>
+      <li>Không viết bản vá chữa cháy ở tầng ứng dụng: thiếu năng lực thì sửa thẳng ở thượng nguồn (<code>agentcore</code>).</li>
+      <li>Không đưa mô hình nghiệp vụ hay công cụ nghiệp vụ vào <code>agentcore</code> — tiêu chí: năng lực mới phải còn ý nghĩa
+      nếu <code>agentcore</code> được dùng cho một coding agent hay agent chăm sóc khách hàng.</li>
+    </ul>
+  </section>
+
+  <!-- 20 -->
+  <section id="build">
+    <div class="sechead"><span class="secnum">22</span><h2>Build, test &amp; phát hành</h2></div>
+<pre>go build ./cmd/ainovel-cli
+go test ./...                     <span class="c"># 797 hàm test</span>
+go vet ./...</pre>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Hạ tầng</th><th>Nội dung</th></tr></thead>
+        <tbody>
+          <tr><td><code>.github/workflows/ci.yml</code></td><td>Build + test trên mỗi lần đẩy</td></tr>
+          <tr><td><code>.github/workflows/release.yml</code> + <code>.goreleaser.yml</code></td><td>Đóng gói đa nền tảng, sinh SHA256 manifest mà <code>scripts/install.sh</code> kiểm tra trước khi cài</td></tr>
+          <tr><td><code>.github/workflows/docker.yml</code> + <code>Dockerfile</code></td><td>Ảnh <code>ghcr.io/voocel/ainovel-cli:latest</code>, hợp với chạy headless dài ngày trên server/NAS</td></tr>
+          <tr><td><code>scripts/check_chapter_wordcount.py</code></td><td>Tiện ích kiểm tra số từ theo chương</td></tr>
+        </tbody>
+      </table>
+    </div>
+<pre>mkdir -p config workspace
+docker run --rm -it \
+  -v "$PWD/config:/root/.ainovel" \
+  -v "$PWD/workspace:/workspace" \
+  ghcr.io/voocel/ainovel-cli:latest</pre>
+
+    <h3>Chiến lược kiểm chứng</h3>
+    <ul>
+      <li><strong>Test đặc tả vét cạn</strong> cho <code>flow.Route</code> — hàng vạn tổ hợp trạng thái. Đổi bảng quyết định thì sửa đặc tả trước.</li>
+      <li><strong>Test hợp đồng agentcore</strong> — 6 khẳng định phải xanh trước khi nâng phiên bản thư viện thượng nguồn.</li>
+      <li><strong>Phát lại offline phán quyết Arbiter</strong> — <code>decisions.jsonl</code> cho phép hồi quy mà không cần gọi model.</li>
+      <li><strong>Harness eval</strong> — kiểm chứng chất lượng bằng chính bộ chẩn đoán của sản phẩm.</li>
+      <li><strong>Bất biến ngôn ngữ</strong> — <code>internal/lang</code> chốt: giá trị rỗng an toàn, thước đo tiếng Trung
+      không đổi từng byte, mẫu văn phong khớp thật trên ngôn ngữ của nó và <em>không</em> khớp chéo sang ngôn ngữ khác.
+      Cái cuối chính là thứ phát hiện "thất bại im lặng".</li>
+    </ul>
+
+    <h3>Các cột mốc tiến hóa</h3>
+    <div class="tablewrap">
+      <table class="compact">
+        <thead><tr><th>Thời điểm</th><th>Tái cấu trúc</th><th>Hiệu quả ròng</th></tr></thead>
+        <tbody>
+          <tr><td>2026-04-10</td><td><code>internal/orchestrator/</code> (6.342 dòng) → <code>host/</code> + <code>agents/</code></td><td>Lõi runtime giảm 74%</td></tr>
+          <tr><td>2026-04-20</td><td>Hybrid Coordinator: tạo <code>host/flow/</code>, định tuyến thu về hàm thuần</td><td>Tỉ lệ lỗi định tuyến tiệm cận 0</td></tr>
+          <tr><td>2026-06-05</td><td>Vòng khép kín quy hoạch cuộn + <code>/import</code></td><td>Lần đầu chạy thông 200+ chương</td></tr>
+          <tr><td>2026-07-12</td><td><strong>Thay mặt phẳng điều khiển: Engine + Arbiter</strong>; vòng lặp dài Coordinator LLM nghỉ hưu cùng 7 bản vá</td><td>Mỗi biên tiết kiệm một lượt LLM; mặt phẳng điều khiển test offline 100%; phán xử ngữ nghĩa phát lại được</td></tr>
+          <tr><td>2026-08-27</td><td><strong>Tầng ngôn ngữ giao diện <code>internal/i18n</code></strong>; ~530 chuỗi giao diện thu về từ điển nhúng ba ngôn ngữ</td><td>TUI, wizard và trợ giúp lệnh chạy được bằng tiếng Việt/Anh; ba test canh chống thoái hoá thầm lặng</td></tr>
+          <tr><td>2026-08-27</td><td><strong>Tầng ngôn ngữ sáng tác <code>internal/lang</code></strong>; bốn điểm hardcode tiếng Trung âm thầm sai được thu về một nguồn</td><td>Viết được tiểu thuyết tiếng Việt/Anh với thước đo cơ học đúng; sách tiếng Trung không đổi một byte</td></tr>
+          <tr><td>2026-07-15</td><td><strong>Pipeline biên dịch ngữ nghĩa <code>/import</code></strong>; quy tắc cắt hard-code nghỉ hưu</td><td>Chất lượng cắt tăng theo năng lực model; đứt là chạy tiếp được, idempotent</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      Tài liệu này được tổng hợp từ mã nguồn và các tài liệu thiết kế trong <code>docs/</code>:
+      <code>architecture.md</code>, <code>engine-arbiter.md</code>, <code>engine-rfc.md</code>, <code>context-management.md</code>,
+      <code>import-pipeline.md</code>, <code>chapter-advance-gate.md</code>, <code>evaluation-system.md</code>,
+      <code>observability.md</code>, <code>prompt-cache-design.md</code>, <code>user-rules-runtime.md</code>, <code>voice-layer.md</code>.
+      Với các quyết định thiết kế đã bị thay thế, xem <code>refactor-flow-driven.md</code> (đã ngừng dùng, chỉ giữ làm hồ sơ tiến hóa).
+    </p>
+    <p class="fmono" style="margin-top:1.25rem">ainovel-cli · MIT · github.com/voocel/ainovel-cli</p>
+  </footer>
+
+  </main>
+</div>
+</div>

@@ -10,6 +10,8 @@ import (
 
 	"github.com/voocel/agentcore/llm"
 	"github.com/voocel/ainovel-cli/internal/errs"
+	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/voocel/ainovel-cli/internal/lang"
 	"github.com/voocel/ainovel-cli/internal/models"
 	"github.com/voocel/ainovel-cli/internal/notify"
 	"github.com/voocel/ainovel-cli/internal/utils"
@@ -58,8 +60,9 @@ type ProviderConfig struct {
 	// presence_penalty，或厂商特有键如 nvidia 开 think 的 chat_template_kwargs）。
 	// OpenAI 兼容端逐字并入请求体（即 extra_body 约定）；值由用户自负其责。
 	ExtraBody map[string]any `json:"extra_body,omitempty"`
-	// Extra 透传给 provider 级配置（litellm.ProviderConfig.Extra），用于 HTTP
+	// Extra 透传给 provider 级配置（agentcore/llm.ProviderConfig.Extra），用于 HTTP
 	// headers、user_agent、anthropic_beta 等客户端/传输层选项。
+	// 注：litellm 本身没有 ProviderConfig 类型，解码 Extra 的是 agentcore 的适配层。
 	Extra map[string]any `json:"extra,omitempty"`
 	// StreamIdleTimeout 流式空闲看门狗：超过该时长收不到任何 chunk 即断流
 	// （Go duration 字符串，如 "900s" / "15m"）。留空默认 5m——云端服务的合理上界；
@@ -164,7 +167,7 @@ func (pc ProviderConfig) ProviderType(name string) (string, error) {
 	if llm.IsProviderRegistered(name) {
 		return name, nil
 	}
-	return "", fmt.Errorf("provider %q 缺少 type，且不在 litellm 已知 provider 列表中: %w", name, errs.ErrConfig)
+	return "", fmt.Errorf(i18n.T("cfg.err.notype"), name, errs.ErrConfig)
 }
 
 // ModelRef 表示一个 provider/model 组合。
@@ -217,6 +220,19 @@ type Config struct {
 	// 创作参数
 	Style string `json:"style,omitempty"`
 
+	// UILanguage 是**界面**语言（zh / vi / en / auto），空 = zh。
+	//
+	// 与 Language 是两件事，刻意分开：一个越南用户完全可能用越南语界面写中文小说。
+	// 绑在一起会逼用户在"看得懂界面"和"写想写的语言"之间二选一。
+	// "auto" 是显式选择加入——不写这个字段的存量用户不会因为 $LANG=en_US
+	// 就突然换成英文界面。解析见 internal/i18n。
+	UILanguage string `json:"ui_language,omitempty"`
+
+	// Language 是本书正文的创作语言（zh / vi / en），空 = zh。
+	// 它决定的是**产出物语言**与随之而来的机械口径（字数怎么数、句子在哪断、
+	// 哪些定长串算 AI 套句），不是界面语言。解析与全部语言事实见 internal/lang。
+	Language string `json:"language,omitempty"`
+
 	// ContextWindow 是旧版全局上下文窗口，保留为模型专属 context_window 之后的
 	// 兼容回退。仅影响压缩阈值，不改变 LLM API 实际请求长度。
 	ContextWindow int `json:"context_window,omitempty"`
@@ -268,7 +284,7 @@ func (c *Config) ValidateBase() error {
 	// 默认 provider 必须有凭证
 	pc, ok := c.Providers[c.Provider]
 	if !ok {
-		return fmt.Errorf("provider %q 未在 providers 中配置凭证；若在 ./.ainovel/config.json 里覆盖了 provider，需同时声明 providers.%s（含 api_key/base_url），不能只改顶层 provider: %w", c.Provider, c.Provider, errs.ErrConfig)
+		return fmt.Errorf(i18n.T("cfg.err.nocreds"), c.Provider, c.Provider, errs.ErrConfig)
 	}
 	if pc.RequiresAPIKey(c.Provider) && pc.APIKey == "" {
 		return fmt.Errorf("provider %q has no api_key configured: %w", c.Provider, errs.ErrConfig)
@@ -423,6 +439,12 @@ func (c *Config) FillDefaults() {
 	if c.Style == "" {
 		c.Style = "default"
 	}
+	if c.Language == "" {
+		c.Language = string(lang.Default)
+	}
+	if c.UILanguage == "" {
+		c.UILanguage = string(i18n.Default)
+	}
 	if c.Budget.Enabled() && c.Budget.WarnRatio == 0 {
 		c.Budget.WarnRatio = 0.8
 	}
@@ -479,13 +501,13 @@ func LogContextWindowChoice(role, model string, window int, source ContextWindow
 	attrs := []any{"module", "context", "role", role, "model", model, "window", window, "source", source}
 	switch source {
 	case CtxWindowModelConfig:
-		slog.Info("上下文窗口（来自 provider 模型配置）", attrs...)
+		slog.Info(i18n.T("cw.model"), attrs...)
 	case CtxWindowDefault:
-		slog.Warn("未识别的模型，使用兜底窗口（可在 providers.<name>.models[].context_window 显式指定）", attrs...)
+		slog.Warn(i18n.T("cw.fallback"), attrs...)
 	case CtxWindowConfig:
-		slog.Info("上下文窗口（来自配置文件 context_window）", attrs...)
+		slog.Info(i18n.T("cw.config"), attrs...)
 	default:
-		slog.Info("上下文窗口", attrs...)
+		slog.Info(i18n.T("cw.registry"), attrs...)
 	}
 }
 
@@ -552,10 +574,21 @@ func (c Config) validateProviderAPI(owner, providerName string, pc ProviderConfi
 	}
 	providerType, err := pc.ProviderType(providerName)
 	if err != nil {
-		return fmt.Errorf("%s provider %q api 配置无法解析协议类型: %w", owner, providerName, err)
+		return fmt.Errorf(i18n.T("cfg.err.apitype.parse"), owner, providerName, err)
 	}
 	if strings.ToLower(strings.TrimSpace(providerType)) != "openai" {
-		return fmt.Errorf("%s provider %q api 仅支持 OpenAI 协议 provider: %w", owner, providerName, errs.ErrConfig)
+		return fmt.Errorf(i18n.T("cfg.err.apitype.openaionly"), owner, providerName, errs.ErrConfig)
 	}
 	return nil
+}
+
+// UILang 解析界面语言。与 Lang 分属两条独立的语言维度，别混用。
+func (c Config) UILang() i18n.Locale {
+	return i18n.Resolve(c.UILanguage)
+}
+
+// Lang 解析本书的创作语言档案。配置缺失或写错一律回落到 lang.Default，
+// 不因配置错字中断创作——代价是语言回到中文，用户第一章就能看见。
+func (c Config) Lang() lang.Profile {
+	return lang.Resolve(c.Language)
 }

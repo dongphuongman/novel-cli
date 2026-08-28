@@ -71,10 +71,10 @@ func (d *DispatchOp) validate() error {
 		return nil
 	}
 	if !slices.Contains(workerNames, d.Agent) {
-		return fmt.Errorf("dispatch.agent 非法: %q", d.Agent)
+		return fmt.Errorf("invalid dispatch.agent: %q", d.Agent)
 	}
 	if strings.TrimSpace(d.Task) == "" {
-		return fmt.Errorf("dispatch.task 不能为空")
+		return fmt.Errorf("dispatch.task cannot be empty")
 	}
 	return nil
 }
@@ -84,7 +84,7 @@ func (d *DispatchOp) validate() error {
 func dispatchSchema(desc string) map[string]any {
 	return llmcontract.Nullable(schema.Object(
 		schema.Property("agent", schema.Enum(desc, workerNames...)).Required(),
-		schema.Property("task", schema.String("交给该 worker 的完整任务描述")).Required(),
+		schema.Property("task", schema.String("The complete task description handed to that worker")).Required(),
 	))
 }
 
@@ -93,7 +93,7 @@ func dispatchSchema(desc string) map[string]any {
 func marshalPayload(v any) (string, error) {
 	data, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
-		return "", fmt.Errorf("arbiter: 事实包序列化失败: %w", err)
+		return "", fmt.Errorf("arbiter: failed to serialize the fact bundle: %w", err)
 	}
 	return string(data), nil
 }

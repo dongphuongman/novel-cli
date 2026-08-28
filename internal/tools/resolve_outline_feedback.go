@@ -20,15 +20,15 @@ func NewResolveOutlineFeedbackTool(store *store.Store) *ResolveOutlineFeedbackTo
 }
 
 func (t *ResolveOutlineFeedbackTool) Name() string  { return "resolve_outline_feedback" }
-func (t *ResolveOutlineFeedbackTool) Label() string { return "确认大纲无需调整" }
+func (t *ResolveOutlineFeedbackTool) Label() string { return "Confirm outline needs no change" }
 func (t *ResolveOutlineFeedbackTool) Description() string {
-	return "确认已审查全部 writer_feedback，且现有后续计划仍然适用。只有无需修改大纲时调用；需要修改时使用 revise_outline 或结构工具。"
+	return "Confirm that all writer_feedback has been reviewed and the existing downstream plan still holds. Call it only when the outline needs no change; when it does, use revise_outline or a structural tool."
 }
 func (t *ResolveOutlineFeedbackTool) ReadOnly(json.RawMessage) bool        { return false }
 func (t *ResolveOutlineFeedbackTool) ConcurrencySafe(json.RawMessage) bool { return false }
 func (t *ResolveOutlineFeedbackTool) StrictSchema() bool                   { return true }
 func (t *ResolveOutlineFeedbackTool) Schema() map[string]any {
-	return schema.Object(schema.Property("reason", schema.String("现有计划仍然适用的理由")).Required())
+	return schema.Object(schema.Property("reason", schema.String("Why the existing plan still holds")).Required())
 }
 
 func (t *ResolveOutlineFeedbackTool) Execute(_ context.Context, args json.RawMessage) (json.RawMessage, error) {
@@ -47,7 +47,7 @@ func (t *ResolveOutlineFeedbackTool) Execute(_ context.Context, args json.RawMes
 		return nil, fmt.Errorf("load outline feedback: %w: %w", errs.ErrStoreRead, err)
 	}
 	if len(feedback) == 0 {
-		return nil, fmt.Errorf("没有待处理的大纲反馈: %w", errs.ErrToolPrecondition)
+		return nil, fmt.Errorf("there is no pending outline feedback: %w", errs.ErrToolPrecondition)
 	}
 	if err := t.store.Outline.SaveOutlineFeedbackResolution(input.Reason, len(feedback)); err != nil {
 		return nil, fmt.Errorf("save outline feedback resolution: %w: %w", errs.ErrStoreWrite, err)

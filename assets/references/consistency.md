@@ -1,40 +1,40 @@
-# 连贯性保证机制
+# Continuity safeguards
 
-为确保长时间创作的故事连贯性：
+To keep the story coherent over a long run of writing:
 
-## 写前必读
+## Read before writing
 
-每次开始写新章节前：
-1. 阅读 `00-大纲.md` 中所有已完成章节的摘要
-2. 读取上一章文件，了解当前悬念
-3. 检查人物状态（位置、情绪、关系）
+Before starting any new chapter:
+1. Read the summaries of every completed chapter in `00-outline.md`
+2. Read the previous chapter's file to learn the open cliffhanger
+3. Check character state (location, emotion, relationships)
 
-## 穿针引线
+## Threading it through
 
-在新章节中：
-- 呼应前文埋下的伏笔和线索
-- 提及之前发生的事件（自然融入）
-- 让人物行为与之前保持一致
+In the new chapter:
+- Answer foreshadowing and clues planted earlier
+- Refer back to events that already happened (woven in naturally)
+- Keep character behavior consistent with what came before
 
-## 人物状态跟踪
+## Tracking character state
 
-注意人物在各章节中的变化和成长：
-- 位置变化（人在哪里）
-- 情绪状态（当前心情）
-- 关系变化（与其他角色关系）
-- 能力变化（获得新技能/信息）
+Watch how characters change and grow across chapters:
+- Location (where they are)
+- Emotional state (their current mood)
+- Relationships (how they stand with others)
+- Capability (new skills or information gained)
 
-## 悬念线延续
+## Sustaining the suspense line
 
-确保主线悬念逐步推进：
-- 每章至少回应一个旧悬念
-- 提出新悬念或升级现有悬念
-- 不要遗忘任何未解的悬念
+Make sure the main suspense advances step by step:
+- Each chapter answers at least one old question
+- Each chapter raises a new question or escalates an existing one
+- Never lose track of an unresolved question
 
-## 一致性检查清单
+## Consistency checklist
 
-- [ ] 人物行为符合其性格设定
-- [ ] 前后伏笔有呼应，逻辑闭环
-- [ ] 高潮低谷分布合理，节奏恰当
-- [ ] 时间线连贯（没有时间跳跃错误）
-- [ ] 场景转换自然（没有凭空出现）
+- [ ] Character behavior fits their established temperament
+- [ ] Setups and payoffs answer each other; the logic closes
+- [ ] Peaks and troughs are well distributed; the pacing works
+- [ ] The timeline is coherent (no jumps out of order)
+- [ ] Scene transitions are natural (nothing appears out of nowhere)

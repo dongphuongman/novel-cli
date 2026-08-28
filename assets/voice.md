@@ -1,14 +1,14 @@
-## 写作标准
+## Writing standards
 
-这些是质量准则，不要逐条生硬打卡。章节首先要自然成立，其次才是检查项齐全。
+These are quality guidelines, not a checklist to tick off line by line. A chapter has to work on its own terms first; only then does completeness of the checks matter.
 
-- 开头尽快建立冲突、悬念、欲望或异常感，少用抽象回顾。
-- 用动作、对话、感官细节推进情节，少用概述和总结。
-- 角色对话要有身份差异、潜台词和行动目的，不要说教。
-- 情绪用身体反应和选择呈现，不直接贴标签。
-- 关系变化要有事件触发，不要一章内从陌生跃迁到绝对信任。
-- 秘密分批释放，不提前解释大纲未要求的重大谜底。
-- 章末钩子可以是危机、选择、情绪余波、关系变化或未完成目标，不必每章都做夸张悬念。
-- **去 AI 味**：写作时规避 `reference_pack.references.anti_ai_tone` 列出的全部模式（结构/用词/描写/对话/节奏五类）。其中可机械枚举的疲劳词、套句阈值见 `working_memory.user_rules.structured`，commit 时强制检查。
-- **句式多样性**：`episodic_memory.style_stats`（如有）是代码对你已写正文的统计——你自己的口头禅镜像。本章主动压低其中的高频项；最常见的固化源是矫正句（"不是…而是…"）、单一计时量词（"几息/数息"）和同型明喻连用。章末收束形式（短句斩断/对话余音/场景余像/悬念提问）与近期章节轮换，开篇避免每章都用"夜里/清晨/醒来"式时间起手。
-- **前情不复述**：`episodic_memory` 中的摘要、伏笔、状态是已写入正文的备忘，用于对照衔接，不是本章待写素材；上一章已交代的信息，新章只在剧情需要时以新视角触及，禁止前情提要式重写（跨章逐字复读会被 style_stats 的 repeated_sentences 记录在案）。
+- Establish conflict, suspense, desire or a sense of wrongness as early as possible; go light on abstract recap.
+- Move the plot with action, dialogue and sensory detail; go light on summary and exposition.
+- Give dialogue differences of station, subtext and an aim behind it; never sermonize.
+- Render emotion through physical reaction and choice rather than labelling it outright.
+- Changes in a relationship need a triggering event; nobody goes from stranger to absolute trust inside a single chapter.
+- Release secrets in stages; do not explain a major revelation ahead of what the outline calls for.
+- A chapter-ending hook can be a crisis, a choice, emotional aftershock, a shift in a relationship or an unfinished goal — not every chapter needs an outsized cliffhanger.
+- **Strip the AI tone**: while writing, avoid every pattern listed in `reference_pack.references.anti_ai_tone` (the five categories: structure, diction, description, dialogue, pacing). The mechanically enumerable fatigue words and stock-phrase thresholds are in `working_memory.user_rules.structured` and are enforced at commit time.
+- **Sentence variety**: `episodic_memory.style_stats` (when present) is the code's statistics over prose you have already written — a mirror of your own verbal tics. Actively push down the high-frequency items in it this chapter; the most common sources of ossification are the corrective construction ("not X, but Y"), a single repeated time marker ("a heartbeat later", "a moment later") and same-shaped similes stacked back to back. Rotate the closing move of the chapter (a short sentence that cuts off, a line of dialogue left ringing, an afterimage of the scene, an open question) against recent chapters, and avoid opening every chapter on a time marker like "that night", "at dawn" or "he woke".
+- **No recap**: the summaries, foreshadowing and states in `episodic_memory` are a memo of what is already on the page, there for continuity checking — they are not material to be written again. Information already delivered in the previous chapter should be touched in a new chapter only when the plot needs it and only from a new angle; "previously on…" rewrites are forbidden (verbatim repetition across chapters is recorded by style_stats as repeated_sentences).

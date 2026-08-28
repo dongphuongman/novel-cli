@@ -8,6 +8,8 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestDraftChapterRejectsUnfinishedPendingRewrite(t *testing.T) {
@@ -31,7 +33,7 @@ func TestDraftChapterRejectsUnfinishedPendingRewrite(t *testing.T) {
 		t.Fatalf("Save corrupt progress: %v", err)
 	}
 
-	tool := NewDraftChapterTool(s)
+	tool := NewDraftChapterTool(s, lang.Resolve("zh"))
 	args, err := json.Marshal(map[string]any{
 		"chapter": 65,
 		"content": "错误写入未来章节。",
@@ -83,7 +85,7 @@ func TestDraftChapterRejectsUnexpandedLayeredChapter(t *testing.T) {
 		t.Fatalf("SetLayered: %v", err)
 	}
 
-	tool := NewDraftChapterTool(s)
+	tool := NewDraftChapterTool(s, lang.Resolve("zh"))
 	args, err := json.Marshal(map[string]any{
 		"chapter": 3,
 		"content": "越界正文。",

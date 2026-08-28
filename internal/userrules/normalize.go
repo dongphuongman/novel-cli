@@ -29,19 +29,19 @@ const normalizeMaxTokens = 8192
 // （strict 模式禁止动态 key 的 map），两种模式共用同一 DTO 约定。
 var normalizeContract = llmcontract.Contract{
 	Name:        "userrules_normalize",
-	Description: "把用户自然语言写作规则归一化为结构化字段",
+	Description: "Normalize the user's natural-language writing rules into structured fields",
 	Schema: schema.Object(
 		schema.Property("structured", schema.Object(
-			schema.Property("genre", schema.String("题材;无则空字符串")).Required(),
-			schema.Property("forbidden_chars", schema.Array("禁止出现的字符", schema.String("字符"))).Required(),
-			schema.Property("forbidden_phrases", schema.Array("禁止出现的短语(字面精确匹配)", schema.String("短语"))).Required(),
-			schema.Property("fatigue_words", schema.Array("疲劳词及每章出现上限", schema.Object(
-				schema.Property("word", schema.String("疲劳词")).Required(),
-				schema.Property("max_per_chapter", schema.Int("每章出现次数上限(正整数)")).Required(),
+			schema.Property("genre", schema.String("Genre; an empty string when there is none")).Required(),
+			schema.Property("forbidden_chars", schema.Array("Characters that must not appear", schema.String("Character"))).Required(),
+			schema.Property("forbidden_phrases", schema.Array("Phrases that must not appear (exact literal match)", schema.String("Phrase"))).Required(),
+			schema.Property("fatigue_words", schema.Array("Fatigue words and their per-chapter limit", schema.Object(
+				schema.Property("word", schema.String("Fatigue word")).Required(),
+				schema.Property("max_per_chapter", schema.Int("Maximum occurrences per chapter (a positive integer)")).Required(),
 			))).Required(),
 		)).Required(),
-		schema.Property("preferences", schema.String("自然语言风格/人物/审美偏好;无则空字符串")).Required(),
-		schema.Property("uncertain", schema.Array("故意未提升到 structured 的项+原因", schema.String("条目"))).Required(),
+		schema.Property("preferences", schema.String("Natural-language preferences on style, characters and craft; an empty string when there are none")).Required(),
+		schema.Property("uncertain", schema.Array("Items deliberately not promoted to structured, with the reason", schema.String("Item"))).Required(),
 	),
 }
 
@@ -69,7 +69,7 @@ func (n *Normalizer) Normalize(ctx context.Context, source, text string) (rules.
 		return rules.Candidate{Source: source}, nil
 	}
 	if n == nil || n.model == nil {
-		return rules.Candidate{}, fmt.Errorf("归一化模型未配置")
+		return rules.Candidate{}, fmt.Errorf("no normalization model configured")
 	}
 
 	out, err := llmcontract.Execute(ctx, n.model, llmcontract.Request[normalizerOutput]{
@@ -96,7 +96,7 @@ func (n *Normalizer) Normalize(ctx context.Context, source, text string) (rules.
 		},
 	})
 	if err != nil {
-		return rules.Candidate{}, fmt.Errorf("归一化失败: %w", err)
+		return rules.Candidate{}, fmt.Errorf("normalization failed: %w", err)
 	}
 	return out.toCandidate(source)
 }
@@ -107,7 +107,7 @@ func degraded(source, text string) rules.Candidate {
 	return rules.Candidate{
 		Source:      source,
 		Preferences: text,
-		Uncertain:   []string{source + "：归一化失败，已按原文作为风格偏好处理（未提炼机械规则）"},
+		Uncertain:   []string{source + ": normalization failed; the text was kept verbatim as a style preference (no mechanical rules were derived)"},
 		Degraded:    true,
 	}
 }
@@ -139,10 +139,10 @@ func (o normalizerOutput) toCandidate(source string) (rules.Candidate, error) {
 	for _, e := range o.Structured.FatigueWords {
 		word := strings.TrimSpace(e.Word)
 		if word == "" {
-			return rules.Candidate{}, fmt.Errorf("fatigue_words 含空词条目")
+			return rules.Candidate{}, fmt.Errorf("fatigue_words contains an empty entry")
 		}
 		if e.MaxPerChapter < 1 {
-			return rules.Candidate{}, fmt.Errorf("fatigue_words[%q].max_per_chapter 必须是正整数, got %d", word, e.MaxPerChapter)
+			return rules.Candidate{}, fmt.Errorf("fatigue_words[%q].max_per_chapter must be a positive integer, got %d", word, e.MaxPerChapter)
 		}
 		if fatigue == nil {
 			fatigue = make(map[string]int, len(o.Structured.FatigueWords))

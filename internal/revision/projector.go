@@ -4,18 +4,26 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/voocel/ainovel-cli/internal/chapterfacts"
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/rules"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // Projector 从章节记录重建所有章节级派生状态。
-type Projector struct{ store *store.Store }
+type Projector struct {
+	store *store.Store
+	// lp 决定重算字数与机械基线黑名单的语言口径。必须与写入时一致，
+	// 否则 /sync 之后 TotalWordCount 会与 commit 时的口径打架。
+	lp lang.Profile
+}
 
-func NewProjector(st *store.Store) *Projector { return &Projector{store: st} }
+func NewProjector(st *store.Store, lp lang.Profile) *Projector {
+	return &Projector{store: st, lp: lp}
+}
 
 // ValidateRecords 校验完整章节记录集能否被确定性重放，不写入任何投影。
 func ValidateRecords(records []domain.ChapterRecord) error {
@@ -206,7 +214,7 @@ func (p *Projector) updateProgress(records []domain.ChapterRecord) error {
 	progress.HookHistory = nil
 	progress.StrandHistory = nil
 	for _, record := range records {
-		count := utf8.RuneCountInString(record.Content)
+		count := p.lp.CountWords(record.Content)
 		progress.ChapterWordCounts[record.Chapter] = count
 		progress.TotalWordCount += count
 		setChapterHistory(&progress.HookHistory, record.Chapter, record.Facts.HookType)
@@ -219,7 +227,7 @@ func (p *Projector) updateProgress(records []domain.ChapterRecord) error {
 }
 
 func (p *Projector) refreshRuleViolations(records []domain.ChapterRecord) error {
-	structured := rules.SystemDefaults().Structured
+	structured := rules.SystemDefaults(p.lp).Structured
 	if snapshot, err := p.store.UserRules.Load(); err != nil {
 		return fmt.Errorf("读取用户规则: %w", err)
 	} else if snapshot != nil {

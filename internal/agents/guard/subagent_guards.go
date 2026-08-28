@@ -136,11 +136,11 @@ func writerBlockMsg(seen map[string]struct{}) string {
 	_, hasCheck := seen["consistency_check"]
 	switch {
 	case !hasDraft && !hasEdit:
-		return "禁止结束：本轮尚未落盘任何正文。请按 plan_chapter → draft_chapter → check_consistency → commit_chapter 的顺序完成本章；正文只输出在聊天里等于丢失，必须通过工具落盘并提交。"
+		return "You may not finish: no prose has been persisted this round. Complete this chapter in the order plan_chapter → draft_chapter → check_consistency → commit_chapter. Prose printed in chat is lost; it must be persisted through the tools and committed."
 	case !hasCheck:
-		return "禁止结束：正文已落盘但未收尾。请先调 check_consistency 核对一致性，再调 commit_chapter 提交本章。draft_chapter / edit_chapter 只是保存草稿，不算完成。"
+		return "You may not finish: the prose is persisted but the chapter is not closed out. Call check_consistency first, then commit_chapter to submit this chapter. draft_chapter / edit_chapter only save a draft; that is not completion."
 	default:
-		return "禁止结束：本章只差 commit_chapter 提交。请立即调用 commit_chapter；若它返回错误，先按错误信息处理（核对章节号、按提示补齐前置动作）再重试提交，不要在未提交的状态下结束。"
+		return "You may not finish: this chapter only needs commit_chapter. Call commit_chapter now. If it returns an error, act on the error first (check the chapter number, perform the prerequisite the message names) and retry the submission. Do not finish while it is uncommitted."
 	}
 }
 
@@ -151,7 +151,7 @@ func NewArchitectStopGuard(st *store.Store, onBlock BlockHook) agentcore.StopGua
 			"book", "premise", "outline", "layered_outline", "characters", "world_rules",
 			"foundation_audit", "expand_arc", "append_volume", "update_compass", "complete_book", "revise_outline", "resolve_outline_feedback",
 		},
-		staticBlockMsg("你必须调用 save_book、save_foundation、revise_outline、resolve_outline_feedback 或 audit_foundation 将产出落盘后才能结束。只输出 Markdown/JSON 文字等于丢失。"),
+		staticBlockMsg("You may not finish until you have persisted your output through save_book, save_foundation, revise_outline, resolve_outline_feedback or audit_foundation. Printing Markdown/JSON as text means it is lost."),
 		onBlock,
 	)
 }
@@ -166,16 +166,16 @@ func NewArchitectStopGuard(st *store.Store, onBlock BlockHook) agentcore.StopGua
 // 否决该次退出并催促，直到对应摘要落盘。
 func NewEditorStopGuard(st *store.Store, task string, onBlock BlockHook) agentcore.StopGuard {
 	switch {
-	case strings.Contains(task, "save_volume_summary") || strings.Contains(task, "卷摘要"):
+	case strings.Contains(task, "save_volume_summary") || strings.Contains(task, "volume summary"):
 		return newCheckpointDeltaGuard(st, "editor", []string{"volume_summary"},
-			staticBlockMsg("本次任务是生成卷摘要：你必须调用 save_volume_summary 落盘后才能结束，save_review 复核不算完成。"), onBlock)
-	case strings.Contains(task, "save_arc_summary") || strings.Contains(task, "弧摘要"):
+			staticBlockMsg("This task is to produce the volume summary: you may not finish until save_volume_summary has persisted it. A save_review pass does not count as completion."), onBlock)
+	case strings.Contains(task, "save_arc_summary") || strings.Contains(task, "arc summary"):
 		return newCheckpointDeltaGuard(st, "editor", []string{"arc_summary"},
-			staticBlockMsg("本次任务是生成弧摘要：你必须调用 save_arc_summary 落盘后才能结束，save_review 复核不算完成。"), onBlock)
+			staticBlockMsg("This task is to produce the arc summary: you may not finish until save_arc_summary has persisted it. A save_review pass does not count as completion."), onBlock)
 	default:
 		// 评审或临时任务：任一审阅/摘要落盘即可（保持既有宽松行为）。
 		return newCheckpointDeltaGuard(st, "editor",
 			[]string{"review", "arc_summary", "volume_summary"},
-			staticBlockMsg("你必须调用 save_review / save_arc_summary / save_volume_summary 之一落盘结果后才能结束。"), onBlock)
+			staticBlockMsg("You may not finish until you have persisted a result through one of save_review / save_arc_summary / save_volume_summary."), onBlock)
 	}
 }

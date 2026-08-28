@@ -14,6 +14,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/llmcontract"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestAnalysisContractIsStrictReady(t *testing.T) {
@@ -165,7 +167,7 @@ func TestProjectorRebuildsWorldStateFromChapterRecords(t *testing.T) {
 			RelationshipChanges: []domain.RelationshipEntry{{CharacterA: "店主", CharacterB: "林墨", Relation: "决裂"}},
 		}, domain.StyleDelta{}, now.Add(time.Minute)),
 	}
-	if err := NewProjector(st).Apply(records); err != nil {
+	if err := NewProjector(st, lang.Resolve("zh")).Apply(records); err != nil {
 		t.Fatal(err)
 	}
 	timeline, _ := st.World.LoadTimeline()
@@ -209,7 +211,7 @@ func TestServiceAcceptsRevisionAndRefreshesFacts(t *testing.T) {
   "downstream_issues":[]
 }`}
 	index := &recordingStyleIndex{}
-	result, err := NewService(st, model, "分析用户修订", index).Sync(context.Background())
+	result, err := NewService(st, model, "分析用户修订", index, lang.Resolve("zh")).Sync(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -257,7 +259,7 @@ func TestServiceResumesProjectionWithoutCallingModel(t *testing.T) {
 	if err := st.Revisions.SavePending(pending); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := NewService(st, nil, "", nil).Sync(context.Background()); err != nil {
+	if _, err := NewService(st, nil, "", nil, lang.Resolve("zh")).Sync(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 	summary, _ := st.Summaries.LoadSummary(1)
@@ -297,7 +299,7 @@ func TestServiceResumesPreparedAfterRecordWasAlreadyWritten(t *testing.T) {
 	if err := st.Revisions.SavePending(pending); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := NewService(st, nil, "", nil).Sync(context.Background()); err != nil {
+	if _, err := NewService(st, nil, "", nil, lang.Resolve("zh")).Sync(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 	summary, _ := st.Summaries.LoadSummary(1)
@@ -341,7 +343,7 @@ func TestServiceResumesPartiallyWrittenPreparedBatch(t *testing.T) {
 	if err := st.Revisions.SavePending(pending); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := NewService(st, nil, "", nil).Sync(context.Background()); err != nil {
+	if _, err := NewService(st, nil, "", nil, lang.Resolve("zh")).Sync(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 	for chapter := 1; chapter <= 2; chapter++ {
@@ -365,7 +367,7 @@ func TestProjectorFillsCastRoleFromLaterChapter(t *testing.T) {
 			CastIntros: []domain.CastIntro{{Name: "店主", BriefRole: "客栈店主"}},
 		}, domain.StyleDelta{}, now.Add(time.Minute)),
 	}
-	if err := NewProjector(st).Apply(records); err != nil {
+	if err := NewProjector(st, lang.Resolve("zh")).Apply(records); err != nil {
 		t.Fatal(err)
 	}
 	cast, err := st.Cast.Load()
@@ -399,7 +401,7 @@ func TestServiceRejectsAndClearsStalePreparedAnalysis(t *testing.T) {
 	if err := os.WriteFile(path, []byte("第二次修改"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := NewService(st, nil, "", nil).Sync(context.Background()); err == nil {
+	if _, err := NewService(st, nil, "", nil, lang.Resolve("zh")).Sync(context.Background()); err == nil {
 		t.Fatal("分析后再次修改正文应拒绝应用")
 	}
 	if pending, _ := st.Revisions.LoadPending(); pending != nil {

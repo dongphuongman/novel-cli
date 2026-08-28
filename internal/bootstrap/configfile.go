@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
 )
 
 const configDirName = ".ainovel"
@@ -87,7 +89,7 @@ func LoadConfig() (Config, error) {
 	//    "配了不生效"无从排查（issue #37）。
 	project, found, err := loadOptionalJSON(projectConfigPath())
 	if err != nil {
-		return cfg, fmt.Errorf("项目级配置 ./.ainovel/config.json 解析失败（请检查 JSON 语法）: %w", err)
+		return cfg, fmt.Errorf(i18n.T("cfg.err.projectfile"), err)
 	}
 	if found {
 		cfg = mergeConfig(cfg, project)
@@ -145,6 +147,12 @@ func mergeConfig(base, overlay Config) Config {
 	}
 	if overlay.Style != "" {
 		base.Style = overlay.Style
+	}
+	if overlay.Language != "" {
+		base.Language = overlay.Language
+	}
+	if overlay.UILanguage != "" {
+		base.UILanguage = overlay.UILanguage
 	}
 	if overlay.ContextWindow > 0 {
 		base.ContextWindow = overlay.ContextWindow
@@ -375,4 +383,40 @@ func SaveConfig(path string, cfg Config) error {
 	}
 	committed = true
 	return nil
+}
+
+// ProbeUILanguage 尽最大努力提前判定界面语言，供**读配置本身出错时**使用。
+//
+// 存在的理由是一个时序死角：LoadConfig 自己就会报错（JSON 语法坏、凭证缺失），
+// 而 i18n.Use 要等配置读完才轮得到调用——不做这一步，用户只会看到一句读不懂的
+// 中文错误，恰恰是最需要读懂的时刻。
+//
+// 三条纪律：
+//   - **只读 ui_language 一个字段**：其余字段的合法性不在这里判断，那是 LoadConfig 的职责。
+//   - **永不失败**：任何读取/解析错误都退回 i18n.Default。探测语言绝不能成为新的启动阻塞点。
+//   - **与 LoadConfig 同一优先级**：项目级覆盖全局，与真正加载时的语义一致，
+//     否则错误信息的语言会和后续界面对不上。
+//
+// 若坏掉的恰好是承载 ui_language 的那个文件，就只能回落默认语言——诚实的下限。
+func ProbeUILanguage() i18n.Locale {
+	raw := ""
+	for _, p := range []string{DefaultConfigPath(), projectConfigPath()} {
+		if p == "" {
+			continue
+		}
+		data, err := os.ReadFile(p)
+		if err != nil {
+			continue
+		}
+		var probe struct {
+			UILanguage string `json:"ui_language"`
+		}
+		if json.Unmarshal(stripJSONComments(data), &probe) != nil {
+			continue // 坏文件在这里不是错误，只是没得可读
+		}
+		if probe.UILanguage != "" {
+			raw = probe.UILanguage
+		}
+	}
+	return i18n.Resolve(raw)
 }

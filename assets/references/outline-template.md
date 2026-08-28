@@ -1,92 +1,92 @@
-# 大纲规划模板
+# Outline planning template
 
-本模板的作用不是把所有作品都压成固定长度，而是帮助先判断作品级别，再选择大纲粒度。
+The point of this template is not to force every work into a fixed length, but to help you judge the work's tier first and then choose the outline granularity.
 
-## 第一步：先判断作品长度级别
+## Step 1: judge the length tier
 
-### 短篇 / 单卷故事
+### Short form / single-volume story
 
-- 适用：单冲突、单目标、角色少、结局集中
-- 参考长度：8-25 章
-- 建议格式：扁平 `outline`
+- Suits: a single conflict, a single goal, a small cast, a concentrated ending
+- Reference length: 8–25 chapters
+- Recommended format: flat `outline`
 
-### 中篇 / 多阶段故事
+### Mid-length / multi-stage story
 
-- 适用：有阶段升级、数条支线、人物关系会变化
-- 参考长度：25-60 章
-- 建议格式：扁平 `outline` 或轻量分层
+- Suits: staged escalation, several subplots, relationships that change
+- Reference length: 25–60 chapters
+- Recommended format: flat `outline`, or lightly layered
 
-### 长篇连载 / 网文型故事
+### Long-form serial / web-fiction style
 
-- 适用：题材天然具备持续升级空间、长期关系张力、多个阶段目标、可扩展世界、长期谜团或长期成长线
-- 参考长度：80-200+ 章
-- 建议格式：分层 `layered_outline`
+- Suits: a genre with natural room for continuous escalation, sustained relational tension, several stage goals, an expandable world, a long-running mystery or a long growth line
+- Reference length: 80–200+ chapters
+- Recommended format: layered `layered_outline`
 
-## 第二步：判断是否必须使用分层大纲
+## Step 2: decide whether a layered outline is required
 
-只要满足下面任意 2 条，就优先使用 `layered_outline`：
+If any 2 of the following hold, prefer `layered_outline`:
 
-- 世界观需要逐步展开，而不是一次性讲完
-- 主角成长不是一次跃迁，而是多阶段升级
-- 人物关系会在多个阶段持续变化
-- 中期和后期存在不同类型的主矛盾
-- 需要多次地图/势力/身份/目标切换
-- 题材明显更像连载型商业小说，而不是单卷故事
+- The world needs to unfold gradually rather than be explained all at once
+- The protagonist's growth is not a single leap but a multi-stage escalation
+- Relationships keep changing across several stages
+- The middle and late book have different types of central conflict
+- The story needs repeated shifts of map, faction, identity or goal
+- The genre clearly reads as commercial serial fiction rather than a single-volume story
 
-## 第三步：长篇时不要直接做“全书章节流水账”
+## Step 3: for long form, do not go straight to a chapter-by-chapter ledger of the whole book
 
-长篇规划顺序建议是：
+The recommended planning order for long form:
 
-1. 作品卖点与差异化
-2. 长期故事引擎
-3. 卷级主题与升级
-4. 弧级目标与阶段转折
-5. 章节级事件与钩子
+1. What the book sells, and what differentiates it
+2. The long-term story engines
+3. Volume-level themes and escalation
+4. Arc-level goals and stage turns
+5. Chapter-level events and hooks
 
-错误做法：
+What not to do:
 
-- 先写 20 章梗概，再强行拉长
-- 每卷都重复“遇敌-变强-换地图”
-- 只有主线升级，没有关系升级
-- 前期把所有大秘密透支完，中后期只能重复套路
+- Write a 20-chapter synopsis first and then stretch it
+- Repeat "meet enemy — get stronger — change map" in every volume
+- Escalate only the main line and never the relationships
+- Spend all the big secrets early and be left repeating formulas in the middle and late book
 
-## 扁平大纲模板（短/中篇）
+## Flat outline template (short / mid-length)
 
 ```json
 [
   {
     "chapter": 1,
-    "title": "章节标题",
-    "core_event": "本章核心事件",
-    "hook": "章末钩子",
-    "scenes": ["场景1", "场景2", "场景3"]
+    "title": "chapter title",
+    "core_event": "the chapter's core event",
+    "hook": "the chapter-ending hook",
+    "scenes": ["scene 1", "scene 2", "scene 3"]
   }
 ]
 ```
 
-## 分层大纲模板（长篇 - 卷弧双层滚动展开）
+## Layered outline template (long form — two-tier rolling expansion of volumes and arcs)
 
-初始规划采用双层滚动：前 2 卷有弧骨架，其余卷为骨架卷；第一弧有详细章节。
+Initial planning uses a two-tier roll: the first 2 volumes have an arc skeleton, the rest are skeleton volumes; the first arc has detailed chapters.
 
 ```json
 [
   {
     "index": 1,
-    "title": "第一卷标题",
-    "theme": "这一卷新增的核心矛盾/主题",
+    "title": "volume one title",
+    "theme": "the central conflict / theme this volume adds",
     "arcs": [
       {
         "index": 1,
-        "title": "第一弧（已展开）",
-        "goal": "局部目标、阻力和转折",
+        "title": "arc one (expanded)",
+        "goal": "the local goal, the resistance and the turn",
         "chapters": [
-          {"chapter": 1, "title": "章节标题", "core_event": "核心事件", "hook": "章末钩子", "scenes": ["场景1", "场景2"]}
+          {"chapter": 1, "title": "chapter title", "core_event": "core event", "hook": "chapter-ending hook", "scenes": ["scene 1", "scene 2"]}
         ]
       },
       {
         "index": 2,
-        "title": "第二弧（骨架弧）",
-        "goal": "这一弧的目标概述",
+        "title": "arc two (skeleton)",
+        "goal": "an outline of this arc's goal",
         "estimated_chapters": 12,
         "chapters": []
       }
@@ -94,48 +94,48 @@
   },
   {
     "index": 2,
-    "title": "第二卷标题",
-    "theme": "第二卷主题",
+    "title": "volume two title",
+    "theme": "volume two's theme",
     "arcs": [
-      {"index": 1, "title": "弧标题", "goal": "弧目标", "estimated_chapters": 15, "chapters": []},
-      {"index": 2, "title": "弧标题", "goal": "弧目标", "estimated_chapters": 10, "chapters": []}
+      {"index": 1, "title": "arc title", "goal": "arc goal", "estimated_chapters": 15, "chapters": []},
+      {"index": 2, "title": "arc title", "goal": "arc goal", "estimated_chapters": 10, "chapters": []}
     ]
   },
   {
     "index": 3,
-    "title": "第三卷标题（骨架卷）",
-    "theme": "第三卷主题方向",
+    "title": "volume three title (skeleton volume)",
+    "theme": "volume three's thematic direction",
     "estimated_chapters": 60,
     "arcs": []
   }
 ]
 ```
 
-- 弧级展开：写作推进到骨架弧时，Architect 展开该弧的详细章节
-- 卷级展开：写作推进到骨架卷时，Architect 展开该卷的弧结构 + 首弧章节
+- Arc-level expansion: when the writing reaches a skeleton arc, the architect expands that arc's detailed chapters
+- Volume-level expansion: when the writing reaches a skeleton volume, the architect expands that volume's arc structure plus the first arc's chapters
 
-## 长篇卷级检查清单
+## Long-form volume checklist
 
-每一卷都要回答：
+Every volume must answer:
 
-- 这一卷新增了什么世界信息？
-- 这一卷升级了什么核心矛盾？
-- 这一卷让主角得到什么，也失去什么？
-- 这一卷如何改变主要人物关系？
-- 这一卷结束后，故事为什么必须进入下一卷？
+- What new information about the world does this volume add?
+- Which central conflict does this volume escalate?
+- What does the protagonist gain in this volume, and what do they lose?
+- How does this volume change the main relationships?
+- Once this volume ends, why must the story move into the next one?
 
-## 长篇弧级检查清单
+## Long-form arc checklist
 
-每一弧都要回答：
+Every arc must answer:
 
-- 这条弧的明确目标是什么？
-- 阻力来自谁、什么规则、什么代价？
-- 转折点是什么？
-- 这条弧结束后，哪些状态发生了不可逆变化？
+- What is this arc's explicit goal?
+- Where does the resistance come from — who, which rule, what cost?
+- What is the turning point?
+- Once this arc ends, which states have changed irreversibly?
 
-## 章节级检查清单
+## Chapter checklist
 
-- 每章必须服务于所在弧的目标
-- 每章必须包含一个不可删除的事件推进
-- 钩子要多样化，不要全靠“发现秘密”一种模式
-- 前期章节不能只是在“介绍世界”，必须同步推进人物和冲突
+- Every chapter must serve the goal of the arc it belongs to
+- Every chapter must contain one advance that cannot be deleted
+- Vary the hooks; do not lean on "a secret is discovered" as the only pattern
+- Early chapters cannot merely "introduce the world" — they must advance character and conflict at the same time

@@ -137,17 +137,17 @@ func NewChapterMemoryPolicy(progress *Progress, profile ContextProfile, currentO
 		SummaryWindow:       profile.SummaryWindow,
 		TimelineWindow:      profile.TimelineWindow,
 		LayeredSummaries:    profile.Layered,
-		WorkingRefresh:      "每次按章节加载时刷新",
-		EpisodicRefresh:     "随章节提交、评审和长篇状态变更刷新",
+		WorkingRefresh:      "refreshed on every per-chapter load",
+		EpisodicRefresh:     "refreshed on chapter commit, review, and long-form state changes",
 		PreviousTailChars:   800,
 		ChapterPlanEnabled:  true,
 		CurrentOutlineBound: currentOutlineBound,
 		ReadOnlyThreshold:   5,
 	}
 	if profile.Layered {
-		policy.SummaryStrategy = "卷摘要+弧摘要+最近章节摘要"
+		policy.SummaryStrategy = "volume summaries + arc summaries + recent chapter summaries"
 	} else {
-		policy.SummaryStrategy = "最近章节摘要"
+		policy.SummaryStrategy = "recent chapter summaries"
 	}
 	if progress != nil {
 		if progress.TotalChapters > 30 {
@@ -176,10 +176,10 @@ func NewChapterMemoryPolicy(progress *Progress, profile ContextProfile, currentO
 func NewArchitectMemoryPolicy() MemoryPolicy {
 	return MemoryPolicy{
 		Mode:               "architect",
-		PlanningRefresh:    "卷弧结构、指南针或摘要更新时刷新",
-		FoundationRefresh:  "角色、伏笔、设定变更时刷新",
-		PlanningFocus:      "分层大纲、指南针、卷摘要",
-		FoundationFocus:    "角色设定、角色快照、伏笔台账",
+		PlanningRefresh:    "refreshed when the volume/arc structure, the compass, or a summary changes",
+		FoundationRefresh:  "refreshed when characters, foreshadowing, or the setting change",
+		PlanningFocus:      "layered outline, compass, volume summaries",
+		FoundationFocus:    "character setup, character snapshots, foreshadowing ledger",
 		HandoffPreferred:   true,
 		ChapterPlanEnabled: false,
 		ReadOnlyThreshold:  4,
@@ -221,7 +221,7 @@ type UnsupportedAdvanceModeError struct {
 }
 
 func (e *UnsupportedAdvanceModeError) Error() string {
-	return fmt.Sprintf("不支持的章节推进模式 %q，请使用创建该项目的新版 ainovel", e.Mode)
+	return fmt.Sprintf("unsupported chapter advance mode %q; use the newer ainovel version that created this project", e.Mode)
 }
 
 // AdvanceHoldAfter 是一次性暂停的确定性触发条件。
@@ -248,17 +248,17 @@ type AdvanceHold struct {
 // Validate 校验一次性暂停意图自身的结构约束。
 func (h AdvanceHold) Validate() error {
 	if !h.After.Valid() {
-		return fmt.Errorf("不支持的一次性暂停条件 %q", h.After)
+		return fmt.Errorf("unsupported one-shot hold condition %q", h.After)
 	}
 	if h.After == AdvanceHoldAtChapter {
 		if h.TargetChapter <= 0 {
-			return fmt.Errorf("目标章节必须大于 0")
+			return fmt.Errorf("the target chapter must be greater than 0")
 		}
 	} else if h.TargetChapter != 0 {
-		return fmt.Errorf("暂停条件 %q 不能设置目标章节", h.After)
+		return fmt.Errorf("hold condition %q cannot carry a target chapter", h.After)
 	}
 	if strings.TrimSpace(h.Reason) == "" {
-		return fmt.Errorf("一次性暂停原因不能为空")
+		return fmt.Errorf("the reason for a one-shot hold cannot be empty")
 	}
 	return nil
 }

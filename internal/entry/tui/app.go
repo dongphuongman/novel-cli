@@ -10,6 +10,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/bootstrap"
 	"github.com/voocel/ainovel-cli/internal/host"
 	buildversion "github.com/voocel/ainovel-cli/internal/version"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
 )
 
 // Run 启动 TUI。
@@ -30,7 +32,7 @@ func Run(cfg bootstrap.Config, bundle assets.Bundle, build buildversion.Info) er
 
 	m := NewModel(rt, build.Version)
 	if logErr := rt.FileLogError(); logErr != nil {
-		logWarning := fmt.Errorf("文件日志不可用，已继续使用终端日志：%w", logErr)
+		logWarning := fmt.Errorf(i18n.T("app.filelog.unavailable"), logErr)
 		m.err = logWarning
 		m.applyEvent(host.Event{
 			Time: time.Now(), Category: "SYSTEM", Level: "warn",

@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/voocel/ainovel-cli/internal/domain"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestRenderEPUB_StructuralInvariants(t *testing.T) {
@@ -20,6 +22,7 @@ func TestRenderEPUB_StructuralInvariants(t *testing.T) {
 			1: "# 第 1 章 雨夜归人\n\n他望着窗外。\n\n第二段。",
 			2: "她推开门。",
 		},
+		lang.Resolve("zh"),
 	)
 	if err != nil {
 		t.Fatalf("renderEPUB: %v", err)
@@ -135,6 +138,7 @@ func TestRenderEPUB_HTMLEscape(t *testing.T) {
 		chapterTitleIndex{1: "C \"D\""},
 		nil,
 		map[int]string{1: "正文 < & > 内容。"},
+		lang.Resolve("zh"),
 	)
 	if err != nil {
 		t.Fatalf("renderEPUB: %v", err)
@@ -174,6 +178,7 @@ func TestRenderEPUB_LayeredVolume(t *testing.T) {
 		chapterTitleIndex{1: "A", 2: "B"},
 		locs,
 		map[int]string{1: "正文一。", 2: "正文二。"},
+		lang.Resolve("zh"),
 	)
 	if err != nil {
 		t.Fatalf("renderEPUB: %v", err)
@@ -207,6 +212,7 @@ func TestRenderEPUB_NoCoverWhenNoTitle(t *testing.T) {
 		chapterTitleIndex{1: "唯一一章"},
 		nil,
 		map[int]string{1: "正文。"},
+		lang.Resolve("zh"),
 	)
 	if err != nil {
 		t.Fatalf("renderEPUB: %v", err)

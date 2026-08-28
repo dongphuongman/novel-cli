@@ -53,7 +53,7 @@ func (r *contextReads) warn(scope string, err error) {
 	if err == nil || os.IsNotExist(err) {
 		return
 	}
-	msg := fmt.Sprintf("%s 读取失败: %v", scope, err)
+	msg := fmt.Sprintf("%s failed to load: %v", scope, err)
 	if r.seen == nil {
 		r.seen = make(map[string]struct{})
 	}
@@ -68,7 +68,7 @@ func (r *contextReads) require(scope string, err error) {
 	if r.err != nil || err == nil || os.IsNotExist(err) || errors.Is(err, store.ErrOutlineChapterNotFound) {
 		return
 	}
-	r.err = fmt.Errorf("%s 读取失败: %w", scope, err)
+	r.err = fmt.Errorf("%s failed to load: %w", scope, err)
 }
 
 // NewContextTool 创建上下文工具。styleStats 必须与 commit_chapter 共享，
@@ -88,11 +88,11 @@ func NewContextTool(
 
 func (t *ContextTool) Name() string { return "novel_context" }
 func (t *ContextTool) Description() string {
-	return "获取小说当前状态和创作上下文。" +
-		"不传 chapter：返回 progress_status（phase/flow/next_chapter/pending_rewrites 等进度字段）+ 基础设定，用于判断下一步该做什么。" +
-		"传 chapter=N：额外返回该章的前情摘要、伏笔、角色状态、风格规则等写作上下文"
+	return "Get the novel's current state and writing context. " +
+		"Without chapter: returns progress_status (phase/flow/next_chapter/pending_rewrites and other progress fields) plus the foundation, so you can decide what to do next. " +
+		"With chapter=N: additionally returns that chapter's writing context — prior summaries, foreshadowing, character states, style rules"
 }
-func (t *ContextTool) Label() string { return "加载上下文" }
+func (t *ContextTool) Label() string { return "Load context" }
 
 // 纯读工具，可被并发调度。
 func (t *ContextTool) ReadOnly(_ json.RawMessage) bool        { return true }
@@ -100,7 +100,7 @@ func (t *ContextTool) ConcurrencySafe(_ json.RawMessage) bool { return true }
 
 func (t *ContextTool) Schema() map[string]any {
 	return schema.Object(
-		schema.Property("chapter", schema.Int("章节号。不传则返回进度状态和基础设定（Architect 用）；传入则额外返回该章的写作上下文（Writer/Editor 用）")),
+		schema.Property("chapter", schema.Int("Chapter number. Omit it to get progress state and the foundation (for the architect); pass it to also get that chapter's writing context (for writer/editor)")),
 	)
 }
 
@@ -129,7 +129,7 @@ func (t *ContextTool) Execute(_ context.Context, args json.RawMessage) (json.Raw
 		}
 		// episodic 是已写入正文的备忘，不是待写素材。
 		if epi, ok := result["episodic_memory"].(map[string]any); ok && len(epi) > 0 {
-			epi["_usage"] = "本容器为已写入正文的事实备忘（供一致性与衔接对照）；在新章正文中原样复述这些内容属于重复缺陷"
+			epi["_usage"] = "This container is a memo of facts already on the page, for checking consistency and continuity. Restating any of it verbatim in new prose is a repetition defect"
 		}
 	} else {
 		// Architect 路径：只返回状态 + 结构化数据，不加载全量原文
@@ -212,87 +212,87 @@ func buildLoadingSummary(result map[string]any, chapter int) string {
 	var items []string
 
 	if n := firstSliceLen(episodic["character_snapshots"], foundation["character_snapshots"]); n > 0 {
-		items = append(items, fmt.Sprintf("角色:%d(快照)", n))
+		items = append(items, fmt.Sprintf("characters:%d(snapshot)", n))
 	} else if n := firstSliceLen(episodic["characters"], foundation["characters"]); n > 0 {
-		items = append(items, fmt.Sprintf("角色:%d", n))
+		items = append(items, fmt.Sprintf("characters:%d", n))
 	}
 
 	if len(working) > 0 {
-		items = append(items, fmt.Sprintf("工作记忆:%d", len(working)))
+		items = append(items, fmt.Sprintf("working_memory:%d", len(working)))
 	}
 	if len(episodic) > 0 {
-		items = append(items, fmt.Sprintf("情节记忆:%d", len(episodic)))
+		items = append(items, fmt.Sprintf("episodic_memory:%d", len(episodic)))
 	}
 	if len(planning) > 0 {
-		items = append(items, fmt.Sprintf("规划记忆:%d", len(planning)))
+		items = append(items, fmt.Sprintf("planning_memory:%d", len(planning)))
 	}
 	if len(foundation) > 0 {
-		items = append(items, fmt.Sprintf("基础记忆:%d", len(foundation)))
+		items = append(items, fmt.Sprintf("foundation_memory:%d", len(foundation)))
 	}
 
 	if n := firstSliceLen(working["volume_summaries"], planning["volume_summaries"]); n > 0 {
-		items = append(items, fmt.Sprintf("卷摘要:%d", n))
+		items = append(items, fmt.Sprintf("volume_summaries:%d", n))
 	}
 	if n := firstSliceLen(working["arc_summaries"], planning["arc_summaries"]); n > 0 {
-		items = append(items, fmt.Sprintf("弧摘要:%d", n))
+		items = append(items, fmt.Sprintf("arc_summaries:%d", n))
 	}
 	if n := sliceLen(working["recent_summaries"]); n > 0 {
-		items = append(items, fmt.Sprintf("章摘要:%d", n))
+		items = append(items, fmt.Sprintf("chapter_summaries:%d", n))
 	}
 
 	if n := sliceLen(planning["layered_outline"]); n > 0 {
-		items = append(items, fmt.Sprintf("分层大纲:%d卷", n))
+		items = append(items, fmt.Sprintf("layered_outline:%d volumes", n))
 	}
 
 	if n := sliceLen(working["timeline"]); n > 0 {
-		items = append(items, fmt.Sprintf("时间线:%d", n))
+		items = append(items, fmt.Sprintf("timeline:%d", n))
 	}
 	if n := firstSliceLen(episodic["foreshadow_ledger"], foundation["foreshadow_ledger"]); n > 0 {
-		items = append(items, fmt.Sprintf("伏笔:%d", n))
+		items = append(items, fmt.Sprintf("foreshadow:%d", n))
 	}
 	if n := sliceLen(episodic["relationship_state"]); n > 0 {
-		items = append(items, fmt.Sprintf("关系:%d", n))
+		items = append(items, fmt.Sprintf("relationships:%d", n))
 	}
 	if n := sliceLen(episodic["recent_state_changes"]); n > 0 {
-		items = append(items, fmt.Sprintf("状态变化:%d", n))
+		items = append(items, fmt.Sprintf("state_changes:%d", n))
 	}
 	if _, ok := working["previous_tail"]; ok {
-		items = append(items, "前章尾部:ok")
+		items = append(items, "previous_tail:ok")
 	}
 	if _, ok := referencePack["style_rules"]; ok {
-		items = append(items, "风格规则:ok")
+		items = append(items, "style_rules:ok")
 	}
 	if n := sliceLen(episodic["related_chapters"]); n > 0 {
-		items = append(items, fmt.Sprintf("相关章:%d", n))
+		items = append(items, fmt.Sprintf("related_chapters:%d", n))
 	}
 	if selected, ok := result["selected_memory"].(map[string]any); ok && len(selected) > 0 {
 		if n := sliceLen(selected["story_threads"]); n > 0 {
-			items = append(items, fmt.Sprintf("线索召回:%d", n))
+			items = append(items, fmt.Sprintf("thread_recall:%d", n))
 		}
 		if n := sliceLen(selected["review_lessons"]); n > 0 {
-			items = append(items, fmt.Sprintf("评审召回:%d", n))
+			items = append(items, fmt.Sprintf("review_recall:%d", n))
 		}
 	}
 
 	if refs, ok := referencePack["references"].(map[string]string); ok && len(refs) > 0 {
-		items = append(items, fmt.Sprintf("参考:%d项", len(refs)))
+		items = append(items, fmt.Sprintf("references:%d items", len(refs)))
 	}
 	if len(referencePack) > 0 {
-		items = append(items, fmt.Sprintf("参考包:%d", len(referencePack)))
+		items = append(items, fmt.Sprintf("reference_pack:%d", len(referencePack)))
 	}
 	if _, ok := result["memory_policy"]; ok {
-		items = append(items, "记忆策略:ok")
+		items = append(items, "memory_policy:ok")
 	}
 	if _, ok := working["simulation_profile"]; ok {
-		items = append(items, "仿写画像:ok")
+		items = append(items, "simulation_profile:ok")
 	} else if _, ok := planning["simulation_profile"]; ok {
-		items = append(items, "仿写画像:ok")
+		items = append(items, "simulation_profile:ok")
 	}
 	if warnings, ok := result["_warnings"].([]string); ok && len(warnings) > 0 {
-		items = append(items, fmt.Sprintf("告警:%d", len(warnings)))
+		items = append(items, fmt.Sprintf("warnings:%d", len(warnings)))
 	}
 	if trimmed, ok := result["_trimmed"].([]string); ok && len(trimmed) > 0 {
-		items = append(items, fmt.Sprintf("裁剪:%s", strings.Join(trimmed, ",")))
+		items = append(items, fmt.Sprintf("trimmed:%s", strings.Join(trimmed, ",")))
 	}
 
 	if len(items) > 0 {
@@ -632,7 +632,7 @@ func (t *ContextTool) buildRelatedChapters(
 	// 1. 伏笔反查：活跃伏笔的描述是否与当前章大纲相关
 	for _, f := range foreshadow {
 		if strings.Contains(outlineText, f.ID) || containsAny(outlineText, strings.Fields(f.Description)) {
-			add(f.PlantedAt, fmt.Sprintf("伏笔%s(%s)埋设章", f.ID, truncateRunes(f.Description, 15)))
+			add(f.PlantedAt, fmt.Sprintf("chapter where foreshadowing %s (%s) was planted", f.ID, truncateRunes(f.Description, 15)))
 		}
 		if len(results) >= maxResults {
 			break
@@ -655,7 +655,7 @@ func (t *ContextTool) buildRelatedChapters(
 				break
 			}
 			if ch, ok := appearances[name]; ok {
-				add(ch, fmt.Sprintf("角色'%s'最后出场章", name))
+				add(ch, fmt.Sprintf("last chapter featuring character '%s'", name))
 			}
 		}
 	}
@@ -667,7 +667,7 @@ func (t *ContextTool) buildRelatedChapters(
 		}
 		ch := findLastStateChange(stateChanges, name, chapter)
 		if ch > 0 && ch <= chapter-recentWindow {
-			add(ch, fmt.Sprintf("'%s'状态变化章", name))
+			add(ch, fmt.Sprintf("chapter where '%s' changed state", name))
 		}
 	}
 
@@ -684,7 +684,7 @@ func (t *ContextTool) buildRelatedChapters(
 			_, aIn := charSet[r.CharacterA]
 			_, bIn := charSet[r.CharacterB]
 			if aIn && bIn {
-				add(r.Chapter, fmt.Sprintf("%s-%s关系变化", r.CharacterA, r.CharacterB))
+				add(r.Chapter, fmt.Sprintf("%s-%s relationship change", r.CharacterA, r.CharacterB))
 			}
 		}
 	}
@@ -763,8 +763,8 @@ func (t *ContextTool) selectStoryThreads(state contextBuildState) []domain.Recal
 			Kind:    "story_thread",
 			Key:     entry.ID,
 			Chapter: entry.PlantedAt,
-			Reason:  "当前章可能需要承接既有伏笔",
-			Summary: fmt.Sprintf("伏笔“%s”埋于第%d章：%s", entry.ID, entry.PlantedAt, truncateRunes(entry.Description, 30)),
+			Reason:  "this chapter may need to pick up existing foreshadowing",
+			Summary: fmt.Sprintf("foreshadowing %q was planted in chapter %d: %s", entry.ID, entry.PlantedAt, truncateRunes(entry.Description, 30)),
 		})
 		if len(items) >= maxThreads {
 			return items
@@ -778,8 +778,8 @@ func (t *ContextTool) selectStoryThreads(state contextBuildState) []domain.Recal
 			Kind:    "story_thread",
 			Key:     entry.ID,
 			Chapter: entry.PlantedAt,
-			Reason:  "伏笔久挂未回收，注意适时推进或回收",
-			Summary: fmt.Sprintf("伏笔“%s”埋于第%d章，已 %d 章未回收：%s", entry.ID, entry.PlantedAt, state.chapter-entry.PlantedAt, truncateRunes(entry.Description, 30)),
+			Reason:  "foreshadowing has been left hanging for a long time; advance or pay it off when the moment fits",
+			Summary: fmt.Sprintf("foreshadowing %q was planted in chapter %d and has gone %d chapters without payoff: %s", entry.ID, entry.PlantedAt, state.chapter-entry.PlantedAt, truncateRunes(entry.Description, 30)),
 		})
 		if len(items) >= maxThreads {
 			break
@@ -833,8 +833,8 @@ func (t *ContextTool) selectReviewLessons(chapter int, reads *contextReads) []do
 				Kind:    "review_lesson",
 				Key:     fmt.Sprintf("review-%d-contract-%d", review.Chapter, i),
 				Chapter: review.Chapter,
-				Reason:  "最近审阅指出 contract 漏项",
-				Summary: fmt.Sprintf("第%d章 contract 漏项：%s", review.Chapter, miss),
+				Reason:  "a recent review flagged unmet contract items",
+				Summary: fmt.Sprintf("chapter %d contract miss: %s", review.Chapter, miss),
 			})
 			if len(items) >= 3 {
 				return true
@@ -847,8 +847,8 @@ func (t *ContextTool) selectReviewLessons(chapter int, reads *contextReads) []do
 					Kind:    "review_lesson",
 					Key:     fmt.Sprintf("review-%d-issue-%d", review.Chapter, i),
 					Chapter: review.Chapter,
-					Reason:  "最近审阅指出需要避免重复问题",
-					Summary: fmt.Sprintf("第%d章审阅提醒：%s", review.Chapter, truncateRunes(issue.Description, 36)),
+					Reason:  "a recent review flagged repetition to avoid",
+					Summary: fmt.Sprintf("chapter %d review note: %s", review.Chapter, truncateRunes(issue.Description, 36)),
 				})
 			}
 			if len(items) >= 3 {

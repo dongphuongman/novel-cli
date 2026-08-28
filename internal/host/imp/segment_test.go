@@ -183,7 +183,7 @@ func TestResolveSegmentationReordersAndDedups(t *testing.T) {
 	if seg.Chapters[2].Title != "第二章 云涌" {
 		t.Fatalf("同字节重复应保留先出现者：%+v", seg.Chapters[2])
 	}
-	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "重合") {
+	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "coincide") {
 		t.Fatalf("重复边界应记入 Notes：%v", seg.Notes)
 	}
 }
@@ -207,7 +207,7 @@ func TestResolveSegmentationAbsorbsLeadingText(t *testing.T) {
 	if len(seg.Chapters) != 2 || seg.Chapters[0].Start == 0 {
 		t.Fatalf("章节不应吞掉头部文本：%+v", seg.Chapters)
 	}
-	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "未被模型归属") {
+	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "left unassigned by the model") {
 		t.Fatalf("应记录人工核对说明：%v", seg.Notes)
 	}
 }
@@ -228,7 +228,7 @@ func TestResolveSegmentationNotesDuplicateTitles(t *testing.T) {
 	if len(seg.Chapters) != 2 {
 		t.Fatalf("应得 2 章，得 %d", len(seg.Chapters))
 	}
-	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "标题相同") {
+	if len(seg.Notes) != 1 || !strings.Contains(seg.Notes[0], "have the same title") {
 		t.Fatalf("应记一条同名核对说明：%v", seg.Notes)
 	}
 }

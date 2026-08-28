@@ -94,6 +94,31 @@
           "X-Codex-Turn-Metadata": "replace-with-random-turn-metadata"
         }
       }
+    },
+    "freellmapi": {
+      // FreeLLMAPI（https://github.com/tashfeenahmed/freellmapi）：自建的
+      // OpenAI 兼容网关，把几十家免费额度聚合到一个 /v1 后面。用向导或 /config
+      // 选 "FreeLLMAPI (localhost:3001)" 即可自动生成本段，这里只是照抄参考。
+      //
+      // 名字不在 litellm 注册表里，因此 type 必须显式声明——这不是可选项。
+      "type": "openai",
+      "api_key": "freellmapi-your-unified-key",
+      "base_url": "http://localhost:3001/v1",
+      // "auto" 让它自己挑模型；也可写 "auto:fast" / "auto:smart" 或具体 model id。
+      //
+      // json_schema 显式关掉：路由器每次请求换一个后端模型，无法承诺被选中的
+      // 那个支持原生 JSON Schema，让 Arbiter 走提示词契约更稳。
+      "models": [{ "name": "auto", "json_schema": false }]
+      // 可选 "api": "responses"——FreeLLMAPI 两个 endpoint 都实现了。
+      //
+      // 三点务必知情（来自其官方文档）：
+      // 1) 路由器逐请求换后端 → 请求前缀不稳定，提示词缓存基本失效，
+      //    TUI 缓存面板会频繁报"链路断裂"。这是本项目第二大省钱杠杆。
+      // 2) 其 API 文档未提及返回 usage → 用量/费用/预算可能全为 0，
+      //    TUI 会显示"上游未返 usage"。预算保险丝届时形同虚设。
+      // 3) 官方自述"没有前沿模型、越到日末质量越低（UTC 零点重置）、
+      //    仅供个人试验"。连写 200~500 章正是最容易撞上额度天花板的场景——
+      //    拿来试跑很合适，长篇主力配置要谨慎。
     }
   },
 
@@ -112,7 +137,19 @@
   // },
 
   // 写作风格：default / suspense / fantasy / romance。
-  "style": "default"
+  "style": "default",
+
+  // 界面语言：zh（默认）/ vi / en / auto。auto 按 LC_ALL > LC_MESSAGES > LANG 推断，
+  // 认不出则回落 zh。它只管**你在终端里读到的字**，不影响小说正文。
+  // 与 language 刻意分开：越南用户完全可能用越南语界面写中文小说。
+  "ui_language": "zh",
+
+  // 创作语言：zh（简体中文，默认）/ vi（Tiếng Việt）/ en（English）。
+  // 它决定的是**正文语言**——章节、大纲、角色名、摘要、评审都用该语言书写——
+  // 以及随之而来的机械口径：字数怎么数（中文按字、越/英按词）、句子在哪断、
+  // 哪些定长串算 AI 套句、导出的章节标题与 EPUB dc:language。界面文案不受影响。
+  // 留空或写错一律回落到 zh。
+  "language": "zh"
 
   // 旧版全局上下文窗口，保留作所有模型的回退。优先级低于 models[].context_window，
   // 高于模型注册表和 200k 默认值。仅影响压缩阈值，不改变 API 实际请求长度。

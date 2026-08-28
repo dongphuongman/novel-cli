@@ -8,6 +8,8 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/store"
 	"github.com/voocel/ainovel-cli/internal/stylestat"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestStyleStatsIndexAppendRewriteAndRemove(t *testing.T) {
@@ -32,7 +34,7 @@ func TestStyleStatsIndexAppendRewriteAndRemove(t *testing.T) {
 
 	titles := []string{"第一章 风起", "云涌", "第3章 雷动", "暗潮", "归途", "山门"}
 	stopwords := []string{"陆九渊"}
-	index := NewStyleStatsIndex(st)
+	index := NewStyleStatsIndex(st, lang.Resolve("zh"))
 	completed := []int{1, 2, 3, 4, 5, 6}
 	assertStyleStatsIndexMatchesCompute(t, index, chapters, completed, titles, stopwords)
 
@@ -61,8 +63,8 @@ func TestStyleStatsIndexSurfacesMissingCompletedChapter(t *testing.T) {
 	if err := st.Init(); err != nil {
 		t.Fatal(err)
 	}
-	_, err := NewStyleStatsIndex(st).Snapshot([]int{1}, nil, nil)
-	if err == nil || !strings.Contains(err.Error(), "第 1 章已标记完成但终稿不存在") {
+	_, err := NewStyleStatsIndex(st, lang.Resolve("zh")).Snapshot([]int{1}, nil, nil)
+	if err == nil || !strings.Contains(err.Error(), "chapter 1 is marked complete but has no final text") {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }

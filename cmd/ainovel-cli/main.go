@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"github.com/voocel/ainovel-cli/internal/entry/startup"
 	"github.com/voocel/ainovel-cli/internal/entry/tui"
 	"github.com/voocel/ainovel-cli/internal/eval"
+	"github.com/voocel/ainovel-cli/internal/i18n"
 	"github.com/voocel/ainovel-cli/internal/rules"
 	buildversion "github.com/voocel/ainovel-cli/internal/version"
 )
@@ -27,6 +29,11 @@ var (
 var headlessMode bool
 
 func main() {
+	// 界面语言最先定：此后每一条用户可见输出——flag 解析错误、配置加载错误、
+	// die() 的收尾提示——都要用用户读得懂的语言。探测只读配置里的 ui_language，
+	// 永不失败，因此放在最前面是安全的。
+	i18n.Use(bootstrap.ProbeUILanguage())
+
 	// 子命令在常规 flag 解析之前拦截：eval 是离线评测 harness，参数体系独立。
 	if len(os.Args) > 1 && os.Args[1] == "eval" {
 		os.Exit(eval.Command(os.Args[2:]))
@@ -52,7 +59,7 @@ func main() {
 	// 首次引导
 	if bootstrap.NeedsSetup() {
 		if opts.Headless {
-			die("error: headless 模式不支持首次引导，请先运行一次 TUI 完成配置")
+			die("%s", i18n.T("cli.err.headless.setup"))
 		}
 		setupCfg, err := bootstrap.RunSetup()
 		if err != nil {
@@ -79,10 +86,10 @@ func die(format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	fmt.Fprintln(os.Stderr, msg)
 	if path := bootstrap.WriteStartupError(msg); path != "" {
-		fmt.Fprintf(os.Stderr, "（详细错误已记录到 %s）\n", path)
+		fmt.Fprintf(os.Stderr, i18n.T("cli.err.logged"), path)
 	}
 	if !headlessMode && stdinIsTerminal() {
-		fmt.Fprint(os.Stderr, "\n按回车键退出...")
+		fmt.Fprint(os.Stderr, i18n.T("cli.press.enter"))
 		fmt.Fscanln(os.Stdin)
 	}
 	os.Exit(1)
@@ -102,12 +109,14 @@ func runWithConfig(cfg bootstrap.Config, opts cliOptions, args []string) {
 	rules.EnsureHomeRulesDir()
 
 	if len(args) > 0 {
-		die("error: 不再支持命令行直接传入小说需求，请启动后在 TUI 输入框中输入")
+		die("%s", i18n.T("cli.err.noargs"))
 	}
 
 	// FillDefaults 必须先于资产加载:OutputDir 是运行时字段,默认值在此归一——
 	// 否则默认配置下 <书目录>/style/ 的本书级文风覆盖永远不会被加载。
 	cfg.FillDefaults()
+	// FillDefaults 归一化 "auto" 等取值后，用权威结果覆盖开头的探测值。
+	i18n.Use(cfg.UILang())
 	bundle := assets.Load(cfg.Style, assets.DefaultLoadOptions(cfg.OutputDir))
 	if opts.Headless {
 		prompt, err := loadPrompt(opts)
@@ -120,7 +129,7 @@ func runWithConfig(cfg bootstrap.Config, opts cliOptions, args []string) {
 		return
 	}
 	if opts.Prompt != "" || opts.PromptFile != "" {
-		die("error: --prompt/--prompt-file 仅能在 --headless 模式下使用")
+		die("%s", i18n.T("cli.err.prompt.headlessonly"))
 	}
 	if err := tui.Run(cfg, bundle, versionInfo()); err != nil {
 		die("error: %v", err)
@@ -146,35 +155,35 @@ func parseCLIOptions(argv []string) (cliOptions, []string, error) {
 			opts.Version = true
 		case "version":
 			if i+1 < len(argv) {
-				return opts, nil, fmt.Errorf("version 不接受参数")
+				return opts, nil, errors.New(i18n.T("cli.err.version.args"))
 			}
 			opts.Version = true
 		case "update":
 			if opts.Update {
-				return opts, nil, fmt.Errorf("update 只能指定一次")
+				return opts, nil, errors.New(i18n.T("cli.err.update.once"))
 			}
 			opts.Update = true
 			if i+1 < len(argv) {
 				if strings.HasPrefix(argv[i+1], "-") {
-					return opts, nil, fmt.Errorf("update 只接受一个可选版本参数")
+					return opts, nil, errors.New(i18n.T("cli.err.update.oneversion"))
 				}
 				opts.UpdateVersion = argv[i+1]
 				i++
 			}
 			if i+1 < len(argv) {
-				return opts, nil, fmt.Errorf("update 只接受一个可选版本参数")
+				return opts, nil, errors.New(i18n.T("cli.err.update.oneversion"))
 			}
 		case "--headless":
 			opts.Headless = true
 		case "--prompt":
 			if i+1 >= len(argv) {
-				return opts, nil, fmt.Errorf("--prompt 缺少值")
+				return opts, nil, errors.New(i18n.T("cli.err.prompt.missing"))
 			}
 			opts.Prompt = argv[i+1]
 			i++
 		case "--prompt-file":
 			if i+1 >= len(argv) {
-				return opts, nil, fmt.Errorf("--prompt-file 缺少值")
+				return opts, nil, errors.New(i18n.T("cli.err.promptfile.missing"))
 			}
 			opts.PromptFile = argv[i+1]
 			i++
@@ -183,13 +192,13 @@ func parseCLIOptions(argv []string) (cliOptions, []string, error) {
 		}
 	}
 	if opts.Prompt != "" && opts.PromptFile != "" {
-		return opts, nil, fmt.Errorf("--prompt 和 --prompt-file 不能同时使用")
+		return opts, nil, errors.New(i18n.T("cli.err.prompt.both"))
 	}
 	if opts.Version && (opts.Update || opts.Headless || opts.Prompt != "" || opts.PromptFile != "" || len(args) > 0) {
-		return opts, nil, fmt.Errorf("version 不能与其他启动参数混用")
+		return opts, nil, errors.New(i18n.T("cli.err.version.mix"))
 	}
 	if opts.Update && (opts.Headless || opts.Prompt != "" || opts.PromptFile != "" || len(args) > 0) {
-		return opts, nil, fmt.Errorf("update 不能与其他启动参数混用")
+		return opts, nil, errors.New(i18n.T("cli.err.update.mix"))
 	}
 	return opts, args, nil
 }
@@ -214,11 +223,11 @@ func runSelfUpdate(target string) error {
 		return err
 	}
 	if !result.Updated {
-		fmt.Printf("ainovel-cli 已是最新版本 %s\n", result.Version)
+		fmt.Printf(i18n.T("cli.update.latest"), result.Version)
 		return nil
 	}
-	fmt.Printf("ainovel-cli 已更新到 %s\n", result.Version)
-	fmt.Printf("安装位置：%s\n", result.Path)
+	fmt.Printf(i18n.T("cli.update.done"), result.Version)
+	fmt.Printf(i18n.T("cli.update.path"), result.Path)
 	return nil
 }
 
@@ -234,7 +243,7 @@ func loadPromptFrom(opts cliOptions, stdin io.Reader) (string, error) {
 	if opts.PromptFile == "-" {
 		data, err := io.ReadAll(stdin)
 		if err != nil {
-			return "", fmt.Errorf("读取 prompt 失败: %w", err)
+			return "", fmt.Errorf(i18n.T("startup.err.promptfile"), err)
 		}
 		return strings.TrimSpace(string(data)), nil
 	}

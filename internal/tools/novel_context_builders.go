@@ -163,7 +163,7 @@ func (t *ContextTool) buildUserRules(result map[string]any, reads *contextReads)
 	}
 	if snap == nil {
 		// 快照尚未初始化时使用代码内置默认，保证机械底线（字数/禁语/疲劳词）始终存在。
-		def := rules.BuildSnapshot([]rules.Candidate{rules.SystemDefaults()})
+		def := rules.BuildSnapshot([]rules.Candidate{rules.SystemDefaults(t.styleStats.Lang())})
 		snap = &def
 	}
 	working, ok := result["working_memory"].(map[string]any)
@@ -455,7 +455,7 @@ func (t *ContextTool) buildChapterWorkingMemory(envelope *chapterContextEnvelope
 		if volumes, err := t.store.Outline.LoadLayeredOutline(); err == nil {
 			if fv := domain.FinaleVolume(volumes); fv > 0 {
 				if b, boundaryErr := t.store.Outline.CheckArcBoundary(state.chapter); boundaryErr == nil && b != nil && b.Volume == fv {
-					envelope.Working["finale"] = "本卷为全书收官卷：不再新开长线或埋新伏笔，优先回收既有伏笔、收拢关系线，按大纲把故事推向终局。"
+					envelope.Working["finale"] = "This is the final volume: open no new long threads and plant no new foreshadowing. Prioritize paying off existing foreshadowing and closing relationship lines, and drive the story to its ending along the outline."
 				} else {
 					reads.require("arc_boundary", boundaryErr)
 				}

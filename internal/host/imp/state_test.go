@@ -89,7 +89,7 @@ func TestLoadStateReportsCorruptArtifact(t *testing.T) {
 	if err := ws.writeAtomic(fileSegmentation, []byte("{")); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := LoadState(ws); err == nil || !strings.Contains(err.Error(), "切分工件") {
+	if _, err := LoadState(ws); err == nil || !strings.Contains(err.Error(), "segmentation artifact") {
 		t.Fatalf("损坏工件不得伪装成尚未切分: %v", err)
 	}
 }

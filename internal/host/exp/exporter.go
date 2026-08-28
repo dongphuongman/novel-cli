@@ -135,9 +135,9 @@ func Run(ctx context.Context, deps Deps, opts Options) (*Result, error) {
 	var data []byte
 	switch opts.Format {
 	case FormatTXT:
-		data = []byte(renderTXT(book.Title, chapters, titleIdx, locations, bodies))
+		data = []byte(renderTXT(book.Title, chapters, titleIdx, locations, bodies, deps.Lang))
 	case FormatEPUB:
-		buf, err := renderEPUB(*book, chapters, titleIdx, locations, bodies)
+		buf, err := renderEPUB(*book, chapters, titleIdx, locations, bodies, deps.Lang)
 		if err != nil {
 			return nil, fmt.Errorf("渲染 EPUB 失败：%w", err)
 		}

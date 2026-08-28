@@ -1,316 +1,329 @@
-# 对话写作规范
+# Dialogue writing standards
 
-好对话是揭示人物、推动情节、制造冲突的有力工具。
+Good dialogue is a powerful tool for revealing character, driving plot and creating conflict.
 
-## 对话核心原则
+## Core principles
 
-### 1. 对话必须有目的
+### 1. Dialogue must have a purpose
 
-每句对话应该至少完成以下之一：
+Every line should do at least one of the following:
 
-| 目的 | 示例 |
+| Purpose | Example |
 |-----|------|
-| **推动情节** | "我找到凶器了，在河边的草丛里。" |
-| **揭示人物** | "我不信任警察，他们从来不帮我这样的人。" |
-| **制造冲突** | "你骗了我。你从头到尾都在骗我。" |
-| **传达信息** | "炸弹将在三点引爆。" |
-| **表达情感** | "我...我不知道该说什么。" |
-| **制造悬念** | "你知道那天晚上真正发生了什么吗？" |
+| **Advance the plot** | "I found the weapon. In the grass down by the river." |
+| **Reveal character** | "I don't trust police. They've never helped people like me." |
+| **Create conflict** | "You lied to me. You've been lying the whole time." |
+| **Convey information** | "The bomb goes off at three." |
+| **Express feeling** | "I… I don't know what to say." |
+| **Create suspense** | "Do you know what actually happened that night?" |
 
-**无效对话：**
-> "你好。"
-> "你好。"
-> "吃了吗？"
-> "吃了。"
-> "哦，那就好。"
+**Dead dialogue:**
+> "Hello."
+> "Hello."
+> "Have you eaten?"
+> "Yes."
+> "Oh. Good."
 
-### 2. 对话应该简洁
+### 2. Dialogue should be lean
 
-人们说话不写论文。删除多余的词。
+People speak; they do not write essays. Cut the surplus words.
 
-| 啰嗦 | 简洁 |
+| Wordy | Lean |
 |-----|------|
-| "我想告诉你的是，我认为我们应该立刻离开这里。" | "我们得马上走。" |
-| "我非常抱歉，但我真的不知道你刚才说的那件事的答案。" | "我不知道。" |
-| "如果你不介意的话，我能不能请你帮我把那个东西递给我？" | "递给我那个。" |
+| "What I want to tell you is that I think we should leave here immediately." | "We have to go. Now." |
+| "I'm terribly sorry, but I really don't know the answer to what you just asked me." | "I don't know." |
+| "If you wouldn't mind, could I possibly ask you to pass me that thing?" | "Pass me that." |
 
-### 3. 真实的人不会完整表达
+### 3. Real people do not finish their thoughts
 
-真实对话充满：
-- 打断
-- 迟疑
-- 话题转移
-- 话没说完
-- 暗示而非明说
+Real dialogue is full of:
+- Interruptions
+- Hesitation
+- Changes of subject
+- Unfinished sentences
+- Implication rather than statement
 
-**示例：**
-> "我本来想告诉你，但是——"
-> "但是什么？"
-> "算了，没什么。"
-> "不，你说。"
-> "真的没什么。"
+**Example:**
+> "I was going to tell you, but—"
+> "But what?"
+> "Never mind. It doesn't matter."
+> "No. Say it."
+> "It really doesn't matter."
 
 ---
 
-## 对话格式规范
+## Formatting standards
 
-### 中文对话标点
+### English dialogue punctuation
 
-**基础格式：**
+**Basic form:**
 ```
-"说话内容，" 他说。
-"说话内容？" 她问。
-"说话内容！" 他大喊。
-```
-
-**多行对话：**
-```
-"第一句话，"他说，"第二句话。"
-
-"第一句话。
-第二句话，"他说，"第三句话。"
+"Speech," he said.
+"Speech?" she asked.
+"Speech!" he shouted.
 ```
 
-**对话动作：**
+Note that the comma, question mark and exclamation mark sit *inside* the closing quotation mark, and the attribution that follows starts in lower case.
+
+**Dialogue split by an attribution:**
 ```
-"说话内容。" 他做了动作。
-他做了动作。"说话内容。"
+"First part," he said, "second part."
+
+"First sentence. Second sentence," he said. "Third sentence."
 ```
 
-### 对话标签使用
+Use a comma before the attribution when the sentence continues afterwards; use a full stop when the second half is a new sentence.
 
-**规则：**
-- 能辨识说话人时，省略标签
-- 使用"说""问"等中性标签
-- 避免过度使用副词修饰
+**Dialogue with an action beat:**
+```
+"Speech." He did something.
+He did something. "Speech."
+```
 
-| 过度使用 | 改进后 |
+An action beat is a separate sentence, so it takes a full stop, not a comma.
+
+**Interruption and trailing off:**
+```
+"I was going to say—" The door slammed.
+"I just… I don't know."
+```
+
+Use an em dash for a cut-off, an ellipsis for a fade.
+
+### Using attributions
+
+**Rules:**
+- Drop the tag when the speaker is unmistakable
+- Use neutral tags such as "said" and "asked"
+- Do not lean on adverbs to carry the emotion
+
+| Overdone | Better |
 |---------|--------|
-| "你骗了我，"他愤怒地说。| "你骗了我。"他的声音在颤抖。 |
-| "好的，"她高兴地同意道。| 她眼睛亮了。"好的。" |
-| "我不知道，"他悲伤地回答。| 他低下头。"我不知道。" |
+| "You lied to me," he said angrily. | "You lied to me." His voice shook. |
+| "All right," she agreed happily. | Her eyes lit up. "All right." |
+| "I don't know," he replied sadly. | He looked down. "I don't know." |
 
-**标签位置：**
-- 对话前：[标签]"对话。"
-- 对话后："对话。"[标签]
-- 对话中断："对话，"[标签]"对话。"
+**Tag position:**
+- Before: [tag] "Speech."
+- After: "Speech," [tag].
+- Interrupting: "Speech," [tag], "speech."
 
-### 段落划分
+### Paragraphing
 
-**规则：** 每个说话人的对话开始新段落。
+**Rule:** each new speaker starts a new paragraph.
 
 ```
-正确：
-"第一句，"甲说。
-"第二句，"乙回答。
-"第三句。"甲点头。
+Right:
+"First line," said A.
+"Second line," B answered.
+"Third line." A nodded.
 
-错误：
-"第一句，"甲说。"第二句，"乙回答。"第三句。"甲点头。
+Wrong:
+"First line," said A. "Second line," B answered. "Third line." A nodded.
 ```
 
 ---
 
-## 对话声音区分
+## Distinguishing voices
 
-每个角色说话方式应该不同。
+Every character should speak differently.
 
-### 区分维度
+### Dimensions of difference
 
-| 维度 | 示例 |
+| Dimension | Example |
 |-----|------|
-| **用词** | 正式/俚语/方言/专业术语 |
-| **句式** | 长句/短句/破碎句 |
-| **停顿** | 流畅/迟疑/频繁打断 |
-| **语气** | 温和/激烈/冷嘲热讽/平淡 |
-| **习惯语** | 特定口头禅或用词习惯 |
+| **Word choice** | Formal / slang / dialect / technical jargon |
+| **Sentence shape** | Long sentences / short sentences / fragments |
+| **Pauses** | Fluent / hesitant / frequently interrupting |
+| **Register** | Gentle / vehement / sardonic / flat |
+| **Verbal habits** | A particular tic or turn of phrase |
 
-### 角色声音示例
+### Voices, illustrated
 
-**教授型角色：**
-> "从理论角度分析，这个假设存在三个主要缺陷。首先，数据样本不足；其次，实验条件未受控制；最后，结论过于激进。"
+**The academic:**
+> "Analysed theoretically, this hypothesis has three principal defects. First, the sample is too small; second, the experimental conditions were uncontrolled; third, the conclusion is far too aggressive."
 
-**街头混混型角色：**
-> "扯淡。那帮人就是在放屁，想蒙咱们呢。我告诉你，这事儿没那么简单。"
+**The street tough:**
+> "Rubbish. That lot are talking out of their backsides, trying to have us on. I'm telling you, there's more to this."
 
-**害羞内向型角色：**
-> "我...我是说，如果...如果你不介意的话...那个..."
+**The shy one:**
+> "I… I mean, if… if you don't mind… that is…"
 
-**傲慢自大型角色：**
-> "让我来告诉你什么叫专业。你们这些业余人士根本不懂。"
+**The arrogant one:**
+> "Let me show you what professional actually means. You amateurs have no idea."
 
 ---
 
-## 潜台词（Subtext）
+## Subtext
 
-好的对话，真正含义在表面之下。
+In good dialogue the real meaning sits below the surface.
 
-### 直接 vs 潜台词
+### Direct vs. subtext
 
-| 直接（乏味） | 潜台词（有趣） |
+| Direct (dull) | Subtext (interesting) |
 |-------------|---------------|
-| "我很生气。" | "没事。我挺好的。真的。" |
-| "我喜欢你。" | "你今天看起来...不错。" |
-| "我不信任你。" | "谢谢你告诉我。我会记住的。" |
-| "我想离开。" | "这个地方空气不太好。" |
+| "I'm angry." | "It's fine. I'm fine. Really." |
+| "I like you." | "You look… good today." |
+| "I don't trust you." | "Thank you for telling me. I'll remember that." |
+| "I want to leave." | "The air in here isn't great." |
 
-### 潜台词技巧
+### Techniques
 
-**1. 话题转移**
+**1. Change the subject**
 ```
-"你爱我吗？"
-"你看了天气预报吗？明天有雨。"
-```
-
-**2. 反问而非回答**
-```
-"你杀了他吗？"
-"你觉得像我这样的人会做那种事？"
+"Do you love me?"
+"Did you see the forecast? Rain tomorrow."
 ```
 
-**3. 谈论其他事物**
+**2. Answer with a question**
 ```
-"你想我吗？"
-"我妈昨天打电话来了。"
-```
-
-**4. 沉默和动作**
-```
-"你愿意原谅我吗？"
-她继续看杂志，翻了一页。
+"Did you kill him?"
+"Do you think a man like me would do a thing like that?"
 ```
 
----
-
-## 对话与动作结合
-
-对话与肢体语言配合，增强表现力。
-
-### 同步原则
-
-动作与对话一致或矛盾，都有戏剧效果。
-
-**一致（增强）：**
-> "我爱你。"她紧紧抱住他，眼泪流下来。
-
-**矛盾（揭示真相）：**
-> "我完全支持你。"他目光看向别处，手在口袋里握紧拳头。
-
-### 动作打断
-
-动作插入可以控制节奏。
-
+**3. Talk about something else**
 ```
-"我本来想告诉你，"他停下脚步，转过身，"但我想你已经知道了。"
+"Did you miss me?"
+"My mother called yesterday."
 ```
 
-### 动作替代标签
-
-用动作替代"他说"。
-
+**4. Silence and action**
 ```
-"你在撒谎。"她拍案而起。
-"坐下。"他头也不抬。
+"Will you forgive me?"
+She went on reading the magazine and turned a page.
 ```
 
 ---
 
-## 对话场景类型
+## Combining dialogue and action
 
-### 争吵场景
+Dialogue paired with body language carries more.
 
-**特征：**
-- 短句
-- 打断
-- 重复强调
-- 情绪升级
+### The principle of alignment
 
-**示例：**
-> "你答应过的！"
-> "情况变了！"
-> "那是你的借口！"
-> "你根本不懂！"
-> "我当然不懂！你什么都不告诉我！"
+Action can agree with the dialogue or contradict it; both are dramatic.
 
-### 告白场景
+**Agreeing (reinforcement):**
+> "I love you." She held on to him, and the tears came.
 
-**特征：**
-- 迟疑
-- 停顿
-- 寻找词语
-- 真诚或尴尬
+**Contradicting (revealing the truth):**
+> "You have my full support." He was looking somewhere else, his hand a fist in his pocket.
 
-**示例：**
-> "我...我想说...这些年，我一直在想...如果我们..."
-> 她低下头，声音变小。
-> "如果我们什么？"
-> "如果我们早一点相遇。"
+### Action as interruption
 
-### 审讯场景
+Inserting action controls the pace.
 
-**特征：**
-- 提问控制
-- 信息不对称
-- 压力建立
-- 操纵对话
+```
+"I was going to tell you," he stopped walking and turned around, "but I think you already knew."
+```
 
-**示例：**
-> "那天晚上你在哪里？"
-> "在家。"
-> "有人能证明吗？"
-> "...没有。"
-> "你是一个人？"
-> "是的。"
-> "整个晚上？"
+### Action instead of a tag
 
-### 调情场景
+Let action replace "he said".
 
-**特征：**
-- 双关语
-- 试探
-- 身体接近
-- 暗示
-
-**示例：**
-> "你今天很漂亮。"
-> "只是今天？"
-> "嗯...今天特别漂亮。"
-> "那我明天该担心了？"
-> "明天...明天再看看。"
+```
+"You're lying." She slammed her hand on the table and stood.
+"Sit down." He did not look up.
+```
 
 ---
 
-## 对话常见问题
+## Types of dialogue scene
 
-### 避免
+### The argument
 
-1. **信息倾倒** - 角色互相说已知信息
-   > 错误："正如你所知，我们的公司成立于1995年..."
-   > 正确：通过情节自然揭示信息
+**Traits:**
+- Short sentences
+- Interruptions
+- Emphatic repetition
+- Escalating emotion
 
-2. **所有人说话一样** - 无法区分角色
-   > 解决：给每个角色独特的说话方式
+**Example:**
+> "You promised!"
+> "Things changed!"
+> "That's your excuse!"
+> "You don't understand!"
+> "Of course I don't! You never tell me anything!"
 
-3. **过度礼貌** - 真实对话更粗糙
-   > 错误："我很抱歉打扰你，能否请你..."
-   > 正确："喂。帮我个忙。"
+### The confession
 
-4. **无意义的闲聊** - 除非有特殊目的
-   > 删除天气、吃饭等无关对话，除非揭示人物/推动情节
+**Traits:**
+- Hesitation
+- Pauses
+- Searching for words
+- Sincerity or embarrassment
 
-5. **说教** - 角色发表长篇哲学论述
-   > 改为通过冲突和行动展示观点
+**Example:**
+> "I… I wanted to say… all these years I've been thinking… if we…"
+> She looked down; her voice dropped.
+> "If we what?"
+> "If we'd met sooner."
+
+### The interrogation
+
+**Traits:**
+- Control through questions
+- Asymmetric information
+- Building pressure
+- Steering the exchange
+
+**Example:**
+> "Where were you that night?"
+> "At home."
+> "Can anyone confirm that?"
+> "…No."
+> "You were alone?"
+> "Yes."
+> "All night?"
+
+### The flirtation
+
+**Traits:**
+- Double meanings
+- Testing
+- Physical proximity
+- Implication
+
+**Example:**
+> "You look lovely today."
+> "Only today?"
+> "Well… particularly today."
+> "Should I be worried about tomorrow, then?"
+> "Tomorrow… we'll see about tomorrow."
 
 ---
 
-## 对话练习自查
+## Common problems
 
-写完对话后检查：
+### Avoid
 
-- [ ] 每句对话是否有目的？
-- [ ] 删除后情节是否受影响？
-- [ ] 能否辨识说话人（不看标签）？
-- [ ] 是否有潜台词？
-- [ ] 节奏是否合适（快/慢）？
-- [ ] 是否符合人物性格？
-- [ ] 标签使用是否正确？
+1. **Information dumps** — characters telling each other what they both know
+   > Wrong: "As you know, our company was founded in 1995…"
+   > Right: reveal the information naturally through the plot
+
+2. **Everyone sounding the same** — the characters cannot be told apart
+   > Fix: give each character a distinctive way of speaking
+
+3. **Excessive politeness** — real dialogue is rougher
+   > Wrong: "I'm so sorry to bother you, would you possibly…"
+   > Right: "Hey. Do me a favour."
+
+4. **Small talk with no purpose** — unless it is doing something specific
+   > Cut weather and mealtime chatter unless it reveals character or drives plot
+
+5. **Sermonizing** — a character delivering a long philosophical address
+   > Show the position through conflict and action instead
+
+---
+
+## Self-check
+
+After writing a passage of dialogue:
+
+- [ ] Does every line have a purpose?
+- [ ] Would cutting it affect the plot?
+- [ ] Can you tell who is speaking without the tags?
+- [ ] Is there subtext?
+- [ ] Is the pace right (fast / slow)?
+- [ ] Does it fit the characters' temperaments?
+- [ ] Are the attributions punctuated correctly?

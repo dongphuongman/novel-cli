@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"maps"
 	"strings"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // Snapshot 是本书归一化后的用户规则快照（meta/user_rules.json）。
@@ -174,20 +176,20 @@ func cloneFatigue(m map[string]int) map[string]int {
 
 // SystemDefaults 是代码内置的机械基线（最低优先级来源），不走 LLM 归一化。
 //
-// 数值迁自旧 assets/rules/default.md 的 front matter。阈值依据一并保留：
-// 后段疲劳词（像一/沉默了/没有说话/X息）来自 196 章长跑产物实证——传统 AI 套话被前段
-// 表灭绝后，模型转而把这些"节拍词"用到章均 5-7 次，阈值放宽以容忍正常使用。
-func SystemDefaults() Candidate {
+// 黑名单本身是**语言事实**，由 internal/lang 按本书创作语言提供：中文的
+// 数值迁自旧 assets/rules/default.md 的 front matter，阈值依据是 196 章长跑产物
+// 实证——传统 AI 套话被前段表灭绝后，模型转而把"节拍词"用到章均 5-7 次，
+// 阈值放宽以容忍正常使用。越南语/英语表按同一形状给出各自的套句与疲劳词。
+//
+// 传零值 Profile 等价于中文（lang 的零值解析），保持旧调用语义。
+func SystemDefaults(p lang.Profile) Candidate {
+	def := p.DefaultRules()
 	return Candidate{
 		Source: "system_defaults",
 		Structured: Structured{
 			// 定长固定串的 AI 套句；checker 字面子串匹配，带变量的模式（不是X而是Y）归语义层。
-			ForbiddenPhrases: []string{"某种程度上", "值得注意的是", "不知为何", "五味杂陈"},
-			FatigueWords: map[string]int{
-				"不禁": 1, "竟然": 1, "仿佛": 2, "此外": 1, "然而": 2,
-				"一丝": 2, "一抹": 2, "一缕": 2, "宛如": 1, "不由得": 1,
-				"像一": 3, "沉默了": 2, "没有说话": 2, "几息": 3, "一息": 3, "数息": 2,
-			},
+			ForbiddenPhrases: def.ForbiddenPhrases,
+			FatigueWords:     def.FatigueWords,
 		},
 	}
 }

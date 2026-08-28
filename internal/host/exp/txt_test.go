@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/voocel/ainovel-cli/internal/domain"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestStripChapterTitleHeader(t *testing.T) {
@@ -91,6 +93,7 @@ func TestRenderTXT_TitleAndChapter(t *testing.T) {
 			1: "# 第 1 章 雨夜归人\n\n他望着窗外。",
 			2: "她推开门。",
 		},
+		lang.Resolve("zh"),
 	)
 	if !strings.HasPrefix(got, "《光斑》\n\n") {
 		t.Errorf("missing book title at start:\n%s", got)
@@ -117,6 +120,7 @@ func TestRenderTXT_EmptyBookTitleNoTitleLine(t *testing.T) {
 		chapterTitleIndex{1: "雨夜归人"},
 		nil,
 		map[int]string{1: "正文。"},
+		lang.Resolve("zh"),
 	)
 	if strings.Contains(got, "《") {
 		t.Errorf("should not contain book title brackets: %s", got)
@@ -138,6 +142,7 @@ func TestRenderTXT_LayeredVolume(t *testing.T) {
 		chapterTitleIndex{1: "A", 2: "B"},
 		locs,
 		map[int]string{1: "正文一。", 2: "正文二。"},
+		lang.Resolve("zh"),
 	)
 	if !strings.Contains(got, "第 1 卷  起源") {
 		t.Errorf("missing volume header: %s", got)
@@ -157,6 +162,7 @@ func TestRenderTXT_ChapterWithoutTitleFallsBackToNumberOnly(t *testing.T) {
 		chapterTitleIndex{}, // 没有标题
 		nil,
 		map[int]string{5: "正文。"},
+		lang.Resolve("zh"),
 	)
 	if !strings.Contains(got, "第 5 章\n\n") {
 		t.Errorf("expect 'first 5 章' fallback header: %s", got)

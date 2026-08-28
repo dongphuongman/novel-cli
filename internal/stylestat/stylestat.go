@@ -7,9 +7,11 @@
 package stylestat
 
 import (
-	"regexp"
 	"sort"
 	"strings"
+	"unicode"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // minChapters 少于此章数不出统计——样本太小，频率没有意义。
@@ -24,6 +26,10 @@ type Input struct {
 	Chapters  []string
 	Titles    []string
 	Stopwords []string
+
+	// Lang 决定断句、n-gram 切分单位与模式表。零值 = 中文（lang.Profile 零值安全），
+	// 保证旧调用方行为不变。
+	Lang lang.Profile
 }
 
 // Stats 全书风格统计结果。所有字段都是事实计数，不含任何裁定或指令。
@@ -69,30 +75,9 @@ type TitleStat struct {
 	WithoutPrefix int `json:"without_prefix"`
 }
 
-// patternDefs 通用 AI 文风句式模式。计数是近似（正则不做语法分析），
-// 用途是本书自身的纵向基线对比，绝对精度不重要。
-var patternDefs = []struct {
-	name string
-	re   *regexp.Regexp
-}{
-	{"矫正句『不是…(而)是…』", regexp.MustCompile(`不是[^。！？\n]{1,24}?[，、]?(?:而)?是`)},
-	{"计时量词『X息/X瞬』", regexp.MustCompile(`[一两二三四五六七八九十几数半][息瞬]`)},
-	{"明喻『像一/仿佛/如同/宛如』", regexp.MustCompile(`像一|仿佛|如同|宛如`)},
-	{"沉默节拍『沉默了/没有说话/没有回头』", regexp.MustCompile(`沉默了|没有说话|没有回头`)},
-	{"神态模板『眼中闪过/嘴角勾起/咬了咬唇』", regexp.MustCompile(`眼[中底]闪过|目光一凝|瞳孔一缩|眼眶微红|嘴角[微轻一]?[勾扬翘]|咬了咬唇|不可置信`)},
-	{"躯体反应『心头一紧/身子一颤/倒吸凉气』", regexp.MustCompile(`心头一[紧沉颤]|身子一[颤震僵]|倒吸(?:了)?一口凉气`)},
-	{"思维标记『心想/意识到/感到/觉得』", regexp.MustCompile(`心想|意识到|感到|觉得`)},
-	{"抽象套话『一种说不出的/的意义在于』", regexp.MustCompile(`一种说不出的|说不清[的道]|的意义在于|真正的[^。！？\n]{1,10}是`)},
-}
-
-var (
-	sentenceSplit = regexp.MustCompile(`[。！？\n]+`)
-	openingTimeRe = regexp.MustCompile(`夜|清晨|黎明|天亮|醒来|晨光|一整夜`)
-	titlePrefixRe = regexp.MustCompile(`^#{0,2}\s*第[零〇一二三四五六七八九十百千万\d]+章`)
-)
-
-// shortEndingRunes 末行不超过此字数计为"短结尾"。
-const shortEndingRunes = 30
+// 句式模式、断句正则、标题前缀、短结尾阈值全部迁往 internal/lang——它们是
+// **语言事实**，不是本包的策略。中文那一套在越南语/英语正文上恒零匹配，
+// 留在这里就等于让机械防线在换语言后静默失效（这正是迁移的动因）。
 
 // Compute 计算全书风格统计；章数不足时返回 nil。
 func Compute(in Input) *Stats {
@@ -101,24 +86,25 @@ func Compute(in Input) *Stats {
 		return nil
 	}
 	all := strings.Join(in.Chapters, "\n")
+	lp := in.Lang // 零值安全：等价于中文
 
 	s := &Stats{Chapters: n}
-	for _, def := range patternDefs {
-		total := len(def.re.FindAllStringIndex(all, -1))
+	for _, def := range lp.StylePatterns() {
+		total := len(def.Re.FindAllStringIndex(all, -1))
 		if total == 0 {
 			continue
 		}
 		s.Patterns = append(s.Patterns, PatternStat{
-			Name:       def.name,
+			Name:       def.Name,
 			Total:      total,
 			PerChapter: round1(float64(total) / float64(n)),
 		})
 	}
-	s.TopPhrases = minePhrases(recentWindow(in.Chapters), in.Stopwords)
-	s.RepeatedSentences = repeatedSentences(in.Chapters)
-	s.Ending = endingShape(in.Chapters)
-	s.OpeningTimeRate = openingTimeRate(in.Chapters)
-	s.TitleFormats = titleFormats(in.Titles)
+	s.TopPhrases = minePhrases(recentWindow(in.Chapters), in.Stopwords, lp)
+	s.RepeatedSentences = repeatedSentences(in.Chapters, lp)
+	s.Ending = endingShape(in.Chapters, lp)
+	s.OpeningTimeRate = openingTimeRate(in.Chapters, lp)
+	s.TitleFormats = titleFormats(in.Titles, lp)
 	return s
 }
 
@@ -129,22 +115,23 @@ func recentWindow(chapters []string) []string {
 	return chapters[len(chapters)-phraseWindow:]
 }
 
-// minePhrases 在窗口内挖掘 3-6 字高频短语。
+// minePhrases 在窗口内挖掘高频短语。
+//
+// 切分单位随语言而变（lang.GramMode）：中文按字切 3-6 字 n-gram；越南语/英语
+// 按词切 2-5 词 n-gram。用字符 n-gram 去切"anh ấy"只会得到"nh ấ"这类碎片，
+// 统计出来的"口头禅"全是噪声——这正是必须分语言的原因。
+//
 // 过滤：含标点/空白、首尾虚词、命中专有名词；去重：与已选短语互为子串的丢弃。
-func minePhrases(chapters []string, stopwords []string) []PhraseStat {
+func minePhrases(chapters []string, stopwords []string, lp lang.Profile) []PhraseStat {
 	text := strings.Join(chapters, "\n")
-	runes := []rune(text)
 	threshold := max(8, len(chapters)/2)
+	lo, hi := lp.GramRange()
 
 	counts := make(map[string]int)
-	for size := 3; size <= 6; size++ {
-		for i := 0; i+size <= len(runes); i++ {
-			gram := runes[i : i+size]
-			if !validGram(gram) {
-				continue
-			}
-			counts[string(gram)]++
-		}
+	if lp.GramMode() == lang.GramWord {
+		countWordGrams(counts, text, lo, hi)
+	} else {
+		countRuneGrams(counts, text, lo, hi)
 	}
 
 	stopGrams := stopwordBigrams(stopwords)
@@ -189,6 +176,59 @@ func minePhrases(chapters []string, stopwords []string) []PhraseStat {
 	return out
 }
 
+// countRuneGrams 按字切 n-gram（中文等无词间空格的书写系统）。
+func countRuneGrams(counts map[string]int, text string, lo, hi int) {
+	runes := []rune(text)
+	for size := lo; size <= hi; size++ {
+		for i := 0; i+size <= len(runes); i++ {
+			gram := runes[i : i+size]
+			if !validGram(gram) {
+				continue
+			}
+			counts[string(gram)]++
+		}
+	}
+}
+
+// countWordGrams 按词切 n-gram（拉丁/越南语书写系统）。
+// 词先剥掉两端标点并转小写：句首的 "Anh" 与句中的 "anh" 是同一个口头禅。
+func countWordGrams(counts map[string]int, text string, lo, hi int) {
+	words := make([]string, 0, len(text)/4)
+	for _, w := range strings.FieldsFunc(text, unicode.IsSpace) {
+		w = strings.ToLower(strings.TrimFunc(w, func(r rune) bool {
+			return !unicode.IsLetter(r) && !unicode.IsDigit(r)
+		}))
+		if w != "" {
+			words = append(words, w)
+		}
+	}
+	for size := lo; size <= hi; size++ {
+		for i := 0; i+size <= len(words); i++ {
+			gram := words[i : i+size]
+			if wordGramEdgeStop[gram[0]] || wordGramEdgeStop[gram[len(gram)-1]] {
+				continue
+			}
+			counts[strings.Join(gram, " ")]++
+		}
+	}
+}
+
+// wordGramEdgeStop 是首尾虚词表：以它们开头或结尾的 n-gram 是语法碎片，
+// 不是文风短语。与中文的 gramEdgeStop 同一用途、同一取舍（宁可过滤偏严）。
+var wordGramEdgeStop = func() map[string]bool {
+	m := map[string]bool{}
+	for _, w := range strings.Fields(`
+		the a an of to in on at and or but is was were be been being
+		he she it they we you i him her them his hers its their our my
+		that this these those with for from as by
+		anh cô nó họ chúng tôi bạn tôi mình của và với là đã đang sẽ
+		một những các cái này kia đó thì mà nhưng ở trên trong cho từ
+	`) {
+		m[w] = true
+	}
+	return m
+}()
+
 // gramEdgeStop 首尾为这些虚词/代词的 n-gram 不是文风短语，跳过。
 const gramEdgeStop = "的了着是在和与就也都还又把被他她它我你这那"
 
@@ -231,14 +271,14 @@ func hitStopword(gram string, stopGrams []string) bool {
 }
 
 // repeatedSentences 找跨 ≥3 章逐字重复的 ≥12 字句子，按次数取 top 5。
-func repeatedSentences(chapters []string) []SentenceStat {
+func repeatedSentences(chapters []string, lp lang.Profile) []SentenceStat {
 	type rec struct {
 		count    int
 		chapters map[int]struct{}
 	}
 	seen := make(map[string]*rec)
 	for ci, text := range chapters {
-		for sent, count := range chapterSentenceCounts(text) {
+		for sent, count := range chapterSentenceCounts(text, lp) {
 			r := seen[sent]
 			if r == nil {
 				r = &rec{chapters: make(map[int]struct{})}
@@ -273,7 +313,7 @@ func trimWrappedQuotes(sentence string) string {
 	return strings.Trim(strings.TrimSpace(sentence), `"“”‘’「」『』`)
 }
 
-func endingShape(chapters []string) EndingStat {
+func endingShape(chapters []string, lp lang.Profile) EndingStat {
 	var lengths []int
 	short := 0
 	for _, text := range chapters {
@@ -283,7 +323,7 @@ func endingShape(chapters []string) EndingStat {
 		}
 		n := len([]rune(line))
 		lengths = append(lengths, n)
-		if n <= shortEndingRunes {
+		if n <= lp.ShortEndingLimit() {
 			short++
 		}
 	}
@@ -297,17 +337,17 @@ func endingShape(chapters []string) EndingStat {
 	}
 }
 
-func openingTimeRate(chapters []string) float64 {
+func openingTimeRate(chapters []string, lp lang.Profile) float64 {
 	hit := 0
 	for _, text := range chapters {
-		if openingTimeRe.MatchString(firstParagraph(text)) {
+		if lp.OpeningTimeRe().MatchString(firstParagraph(text)) {
 			hit++
 		}
 	}
 	return round2(float64(hit) / float64(len(chapters)))
 }
 
-func titleFormats(titles []string) *TitleStat {
+func titleFormats(titles []string, lp lang.Profile) *TitleStat {
 	if len(titles) == 0 {
 		return nil
 	}
@@ -316,7 +356,7 @@ func titleFormats(titles []string) *TitleStat {
 		if strings.TrimSpace(title) == "" {
 			continue
 		}
-		if titlePrefixRe.MatchString(title) {
+		if lp.TitlePrefixRe().MatchString(title) {
 			t.WithPrefix++
 		} else {
 			t.WithoutPrefix++

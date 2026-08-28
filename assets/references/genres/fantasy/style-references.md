@@ -1,25 +1,25 @@
-# 奇幻风格补充参考
+# Fantasy style: supplementary reference
 
-## 世界构建
+## World-building
 
-- 魔法体系必须有明确代价，不能出现"无限能量"
-- 种族特征要在行动中自然展示，禁止百科式灌输
-- 新设定首次出现时通过角色互动引出，不用旁白解释
+- The magic system must have an explicit cost; there is no "infinite energy"
+- Traits of a people emerge naturally through action; encyclopedia-style lore dumps are forbidden
+- A new piece of setting is introduced through character interaction the first time it appears, never explained by narration
 
-## 常见陷阱
+## Common traps
 
-- 龙傲天：主角能力攀升要有合理代价和挫折
-- 设定膨胀：每章最多引入一个新设定概念
-- 语言穿越：避免现代网络用语出现在古典背景中
+- Invincible protagonist: any rise in the protagonist's power needs a credible cost and real setbacks
+- Setting bloat: introduce at most one new setting concept per chapter
+- Anachronistic register: keep modern internet slang out of a pre-modern setting
 
-## 战斗与能力描写
+## Writing combat and abilities
 
-- 战斗重点是策略和代价，不是招式名称堆砌
-- 能力上限在 world_rules 中已约定，严禁突破
-- 受伤要有持续影响，不能"下一场景就好了"
+- Combat turns on strategy and cost, not on a pile-up of named techniques
+- The ceiling on an ability is fixed in world_rules; breaking it is strictly forbidden
+- An injury has lasting consequences; nobody is fine again by the next scene
 
-## 氛围营造
+## Atmosphere
 
-- 通过五感描写建立异世界沉浸感
-- 日常生活细节（货币、食物、交通）体现世界观
-- 避免所有角色都说现代普通话，适当使用世界观内的表达方式
+- Build immersion in the other world through the five senses
+- Everyday details (currency, food, travel) carry the world-building
+- Do not have every character speak in one flat modern idiom; use the world's own turns of phrase where they fit

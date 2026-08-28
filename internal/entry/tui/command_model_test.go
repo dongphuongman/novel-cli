@@ -3,8 +3,11 @@ package tui
 import (
 	"testing"
 
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/x/ansi"
 	"github.com/voocel/agentcore"
 	"github.com/voocel/ainovel-cli/internal/host"
+	"strings"
 )
 
 type fakeModelRuntime struct {
@@ -89,5 +92,62 @@ func TestModelSwitchAppliesExplicitThinkingChange(t *testing.T) {
 	}
 	if len(rt.setCalls) != 1 || rt.setCalls[0].level != want {
 		t.Fatalf("显式改动应回写 %q，得到 %+v", want, rt.setCalls)
+	}
+}
+
+// TestModelFieldLabelWidthGrowsWithLabels：标签列宽必须跟着实际标签走。
+//
+// 这条来自实机缺陷：列宽写死 12，中文"推理强度:"占 9 格一直没事，换成越南语
+// "Cường độ suy luận:"占 18 格后被 lipgloss 折行，直接把面板边框撑破。
+// 单测当时全绿——翻译是对的，渲染是坏的。
+func TestModelFieldLabelWidthGrowsWithLabels(t *testing.T) {
+	cases := []struct {
+		name   string
+		labels []string
+		want   int
+	}{
+		{"中文短标签保持历史列宽", []string{"角色", "Provider", "模型", "推理强度"}, modelFieldLabelBaseWidth},
+		{"越南语长标签撑开列宽", []string{"Vai", "Provider", "Model", "Cường độ suy luận"}, 19},
+		{"英语长标签撑开列宽", []string{"Role", "Provider", "Model", "Reasoning effort"}, 18},
+		{"空标签集回落历史列宽", nil, modelFieldLabelBaseWidth},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := modelFieldLabelWidth(c.labels...); got != c.want {
+				t.Errorf("modelFieldLabelWidth(%v) = %d，期望 %d", c.labels, got, c.want)
+			}
+		})
+	}
+}
+
+// TestModelFieldNeverWraps 是上面那条的行为版：渲染出来必须是单行。
+// 一旦折行，面板边框就会被撑破——这正是缺陷的可见形态。
+func TestModelFieldNeverWraps(t *testing.T) {
+	longest := "Cường độ suy luận"
+	w := modelFieldLabelWidth("Vai", "Provider", "Model", longest)
+	line := renderModelField(w, longest, "Mặc định (kế thừa)", false)
+	if strings.Contains(line, "\n") {
+		t.Fatalf("字段渲染出现折行，面板边框会被撑破：\n%s", line)
+	}
+}
+
+// TestModelFieldsAlignAcrossRows：同一面板内所有行的取值必须起始于同一列，
+// 否则视觉上就是一张错位的表。
+func TestModelFieldsAlignAcrossRows(t *testing.T) {
+	labels := []string{"Vai", "Provider", "Model", "Cường độ suy luận"}
+	w := modelFieldLabelWidth(labels...)
+	offset := -1
+	for _, label := range labels {
+		plain := ansi.Strip(renderModelField(w, label, "x", false))
+		// 必须按显示列算：strings.Index 给的是字节下标，越南语一个字符占 2~3 字节，
+		// 用字节下标比对会得出"不对齐"的假阳性（这条测试第一版就踩了）。
+		got := lipgloss.Width(plain[:strings.Index(plain, "[")])
+		if offset == -1 {
+			offset = got
+			continue
+		}
+		if got != offset {
+			t.Errorf("标签 %q 的取值起始列 %d，与首行的 %d 不一致", label, got, offset)
+		}
 	}
 }

@@ -1,38 +1,38 @@
-## 奇幻/仙侠 弧型参考
+## Fantasy / cultivation arc templates
 
-以下弧型适用于修仙、玄幻、奇幻冒险类长篇。根据具体设定自由组合，不必全部使用。
+The arc shapes below suit long-form cultivation, epic fantasy and fantasy adventure. Combine them freely to fit your setting; you do not have to use them all.
 
-### 修炼突破弧（10-15 章）
-3-4 章瓶颈困境/资源不足 → 2-3 章外部干扰或意外机缘 → 2-3 章闭关突破（穿插危机） → 1-2 章实力展示+收获
-- 突破前必须有明确代价或风险
-- 不要"坐下修炼三天就突破了"，过程中穿插人物互动和外部威胁
-- 突破后立刻用新实力解决一个之前无法解决的问题
+### Cultivation-breakthrough arc (10–15 chapters)
+3–4 chapters of a plateau or a resource shortfall → 2–3 chapters of outside interference or an unexpected opportunity → 2–3 chapters of secluded practice and breakthrough (crises interleaved) → 1–2 chapters showing the new power and the gains
+- The breakthrough must carry an explicit cost or risk beforehand
+- No "sat down for three days and broke through" — thread character interaction and outside threats through the process
+- Immediately after breaking through, use the new power to solve a problem that was unsolvable before
 
-### 宗门大比/擂台弧（12-20 章）
-2-3 章赛前准备/情报收集 → 6-10 章逐轮对决（每轮对手有特色，穿插角色互动） → 2-3 章决赛高潮+奖惩
-- 每轮对手不能只是"更强的人"，要有性格和动机
-- 比赛间隙穿插阴谋、结盟、赌约等副线
-- 结局不一定是夺冠，失败或意外中断也能推动剧情
+### Sect tournament / arena arc (12–20 chapters)
+2–3 chapters of preparation and intelligence-gathering → 6–10 chapters of round-by-round bouts (each opponent distinct, with character interaction interleaved) → 2–3 chapters of the final and its rewards and penalties
+- An opponent cannot merely be "someone stronger"; they need temperament and motive
+- Between bouts, weave in subplots: conspiracy, alliance, a wager
+- The ending need not be victory — a loss or an unexpected interruption can drive the story just as well
 
-### 秘境/副本探险弧（15-25 章）
-2-3 章情报收集+组队 → 8-15 章层层深入（每层新机制/新危险） → 2-3 章最终Boss或宝藏+收获
-- 每层有独特的环境、规则和挑战，不是简单的打怪升级
-- 队伍内部关系在压力下发生变化（信任/背叛/牺牲）
-- 收获不只是法宝，也包括认知和关系转变
+### Secret realm / dungeon expedition arc (15–25 chapters)
+2–3 chapters of intelligence-gathering and assembling the party → 8–15 chapters descending layer by layer (each layer with a new mechanic and a new danger) → 2–3 chapters of the final boss or the treasure and its gains
+- Every layer has its own environment, rules and challenge; this is not simply grinding levels
+- Relationships inside the party change under pressure (trust, betrayal, sacrifice)
+- What they gain is not only a treasure but a shift in understanding and in relationships
 
-### 势力争霸/门派斗争弧（12-18 章）
-2-3 章矛盾积累/站队 → 3-5 章暗战博弈 → 3-5 章正面冲突 → 2-3 章结算+格局重塑
-- 不是简单的正邪对立，各方都有合理立场
-- 主角在其中的角色要有演变（旁观→卷入→被迫选择→主导）
-- 结局要改变势力版图，为后续卷埋线
+### Power struggle / factional conflict arc (12–18 chapters)
+2–3 chapters of friction building and choosing sides → 3–5 chapters of covert manoeuvring → 3–5 chapters of open conflict → 2–3 chapters of settlement and a redrawn balance
+- Not a simple good-versus-evil split; every side has a defensible position
+- The protagonist's role must evolve (bystander → drawn in → forced to choose → leading)
+- The ending redraws the map of power and seeds threads for later volumes
 
-### 渡劫/大战弧（8-12 章）
-2-3 章战前态势/最后准备 → 4-6 章多线战斗（不同战场交叉叙事） → 1-2 章决定性转折+代价
-- 战斗要有策略层面，不是纯粹的力量碾压
-- 要有重要角色的牺牲或重大损失
-- 战后世界发生不可逆变化
+### Tribulation / great battle arc (8–12 chapters)
+2–3 chapters of the pre-battle situation and final preparation → 4–6 chapters of multi-front fighting (cutting between battlefields) → 1–2 chapters of the decisive turn and its cost
+- The fighting needs a strategic layer; it is not raw power crushing the opposition
+- An important character must be sacrificed, or something major must be lost
+- The world changes irreversibly afterwards
 
-### 日常/过渡弧（5-8 章）
-修炼日常/人物社交/势力建设/伏笔布局/角色情感发展
-- 不是水字数，每章至少推进一条暗线
-- 为下一个高潮弧蓄势，建立情感连接后破坏才有冲击力
+### Everyday / transitional arc (5–8 chapters)
+Daily practice, character socializing, building an organization, planting foreshadowing, developing relationships
+- This is not padding: every chapter advances at least one hidden thread
+- It builds pressure for the next climactic arc — an emotional bond has to exist before breaking it can land

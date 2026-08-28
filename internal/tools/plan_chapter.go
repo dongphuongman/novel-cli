@@ -22,9 +22,9 @@ func NewPlanChapterTool(store *store.Store) *PlanChapterTool {
 
 func (t *PlanChapterTool) Name() string { return "plan_chapter" }
 func (t *PlanChapterTool) Description() string {
-	return "保存章节写作构思。Agent 自主决定规划粒度，不强制场景拆分"
+	return "Save the writing plan for a chapter. The agent decides the granularity; a scene breakdown is not required"
 }
-func (t *PlanChapterTool) Label() string { return "规划章节" }
+func (t *PlanChapterTool) Label() string { return "Plan chapter" }
 
 // 写工具，禁止并发。
 func (t *PlanChapterTool) ReadOnly(_ json.RawMessage) bool        { return false }
@@ -32,20 +32,20 @@ func (t *PlanChapterTool) ConcurrencySafe(_ json.RawMessage) bool { return false
 
 func (t *PlanChapterTool) Schema() map[string]any {
 	return schema.Object(
-		schema.Property("chapter", schema.Int("章节号")).Required(),
-		schema.Property("title", schema.String("暂定章节标题；写作后可按正文调整")).Required(),
-		schema.Property("goal", schema.String("本章目标")).Required(),
-		schema.Property("conflict", schema.String("核心冲突")).Required(),
-		schema.Property("hook", schema.String("章末钩子")).Required(),
-		schema.Property("emotion_arc", schema.String("情绪曲线")),
-		schema.Property("notes", schema.String("自由备忘（任何你觉得写作时需要记住的东西）")),
-		schema.Property("required_beats", schema.Array("本章必须完成的推进项", schema.String(""))),
-		schema.Property("forbidden_moves", schema.Array("本章明确不能发生的推进", schema.String(""))),
-		schema.Property("continuity_checks", schema.Array("本章需特别核对的连续性点", schema.String(""))),
-		schema.Property("evaluation_focus", schema.Array("Editor 重点检查项", schema.String(""))),
-		schema.Property("emotion_target", schema.String("可选：本章希望读者主要感受到的情绪")),
-		schema.Property("payoff_points", schema.Array("可选：关键章希望回应的情节点或兑现点", schema.String(""))),
-		schema.Property("hook_goal", schema.String("可选：章末希望驱动的追读欲望或悬念目标")),
+		schema.Property("chapter", schema.Int("Chapter number")).Required(),
+		schema.Property("title", schema.String("Provisional chapter title; adjust it to the prose after writing")).Required(),
+		schema.Property("goal", schema.String("This chapter's goal")).Required(),
+		schema.Property("conflict", schema.String("Central conflict")).Required(),
+		schema.Property("hook", schema.String("Chapter-ending hook")).Required(),
+		schema.Property("emotion_arc", schema.String("Emotional arc")),
+		schema.Property("notes", schema.String("Free-form notes (anything you want to remember while writing)")),
+		schema.Property("required_beats", schema.Array("What this chapter must deliver", schema.String(""))),
+		schema.Property("forbidden_moves", schema.Array("What this chapter must explicitly not do", schema.String(""))),
+		schema.Property("continuity_checks", schema.Array("Continuity points to check specifically in this chapter", schema.String(""))),
+		schema.Property("evaluation_focus", schema.Array("What the editor should focus on", schema.String(""))),
+		schema.Property("emotion_target", schema.String("Optional: the emotion you want this chapter to leave the reader with")),
+		schema.Property("payoff_points", schema.Array("Optional: the plot points or payoffs a key chapter should answer", schema.String(""))),
+		schema.Property("hook_goal", schema.String("Optional: the pull to read on, or the suspense goal, you want the chapter ending to create")),
 	)
 }
 
@@ -66,7 +66,7 @@ func (t *PlanChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 			"chapter":   plan.Chapter,
 			"skipped":   true,
 			"completed": true,
-			"reason":    fmt.Sprintf("第 %d 章已提交完成，不能重新规划", plan.Chapter),
+			"reason":    fmt.Sprintf("chapter %d is already committed and cannot be re-planned", plan.Chapter),
 		})
 	}
 	if err := t.store.Progress.ValidateChapterWork(plan.Chapter); err != nil {
@@ -93,7 +93,7 @@ func (t *PlanChapterTool) Execute(_ context.Context, args json.RawMessage) (json
 	return json.Marshal(map[string]any{
 		"planned":   true,
 		"chapter":   plan.Chapter,
-		"next_step": "立即调用 draft_chapter(chapter=本章节号, content=完整正文字符串) 写入正文，不要重复规划同一章",
+		"next_step": "call draft_chapter(chapter=<this chapter number>, content=<the complete prose string>) now to write the prose; do not plan the same chapter again",
 	})
 }
 

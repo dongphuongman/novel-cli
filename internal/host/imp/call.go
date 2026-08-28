@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/voocel/ainovel-cli/internal/i18n"
 	"log/slog"
 	"strings"
 	"time"
@@ -24,7 +25,9 @@ type errTruncated struct {
 	Raw string
 }
 
-func (e *errTruncated) Error() string { return "模型输出被长度截断（stop=length）" }
+func (e *errTruncated) Error() string {
+	return "the model output was truncated by length (stop=length)"
+}
 
 // errSemantic 表示无法通过重问修复的输出层失败，携带原始响应，
 // 供 runner 统一落 failures/ 失败工件（§14.2），所有语义函数共用。
@@ -91,25 +94,34 @@ func snippet(s string, max int) string {
 func briefErr(err error) string {
 	s := err.Error()
 	if d := modelErrDetail(err); d != "" {
-		s = d + "：" + s
+		s = d + ": " + s
 	}
 	return snippet(s, 100)
 }
 
-// errTypeLabels 把 litellm 错误分类翻成一眼可读的中文短标签。
-var errTypeLabels = map[litellm.ErrorType]string{
-	litellm.ErrorTypeAuth:            "鉴权失败",
-	litellm.ErrorTypeRateLimit:       "限流",
-	litellm.ErrorTypeNetwork:         "网络错误",
-	litellm.ErrorTypeValidation:      "请求参数非法",
-	litellm.ErrorTypeProvider:        "上游服务错误",
-	litellm.ErrorTypeTimeout:         "超时",
-	litellm.ErrorTypeQuota:           "配额不足",
-	litellm.ErrorTypeModel:           "模型不可用",
-	litellm.ErrorTypeInternal:        "内部错误",
-	litellm.ErrorTypeContextOverflow: "上下文超限",
-	litellm.ErrorTypeOverloaded:      "上游过载",
-	litellm.ErrorTypeContentFilter:   "内容过滤拦截",
+// errTypeLabelKeys 存 i18n key 而非文案：包级 map 在 init 期求值，
+// 直接存文案会让界面语言切换后这些标签停在启动时的语言（见 i18n 覆盖测试）。
+var errTypeLabelKeys = map[litellm.ErrorType]string{
+	litellm.ErrorTypeAuth:            "imp.errtype.auth",
+	litellm.ErrorTypeRateLimit:       "imp.errtype.ratelimit",
+	litellm.ErrorTypeNetwork:         "imp.errtype.network",
+	litellm.ErrorTypeValidation:      "imp.errtype.validation",
+	litellm.ErrorTypeProvider:        "imp.errtype.provider",
+	litellm.ErrorTypeTimeout:         "imp.errtype.timeout",
+	litellm.ErrorTypeQuota:           "imp.errtype.quota",
+	litellm.ErrorTypeModel:           "imp.errtype.model",
+	litellm.ErrorTypeInternal:        "imp.errtype.internal",
+	litellm.ErrorTypeContextOverflow: "imp.errtype.ctxoverflow",
+	litellm.ErrorTypeOverloaded:      "imp.errtype.overloaded",
+	litellm.ErrorTypeContentFilter:   "imp.errtype.contentfilter",
+}
+
+// errTypeLabel 在使用时解析文案，保证跟随当前界面语言。
+func errTypeLabel(t litellm.ErrorType) string {
+	if key, ok := errTypeLabelKeys[t]; ok {
+		return i18n.T(key)
+	}
+	return ""
 }
 
 // modelErrDetail 从错误链提取适配器的结构化事实（错误分类、HTTP 状态、provider、模型）。
@@ -122,7 +134,7 @@ func modelErrDetail(err error) string {
 		return ""
 	}
 	parts := make([]string, 0, 4)
-	if label := errTypeLabels[le.Type]; label != "" {
+	if label := errTypeLabel(le.Type); label != "" {
 		parts = append(parts, label)
 	}
 	if le.StatusCode != 0 {
@@ -134,7 +146,7 @@ func modelErrDetail(err error) string {
 	if le.Model != "" {
 		parts = append(parts, le.Model)
 	}
-	return strings.Join(parts, "，")
+	return strings.Join(parts, ", ")
 }
 
 // callOptions 组装本次调用的 CallOption：始终带输出上限；按能力可选 thinking。
@@ -164,11 +176,11 @@ func callStructured[T any](ctx context.Context, m callModel, contract llmcontrac
 					"model", res.Model, "schema_fingerprint", contract.Fingerprint())
 			},
 			RequestRetry: func(ev llmretry.Event) {
-				prof.sayRetry(time.Now().Add(ev.Delay), "模型请求失败（%s），进行第 %d 次重试", briefErr(ev.Err), ev.Attempt)
+				prof.sayRetry(time.Now().Add(ev.Delay), i18n.T("imp.say.retry"), briefErr(ev.Err), ev.Attempt)
 				prof.logger().Warn("imp 模型请求重试", "attempt", ev.Attempt, "delay", ev.Delay, "err", ev.Err)
 			},
 			Correction: func(ev llmcontract.Correction) {
-				prof.say("输出校验未通过（%s），带错误反馈进行第 %d 次重问", briefErr(ev.Err), ev.Attempt+1)
+				prof.say(i18n.T("imp.say.correction"), briefErr(ev.Err), ev.Attempt+1)
 				prof.logger().Warn("imp 结构化输出自愈", "attempt", ev.Attempt,
 					"layer", ev.Layer, "structured_mode", ev.Mode, "err", ev.Err)
 			},
@@ -193,7 +205,7 @@ func callStructured[T any](ctx context.Context, m callModel, contract llmcontrac
 		}
 	case llmcontract.FailureRequest:
 		if detail := modelErrDetail(failure); detail != "" {
-			return out, fmt.Errorf("imp: 模型调用失败（%s）：%w", detail, failure)
+			return out, fmt.Errorf("imp: model call failed (%s): %w", detail, failure)
 		}
 	}
 	return out, fmt.Errorf("imp: %w", failure)

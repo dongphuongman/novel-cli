@@ -13,10 +13,12 @@ import (
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/rules"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func newTestContextTool(st *store.Store, refs References, style string) *ContextTool {
-	return NewContextTool(st, refs, style, NewStyleStatsIndex(st))
+	return NewContextTool(st, refs, style, NewStyleStatsIndex(st, lang.Resolve("zh")))
 }
 
 func TestBuildProgressStatusHidesLayeredCapacityEstimate(t *testing.T) {
@@ -577,7 +579,7 @@ func TestFinalizeContextPayloadReportsAppliedTrimming(t *testing.T) {
 		t.Fatal(err)
 	}
 	summary, _ := payload["_loading_summary"].(string)
-	if !strings.Contains(summary, "裁剪:references") {
+	if !strings.Contains(summary, "trimmed:references") {
 		t.Fatalf("loading summary must reflect final trimming, got %q", summary)
 	}
 }
@@ -781,13 +783,13 @@ func TestContextToolSelectedMemoryRecallsStoryThreadsAndReviewLessons(t *testing
 	if containsRecallSummary(payload.Selected.StoryThreads, "试炼规则碑文残卷") {
 		t.Fatalf("expected weak-overlap foreshadow to stay out, got %+v", payload.Selected.StoryThreads)
 	}
-	if containsRecallSummary(payload.Selected.StoryThreads, "建议回看第") {
+	if containsRecallSummary(payload.Selected.StoryThreads, "suggest re-reading chapter") {
 		t.Fatalf("expected related_chapters not to be duplicated into story_threads, got %+v", payload.Selected.StoryThreads)
 	}
-	if !containsRecallSummary(payload.Selected.ReviewLessons, "contract 漏项") {
+	if !containsRecallSummary(payload.Selected.ReviewLessons, "contract miss") {
 		t.Fatalf("expected review lesson recall to mention contract miss, got %+v", payload.Selected.ReviewLessons)
 	}
-	if !strings.Contains(payload.Summary, "线索召回:") || !strings.Contains(payload.Summary, "评审召回:") {
+	if !strings.Contains(payload.Summary, "thread_recall:") || !strings.Contains(payload.Summary, "review_recall:") {
 		t.Fatalf("expected loading summary to report selected memory, got %q", payload.Summary)
 	}
 }
@@ -848,7 +850,7 @@ func TestContextToolSelectedMemorySurfacesAgingForeshadow(t *testing.T) {
 	if !containsRecallSummary(payload.Selected.StoryThreads, "失落的血脉") {
 		t.Fatalf("expected second aging foreshadow to surface, got %+v", payload.Selected.StoryThreads)
 	}
-	if !containsRecallSummary(payload.Selected.StoryThreads, "未回收") {
+	if !containsRecallSummary(payload.Selected.StoryThreads, "without payoff") {
 		t.Fatalf("expected aging item to carry overdue annotation, got %+v", payload.Selected.StoryThreads)
 	}
 	// 近期伏笔（账龄 <30 且不相关）不应被回填。

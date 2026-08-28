@@ -507,3 +507,100 @@ func TestProviderMenuIsTwoLevel(t *testing.T) {
 		}
 	}
 }
+
+// freeLLMAPIPreset 取出被测预设；找不到就让测试失败而不是静默跳过。
+func freeLLMAPIPreset(t *testing.T) bootstrap.ProviderPreset {
+	t.Helper()
+	for _, p := range bootstrap.ProviderPresets() {
+		if p.Name == "freellmapi" {
+			return p
+		}
+	}
+	t.Fatal("预设目录里没有 freellmapi")
+	return bootstrap.ProviderPreset{}
+}
+
+// 地址已知的 OpenAI 兼容网关：选中即成型——协议钉死、地址预填、模型种好，
+// 用户只剩下粘贴 API Key 这一步。
+func TestGatewayPresetArrivesFullyFormed(t *testing.T) {
+	preset := freeLLMAPIPreset(t)
+	st := &modelConfigState{editModelIdx: -1}
+	st.applyProviderChoice(configProviderChoice{preset: &preset})
+
+	if st.step != configStepHub {
+		t.Fatalf("应直接进入 hub（不经自定义命名步骤），得到 step=%d", st.step)
+	}
+	if st.provider != "freellmapi" {
+		t.Errorf("provider = %q", st.provider)
+	}
+	// 这一条是本次改动的核心：留空会让 ProviderType() 查不到名字而报错。
+	if st.providerType != "openai" {
+		t.Errorf("协议 = %q，期望 openai——留空会导致建模型时报 provider 未知", st.providerType)
+	}
+	if st.baseURL != "http://localhost:3001/v1" {
+		t.Errorf("base_url = %q，期望预填网关地址", st.baseURL)
+	}
+	if st.apiKeyOptional {
+		t.Error("FreeLLMAPI 需要 unified key，不该标记为可留空")
+	}
+}
+
+// 种子模型：名字为 auto，且 json_schema 显式为 false（动态路由网关无法承诺原生 schema）。
+func TestGatewayPresetSeedsAutoModelWithSchemaOff(t *testing.T) {
+	preset := freeLLMAPIPreset(t)
+	st := &modelConfigState{editModelIdx: -1}
+	st.applyProviderChoice(configProviderChoice{preset: &preset})
+
+	if len(st.models) != 1 {
+		t.Fatalf("应种下 1 个模型，得到 %d 个", len(st.models))
+	}
+	if st.models[0].Name != "auto" {
+		t.Errorf("模型名 = %q，期望 auto", st.models[0].Name)
+	}
+	if st.models[0].JSONSchema == nil || *st.models[0].JSONSchema {
+		t.Errorf("应种下 json_schema:false，得到 %v", st.models[0].JSONSchema)
+	}
+	// 长度错位会让整列重命名检测偏移索引。
+	if len(st.modelOrigins) != len(st.models) {
+		t.Fatalf("modelOrigins 长度 %d 与 models 长度 %d 不符",
+			len(st.modelOrigins), len(st.models))
+	}
+	if st.modelOrigins[0] != "" {
+		t.Errorf("种子模型是新增，原名应为空，得到 %q", st.modelOrigins[0])
+	}
+}
+
+// 协议钉死后 hub 必须露出协议行与 Endpoint 行：前者让用户看得见这是 OpenAI 协议代理，
+// 后者让用户能在 chat / responses 之间切换（FreeLLMAPI 两个都支持）。
+func TestGatewayPresetHubExposesProtocolAndEndpoint(t *testing.T) {
+	preset := freeLLMAPIPreset(t)
+	st := &modelConfigState{editModelIdx: -1}
+	st.applyProviderChoice(configProviderChoice{preset: &preset})
+
+	ids := hubFieldIDs(st.hubFields())
+	for _, want := range []string{"protocol", "api"} {
+		if !slices.Contains(ids, want) {
+			t.Errorf("hub 缺少 %q，得到 %v", want, ids)
+		}
+	}
+}
+
+// 内置 provider 不受影响：协议仍为空、不种模型——这次改动对既有 11 个预设是 no-op。
+func TestBuiltinPresetsUnaffected(t *testing.T) {
+	for _, p := range bootstrap.ProviderPresets() {
+		if p.ProviderType != "" || p.NeedType {
+			continue
+		}
+		preset := p
+		t.Run(preset.Name, func(t *testing.T) {
+			st := &modelConfigState{editModelIdx: -1}
+			st.applyProviderChoice(configProviderChoice{preset: &preset})
+			if st.providerType != "" {
+				t.Errorf("内置 provider 协议应留空（由名称隐含），得到 %q", st.providerType)
+			}
+			if len(st.models) != 0 {
+				t.Errorf("内置 provider 不该种模型，得到 %d 个", len(st.models))
+			}
+		})
+	}
+}

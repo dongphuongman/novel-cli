@@ -22,10 +22,14 @@ func TestStoreSummaryCompactApplyUsesPersistentStoreData(t *testing.T) {
 	})
 
 	msgs := []agentcore.AgentMessage{
-		agentcore.UserMsg(strings.Repeat("旧上下文", 80)),
+		// 旧上下文要足够大：策略在"压缩后反而更大"时会正确地拒绝压缩
+		// （strategy.go 的 tokensAfter >= tokensBefore 分支）。恢复摘要英文化后
+		// 比中文长，几百 token 的 transcript 已不足以让压缩真正省下 token，
+		// 那时测到的就不是策略行为而是 fixture 太小。
+		agentcore.UserMsg(strings.Repeat("旧上下文", 600)),
 		agentcore.Message{
 			Role:    agentcore.RoleAssistant,
-			Content: []agentcore.ContentBlock{agentcore.TextBlock(strings.Repeat("旧回复", 80))},
+			Content: []agentcore.ContentBlock{agentcore.TextBlock(strings.Repeat("旧回复", 600))},
 		},
 		agentcore.UserMsg("继续写第三章，注意承接第二章结尾。"),
 		agentcore.Message{
@@ -55,16 +59,16 @@ func TestStoreSummaryCompactApplyUsesPersistentStoreData(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected ContextSummary, got %T", out[0])
 	}
-	if !strings.Contains(summary.Summary, "最近章节摘要") {
+	if !strings.Contains(summary.Summary, "Recent chapter summaries") {
 		t.Fatalf("expected persistent summaries in checkpoint, got %q", summary.Summary)
 	}
-	if !strings.Contains(summary.Summary, "当前章节计划") {
+	if !strings.Contains(summary.Summary, "Current chapter plan") {
 		t.Fatalf("expected chapter plan in checkpoint, got %q", summary.Summary)
 	}
-	if !strings.Contains(summary.Summary, "活跃伏笔") {
+	if !strings.Contains(summary.Summary, "Live foreshadowing") {
 		t.Fatalf("expected foreshadow data in checkpoint, got %q", summary.Summary)
 	}
-	if !strings.Contains(summary.Summary, "待修审稿问题") {
+	if !strings.Contains(summary.Summary, "Review issues awaiting fixes") {
 		t.Fatalf("expected pending review section in checkpoint, got %q", summary.Summary)
 	}
 	if !strings.Contains(summary.Summary, "仓库线索需要再蓄压一拍") {
@@ -85,7 +89,7 @@ func TestWriterRestoreIncludesOptionalDataWarnings(t *testing.T) {
 	if err != nil {
 		t.Fatalf("辅助数据损坏不应阻止恢复上下文: %v", err)
 	}
-	if !ok || !strings.Contains(text, "数据告警") || !strings.Contains(text, "style_rules") {
+	if !ok || !strings.Contains(text, "Data warnings") || !strings.Contains(text, "style_rules") {
 		t.Fatalf("恢复上下文应向模型暴露读取告警: %q", text)
 	}
 }
@@ -146,10 +150,10 @@ func TestWriterRestorePackRefreshReusesStoreBuilder(t *testing.T) {
 	if !strings.Contains(text, "<post-compact-context>") {
 		t.Fatalf("expected wrapped restore context, got %q", text)
 	}
-	if !strings.Contains(text, "待修审稿问题") {
+	if !strings.Contains(text, "Review issues awaiting fixes") {
 		t.Fatalf("expected pending review section, got %q", text)
 	}
-	if !strings.Contains(text, "当前章节计划") {
+	if !strings.Contains(text, "Current chapter plan") {
 		t.Fatalf("expected chapter plan section, got %q", text)
 	}
 

@@ -5,6 +5,8 @@ import (
 	"sort"
 	"sync"
 	"testing"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestTrackerMatchesComputeAcrossUpdates(t *testing.T) {
@@ -19,7 +21,7 @@ func TestTrackerMatchesComputeAcrossUpdates(t *testing.T) {
 	titles := []string{"第一章 风起", "云涌", "第3章 雷动", "暗潮", "归途", "山门"}
 	stopwords := []string{"陆九渊"}
 
-	tracker := NewTracker()
+	tracker := NewTracker(lang.Resolve("zh"))
 	chapters := make(map[int]string)
 	for chapter := 1; chapter <= 6; chapter++ {
 		chapters[chapter] = allChapters[chapter]
@@ -37,7 +39,7 @@ func TestTrackerMatchesComputeAcrossUpdates(t *testing.T) {
 }
 
 func TestTrackerSnapshotReturnsIndependentCopy(t *testing.T) {
-	tracker := NewTracker()
+	tracker := NewTracker(lang.Resolve("zh"))
 	for chapter := 1; chapter <= 5; chapter++ {
 		tracker.Upsert(chapter, chapterWith("他不是退缩，而是在等待。"))
 	}
@@ -55,7 +57,7 @@ func TestTrackerSnapshotReturnsIndependentCopy(t *testing.T) {
 }
 
 func TestTrackerConcurrentSnapshotAndUpdate(t *testing.T) {
-	tracker := NewTracker()
+	tracker := NewTracker(lang.Resolve("zh"))
 	for chapter := 1; chapter <= 8; chapter++ {
 		tracker.Upsert(chapter, chapterWith("他不是退缩，而是在等待。"))
 	}

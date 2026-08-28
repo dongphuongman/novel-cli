@@ -8,6 +8,8 @@ import (
 	"github.com/voocel/agentcore"
 	"github.com/voocel/ainovel-cli/internal/rules"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // Service 编排用户规则快照的生成与更新：归一化各来源 → 确定性合并 → 落盘。
@@ -19,12 +21,14 @@ type Service struct {
 	store     *store.Store
 	norm      *Normalizer
 	rulesOpts rules.LoadOptions
+	lp        lang.Profile
 }
 
 // NewService 构造服务。model 用于归一化（应为能力较强的模型）；model 为 nil 时
 // 所有来源降级为 raw preferences（仍可产出快照，机械检查由 system_defaults 兜底）。
-func NewService(st *store.Store, model agentcore.ChatModel, opts rules.LoadOptions) *Service {
-	return &Service{store: st, norm: NewNormalizer(model), rulesOpts: opts}
+// lp 决定 system_defaults 那一层的黑名单用哪门语言；零值安全（等价中文）。
+func NewService(st *store.Store, model agentcore.ChatModel, opts rules.LoadOptions, lp lang.Profile) *Service {
+	return &Service{store: st, norm: NewNormalizer(model), rulesOpts: opts, lp: lp}
 }
 
 // normalizeOrDegrade 归一化一个来源；失败时记录真实错误并降级为 raw preferences
@@ -41,7 +45,7 @@ func (s *Service) normalizeOrDegrade(ctx context.Context, source, text string) r
 // Build 从静态来源（system_defaults + rules 文件 + 启动 prompt）归一化生成快照并落盘。
 // 开书/刷新时调用。startupPrompt 可空。
 func (s *Service) Build(ctx context.Context, startupPrompt string) (*rules.Snapshot, error) {
-	cands := []rules.Candidate{rules.SystemDefaults()}
+	cands := []rules.Candidate{rules.SystemDefaults(s.lp)}
 	for _, rs := range rules.RawFileSources(s.rulesOpts) {
 		cands = append(cands, s.normalizeOrDegrade(ctx, rs.Label, rs.Text))
 	}

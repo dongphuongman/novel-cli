@@ -1,66 +1,66 @@
-# 内容扩充技巧
+# Techniques for expanding content
 
-当章节内容不足时，使用以下技巧自然扩充。
+When a chapter runs thin, use these techniques to expand it naturally.
 
-## 1. 场景细节描写
+## 1. Scene detail
 
-不要只说"他走进房间"，描写：
-- 房间的布局、光线、气味
-- 物品的细节和质感
-- 环境对人物的影响
-- 人物在空间中的移动
+Do not settle for "he walked into the room" — describe:
+- The room's layout, light and smell
+- The detail and texture of the objects
+- How the space acts on the character
+- How the character moves through it
 
-## 2. 人物内心活动
+## 2. Interiority
 
-展示而非讲述内心世界：
-- 角色的犹豫和纠结
-- 过去记忆的闪回（1-2段）
-- 对未来的担忧和期待
-- 道德选择的内心辩论
+Show the inner world rather than telling it:
+- The character's hesitation and inner knot
+- A flashback to an earlier memory (1–2 paragraphs)
+- Worry and anticipation about what is coming
+- The internal argument over a moral choice
 
-## 3. 对话扩展
+## 3. Expanding dialogue
 
-不要只推进剧情，让对话：
-- 展现人物性格和说话方式
-- 包含潜台词和暗示
-- 有来回交锋和试探
-- 偶尔跑题再拉回（更真实）
+Do not use dialogue only to advance plot; let it:
+- Reveal character and manner of speech
+- Carry subtext and implication
+- Trade blows and probe back and forth
+- Occasionally wander off topic and come back (it reads truer)
 
-## 4. 感官体验
+## 4. Sensory experience
 
-调动五感描写：
-- 视觉：颜色、光影、形状
-- 听觉：声音、音乐、沉默
-- 触觉：温度、质感、疼痛
-- 嗅觉：气味、香味、腐臭
-- 味觉：食物、饮料、血腥味
+Bring all five senses to bear:
+- Sight: colour, light and shadow, shape
+- Hearing: sound, music, silence
+- Touch: temperature, texture, pain
+- Smell: scent, perfume, rot
+- Taste: food, drink, the taste of blood
 
-## 5. 次要情节线
+## 5. Secondary storylines
 
-在主剧情中穿插：
-- 配角的小故事
-- 暗线的发展
-- 伏笔的埋设
-- 人物关系的微妙变化
+Interleave them with the main plot:
+- A small story belonging to a supporting character
+- The development of a hidden thread
+- Planting foreshadowing
+- Subtle shifts in a relationship
 
-## 6. 节奏放慢
+## 6. Slowing the pace
 
-关键时刻慢下来描写：
-- 动作场景的分解
-- 情感转变的过程
-- 发现真相的时刻
-- 紧张对峙的延展
+Slow down and describe at the decisive moments:
+- Breaking an action sequence into its parts
+- The process of an emotional turn
+- The moment the truth lands
+- Drawing out a tense standoff
 
-## 7. 环境烘托
+## 7. Setting as emotional register
 
-用环境反映情绪：
-- 天气和氛围
-- 社会环境背景
-- 文化习俗细节
-- 时代特征展现
+Let the environment reflect the feeling:
+- Weather and atmosphere
+- The social backdrop
+- Details of custom and culture
+- The markers of the period
 
-## 扩充原则
+## Principles of expansion
 
-- **自然融入** - 扩充内容要服务于故事，不要注水
-- **保持张力** - 即使扩充场景也不能失去冲突
-- **推进主线** - 所有扩充最终都要指向核心剧情
+- **Weave it in naturally** — expansion serves the story; it is not padding
+- **Hold the tension** — even an expanded scene cannot lose its conflict
+- **Advance the main line** — every expansion must ultimately point back at the core plot

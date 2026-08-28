@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/voocel/ainovel-cli/internal/domain"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // chapterTitleIndex 给定章号查标题，缺失返回空串。
@@ -99,6 +101,7 @@ func renderTXT(
 	titleIdx chapterTitleIndex,
 	locations map[int]chapterLocation,
 	bodies map[int]string,
+	lp lang.Profile,
 ) string {
 	var b strings.Builder
 
@@ -114,17 +117,25 @@ func renderTXT(
 		if useLayered {
 			if loc, ok := locations[ch]; ok && loc.IsFirstOfVolume {
 				b.WriteString("\n═══════════════════════════════════════════\n")
-				fmt.Fprintf(&b, "           第 %d 卷  %s\n", loc.VolumeIdx, strings.TrimSpace(loc.VolumeTitle))
+				vt := strings.TrimSpace(loc.VolumeTitle)
+				head := lp.VolumeLabel(loc.VolumeIdx)
+				if vt != "" {
+					head += lp.TitleJoiner() + "  " + vt
+				}
+				fmt.Fprintf(&b, "           %s\n", head)
 				b.WriteString("═══════════════════════════════════════════\n\n")
 			}
 		}
 
+		// TXT 用两格沟槽（历史版式，导出产物的既有契约）；语言层只提供标签与标点。
 		title := strings.TrimSpace(titleIdx[ch])
+		b.WriteString(lp.ChapterLabel(ch))
 		if title != "" {
-			fmt.Fprintf(&b, "第 %d 章  %s\n\n", ch, title)
-		} else {
-			fmt.Fprintf(&b, "第 %d 章\n\n", ch)
+			b.WriteString(lp.TitleJoiner())
+			b.WriteString("  ")
+			b.WriteString(title)
 		}
+		b.WriteString("\n\n")
 
 		body := stripChapterTitleHeader(strings.TrimSpace(bodies[ch]), title)
 		b.WriteString(body)

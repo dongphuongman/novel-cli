@@ -65,8 +65,8 @@ const WriterUpdateSummaryPrompt = `上面的消息是需要合并到已有摘要
 - 保留所有仍然有效的角色状态，更新发生变化的
 - 已回收的伏笔移除，新埋的伏笔加入
 - 已修的审稿问题标记为已修或移除，新问题加入
-- 更新"当前进度"到最新位置
-- 更新"风格与节奏"中的情绪基调（如有变化）
+- 更新"Current progress"到最新位置
+- 更新"Style and pacing"中的情绪基调（如有变化）
 - 保留准确的角色名、地点名和章节号
 
 使用与上一次摘要相同的格式：
@@ -119,7 +119,7 @@ func (p *WriterRestorePack) Refresh(s *store.Store) {
 	}
 	progress, err := s.Progress.Load()
 	if err != nil {
-		p.setWarning("progress 读取失败", err)
+		p.setWarning("progress failed to load", err)
 		return
 	}
 	if progress == nil {
@@ -137,7 +137,7 @@ func (p *WriterRestorePack) Refresh(s *store.Store) {
 
 	text, ok, err := buildWriterRestoreText(s, restoreBudgetTokens)
 	if err != nil {
-		p.setWarning("恢复上下文读取失败", err)
+		p.setWarning("the restore context failed to load", err)
 		return
 	}
 	if !ok {
@@ -155,7 +155,7 @@ func (p *WriterRestorePack) setWarning(scope string, err error) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.chapter = 0
-	p.text = fmt.Sprintf("<post-compact-context>\n## 数据告警\n%s：%v\n</post-compact-context>", scope, err)
+	p.text = fmt.Sprintf("<post-compact-context>\n## Data warnings\n%s: %v\n</post-compact-context>", scope, err)
 }
 
 // Clear drops cached data (e.g., when switching chapters).

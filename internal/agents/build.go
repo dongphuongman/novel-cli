@@ -18,6 +18,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/bootstrap"
 	"github.com/voocel/ainovel-cli/internal/store"
 	"github.com/voocel/ainovel-cli/internal/tools"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // agentToRole 把 subagent name 归一为 ModelSet 认得的 role 名。
@@ -116,6 +118,10 @@ func BuildWorkers(
 	onGuardBlock guard.BlockHook,
 ) (*subagent.Runner, *ctxpack.WriterRestorePack, ApplyThinking) {
 	// 共享工具
+	// lp 是本书创作语言的唯一取值点。它必须与 styleStats 构造时用的一致——
+	// 两处口径不同会让 commit 的字数和 diag 的字数异常判定互相打架。
+	lp := cfg.Lang()
+
 	contextTool := tools.NewContextTool(store, bundle.References, cfg.Style, styleStats)
 	readChapter := tools.NewReadChapterTool(store)
 
@@ -131,7 +137,7 @@ func BuildWorkers(
 		contextTool,
 		readChapter,
 		tools.NewPlanChapterTool(store),
-		tools.NewDraftChapterTool(store),
+		tools.NewDraftChapterTool(store, lp),
 		tools.NewEditChapterTool(store),
 		tools.NewCheckConsistencyTool(store),
 		tools.NewCommitChapterTool(store, styleStats),
@@ -192,9 +198,9 @@ func BuildWorkers(
 	architectThinking, _ := ResolveThinkingForModel(architectModel, roleThinking(cfg, "architect"))
 	architectShort := subagent.Config{
 		Name:             "architect_short",
-		Description:      "短篇规划师：为单卷、单冲突、高密度故事生成紧凑设定与扁平大纲",
+		Description:      "Short-form planner: produces a compact foundation and a flat outline for a single-volume, single-conflict, high-density story",
 		Model:            architectModel,
-		SystemPrompt:     bundle.Prompts.ArchitectShort,
+		SystemPrompt:     withOutputLanguage(bundle.Prompts.ArchitectShort, lp),
 		Tools:            architectTools,
 		MaxTurns:         15,
 		MaxRetries:       subagentMaxRetries,
@@ -209,9 +215,9 @@ func BuildWorkers(
 	}
 	architectLong := subagent.Config{
 		Name:                "architect_long",
-		Description:         "长篇规划师：为连载型、可持续升级的故事生成分层设定与卷弧大纲",
+		Description:         "Long-form planner: produces a layered foundation and a volume/arc outline for a serialized story that can keep escalating",
 		Model:               architectModel,
-		SystemPrompt:        bundle.Prompts.ArchitectLong,
+		SystemPrompt:        withOutputLanguage(bundle.Prompts.ArchitectLong, lp),
 		Tools:               architectTools,
 		MaxTurns:            20,
 		MaxRetries:          subagentMaxRetries,
@@ -225,14 +231,14 @@ func BuildWorkers(
 
 	// 唯一组装路径:协议模板 {{VOICE}} 原位回填文风段,再追加风格预设。
 	// eval 的 voice A/B 走同一函数,保证两臂等价(docs/voice-layer.md §3.2)。
-	writerPrompt := assets.BuildWriterPrompt(bundle.Prompts.Writer, bundle.Voice, bundle.Styles[cfg.Style])
+	writerPrompt := withOutputLanguage(assets.BuildWriterPrompt(bundle.Prompts.Writer, bundle.Voice, bundle.Styles[cfg.Style]), lp)
 
 	restore := &ctxpack.WriterRestorePack{}
 	restore.Refresh(store)
 
 	writer := subagent.Config{
 		Name:             "writer",
-		Description:      "创作者：自主完成一章的构思、写作、自审和提交",
+		Description:      "Writer: independently plans, writes, self-reviews and commits one chapter",
 		Model:            writerModel,
 		SystemPrompt:     writerPrompt,
 		Tools:            writerTools,
@@ -278,9 +284,9 @@ func BuildWorkers(
 
 	editor := subagent.Config{
 		Name:             "editor",
-		Description:      "审阅者：阅读原文，从结构和审美两个层面发现问题",
+		Description:      "Reviewer: reads the prose and finds problems on two levels, structure and craft",
 		Model:            editorModel,
-		SystemPrompt:     bundle.Prompts.Editor,
+		SystemPrompt:     withOutputLanguage(bundle.Prompts.Editor, lp),
 		Tools:            editorTools,
 		MaxTurns:         20,
 		MaxRetries:       subagentMaxRetries,
@@ -352,4 +358,16 @@ func foundationReadyResult(toolName string, result json.RawMessage) bool {
 		FoundationReady bool `json:"foundation_ready"`
 	}
 	return json.Unmarshal(result, &r) == nil && r.FoundationReady
+}
+
+// withOutputLanguage 把创作语言硬约束追加到 Worker 系统提示词末尾。
+//
+// 为什么在**末尾**而不是开头：提示词缓存的收益来自请求前缀逐字节稳定
+// （docs/prompt-cache-design.md §4）。语言指令是本书级常量，追加在尾部既不
+// 破坏内置提示词的既有前缀，也让"动态内容进尾部"这条纪律保持成立。
+//
+// 每种创作语言都会拿到指令（含中文）：assets 英文化后，"不注入=跟着提示词写英文"，
+// 对中文书是静默的语言漂移。directive 为空只可能来自异常 Profile，此时原样返回。
+func withOutputLanguage(prompt string, lp lang.Profile) string {
+	return lp.WithOutputDirective(prompt)
 }

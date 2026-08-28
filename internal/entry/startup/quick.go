@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
 )
 
 // LoadPromptFile 读取文件作为初始创作要求。
 func LoadPromptFile(path string) (string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return "", fmt.Errorf("读取 prompt 失败: %w", err)
+		return "", fmt.Errorf(i18n.T("startup.err.promptfile"), err)
 	}
 	return strings.TrimSpace(string(data)), nil
 }

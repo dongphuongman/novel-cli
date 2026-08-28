@@ -1,39 +1,39 @@
-## 悬疑/推理 弧型参考
+## Suspense / mystery arc templates
 
-以下弧型适用于悬疑、推理、刑侦、惊悚类长篇。根据具体设定自由组合，不必全部使用。
+The arc shapes below suit long-form suspense, mystery, police procedural and thriller. Combine them freely to fit your setting; you do not have to use them all.
 
-### 案件调查弧（10-15 章）
-2-3 章案件发生/现场勘查 → 3-5 章多方排查（每条线索打开新疑问） → 2-3 章关键突破 → 1-2 章真相揭示+后续影响
-- 线索必须公平呈现，揭示时读者能回溯到伏笔
-- 每条排查线不能只是"排除嫌疑人"，要揭示新的背景信息
-- 真相揭示后的情感冲击比逻辑推理本身更重要
+### Case investigation arc (10–15 chapters)
+2–3 chapters of the crime and the scene → 3–5 chapters of investigating multiple angles (each clue opening a new question) → 2–3 chapters of the key breakthrough → 1–2 chapters of the reveal and its aftermath
+- Clues must be presented fairly; at the reveal the reader can trace every setup
+- No investigative thread should merely "eliminate a suspect" — each must uncover new background
+- The emotional impact after the reveal matters more than the deduction itself
 
-### 真相逼近弧（8-12 章）
-2-3 章旧案重现/新线索浮现 → 3-5 章追踪深入（主角逐步接近核心） → 2-3 章危险升级+被迫选择
-- 适用于连续剧式的长线悬念（贯穿多弧的主线谜团）
-- 每次接近真相都付出代价（信任破裂、人身危险、道德困境）
-- 在揭示部分真相的同时制造更大的疑问
+### Closing-in-on-the-truth arc (8–12 chapters)
+2–3 chapters of an old case resurfacing or a new clue emerging → 3–5 chapters of pursuing it deeper (the protagonist edging toward the core) → 2–3 chapters of escalating danger and a forced choice
+- Suits a serial-style long-range mystery (a central puzzle running across several arcs)
+- Every step closer to the truth exacts a price (a trust broken, physical danger, a moral bind)
+- Reveal part of the truth while raising a larger question
 
-### 追凶/潜入弧（12-18 章）
-2-3 章目标锁定/计划制定 → 6-10 章执行过程（多次危机和临场应变） → 2-3 章最终对峙+意外翻转
-- 执行过程中不断出现计划外状况，展示角色的应变能力
-- 潜入类弧需要环境细节和紧张感营造
-- 对峙不应只是武力，要有心理博弈和信息战
+### Manhunt / infiltration arc (12–18 chapters)
+2–3 chapters of fixing the target and forming the plan → 6–10 chapters of execution (repeated crises and improvisation) → 2–3 chapters of the final confrontation and an unexpected reversal
+- Unplanned situations keep arising during execution, showing the character's ability to adapt
+- An infiltration arc needs environmental detail and sustained tension
+- The confrontation should not be only physical; it needs a psychological contest and a battle over information
 
-### 审判/揭示弧（8-12 章）
-2-3 章证据整理/庭前博弈 → 3-5 章正式交锋（控辩/审讯/公开对峙） → 1-2 章意外证据+最终裁定
-- 适用于故事的阶段性收束（结案、定罪、真相公开）
-- 交锋过程中双方轮流占上风，不是一边倒
-- 最终裁定不一定是正义获胜，可以是妥协或更大的阴谋
+### Trial / disclosure arc (8–12 chapters)
+2–3 chapters of assembling evidence and pre-trial manoeuvring → 3–5 chapters of formal engagement (prosecution and defence, interrogation, a public confrontation) → 1–2 chapters of surprise evidence and the final ruling
+- Suits a staged resolution in the story (closing the case, a conviction, the truth going public)
+- The two sides take turns having the upper hand; it is not one-sided
+- The final ruling need not be justice prevailing — it can be a compromise, or a larger conspiracy
 
-### 连环案串联弧（15-20 章）
-2-3 章看似独立的案件 → 5-8 章发现关联/模式 → 3-5 章追踪幕后主使 → 2-3 章最终对决+真相
-- 前期案件各有特色，每个都能独立成立
-- 关联发现是重大转折点，改变主角对整个局面的认知
-- 幕后主使的动机必须在前文有伏笔支撑
+### Linked-serial-crimes arc (15–20 chapters)
+2–3 chapters of seemingly unrelated cases → 5–8 chapters of finding the link and the pattern → 3–5 chapters of hunting the person behind it → 2–3 chapters of the final showdown and the truth
+- Early cases are each distinctive and each stands on its own
+- Discovering the link is a major turn that changes how the protagonist understands the whole situation
+- The mastermind's motive must be supported by foreshadowing laid earlier
 
-### 日常/过渡弧（4-6 章）
-角色关系修复/新线索酝酿/心理恢复/暗线推进
-- 高压弧之后需要呼吸空间，但不能完全放松
-- 暗线推进：读者能感觉到"某件事要发生了"
-- 角色在经历大案后的心理变化要有体现
+### Everyday / transitional arc (4–6 chapters)
+Repairing relationships, a new lead brewing, psychological recovery, advancing a hidden thread
+- After a high-pressure arc the story needs room to breathe — but never fully relaxes
+- Advancing the hidden thread: the reader can feel that something is about to happen
+- Show how the characters have changed psychologically after a major case

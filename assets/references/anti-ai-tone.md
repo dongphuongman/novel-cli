@@ -1,35 +1,37 @@
-# 去 AI 味判据
+# Anti-AI-tone criteria
 
-本文是 writer 与 editor 共用的"AI 味"判据库:writer 写作时规避以下所有模式,editor 审阅 aesthetic 维度时按此逐项检查并**引用原文**举证。
+This document is the shared "AI tone" criteria library for writer and editor: the writer avoids every pattern below while writing, and the editor checks them one by one in the aesthetic dimension and **quotes the prose** as evidence.
 
-> 可机械枚举的部分(破折号、固定套句、高频疲劳词)已由 `working_memory.user_rules.structured` 在 commit 时强制检查,本文专管**无法机械化的语义判断**。两者互补:机械层抓表面,本文抓质感。
+> The mechanically enumerable part (em-dash tics, fixed stock phrases, high-frequency fatigue words) is already enforced at commit time via `working_memory.user_rules.structured`; this document governs the **semantic judgments that cannot be mechanized**. The two are complementary: the mechanical layer catches the surface, this document catches the texture.
 
-## 一、结构 AI 味
+## 1. Structural AI tone
 
-- **三段式 / 排比三连**:连用三个结构对称的短句或分句来"造势"("他不再犹豫,不再退缩,不再回头")。改法:保留一句最有力的,其余拆成动作或细节。
-- **整齐对称句堆叠**:每段长度、句式高度雷同,读起来像列表。改法:长短句交错,让节奏有呼吸。
-- **章内编号小标题 / `##` 切割**:正文里出现 `一` `二` `三` 或 `##`/`###` 分段。改法:只保留章标题,场景切换用空行自然过渡。
+- **Triadic parallelism**: three structurally symmetrical clauses strung together to manufacture momentum ("He did not hesitate, did not retreat, did not look back"). Fix: keep the strongest one and turn the rest into action or detail.
+- **Stacked symmetrical sentences**: every paragraph the same length and the same shape, reading like a list. Fix: interleave long and short sentences so the rhythm can breathe.
+- **Numbered sub-headings inside a chapter / `##` slicing**: "I", "II", "III" or `##`/`###` breaks appearing in the prose. Fix: keep only the chapter title and let a blank line carry the scene change.
 
-## 二、用词 AI 味
+## 2. Diction AI tone
 
-- **四字成语堆砌**:一段里挤进多个成语充当描写("惊心动魄、险象环生、千钧一发")。改法:用一个具体动作或画面替代一串成语。
-- **明喻套句**:"如同……一般""宛如……似的""仿佛……一样"的固定句式反复出现。改法:换成精准动词或新鲜本体,或直接白描。
-- **量词癖 / 虚词癖**:"一丝""一抹""一缕"配情绪,"不禁""竟然""不由得""仿佛"当口头禅。改法:删掉缓冲词,让动作直接发生("他笑了",不是"他不禁勾起一抹笑意")。
-- **抽象大词**:"某种程度上""值得注意的是""不知为何""说不清道不明"——叙述者在替读者总结。改法:删掉,把判断让位给具体事实。
-- **对比定义句式**:"他要的不是 X,而是 Y""这不是结束,而是开始"这类用否定+转折来"点题"的套路反复出现。改法:用一个具体动作或选择直接呈现,不靠句式造金句感。
+- **Piled-up stock idioms**: several set phrases crammed into one passage to do the work of description ("heart-stopping, hair-raising, down to the wire"). Fix: replace the string of idioms with one concrete action or image.
+- **Simile formulas**: the fixed constructions "like a…", "as if…", "as though…", "much like…" recurring throughout. Fix: reach for a precise verb or a fresh vehicle, or simply describe the thing plainly.
+- **Quantifier and filler tics**: "a hint of", "a trace of", "a flicker of", "a wave of" attached to every emotion; "somehow", "couldn't help but", "seemingly", "as though", "indeed", "merely", "utterly" used as verbal crutches. Fix: delete the cushioning words and let the action happen directly ("He smiled", not "He couldn't help but let a trace of a smile surface").
+- **Abstract filler**: "in some sense", "it is worth noting that", "for some reason", "an indescribable feeling", "what really matters is" — the narrator summarizing on the reader's behalf. Fix: cut them and let concrete fact carry the judgment.
+- **The corrective construction**: "What he wanted was not X, but Y", "This was not an ending, but a beginning", "not only… but also" — negation-plus-pivot used to manufacture an aphorism. Fix: present it directly through a concrete action or choice, without leaning on the sentence shape for profundity.
 
-## 三、描写 AI 味
+## 3. Descriptive AI tone
 
-- **抽象概述代替具象五感**:"环境很压抑""气氛紧张"这类标签式概述。改法:给一个可被触觉/嗅觉/听觉感知的具体细节(优于纯视觉)。
-- **情绪贴标签**:直接写"他很紧张/愤怒/悲伤"。改法:用身体反应和选择呈现("指节发白""喉头发紧"),不点名情绪。
+- **Abstract summary in place of concrete sensory writing**: label-like statements such as "the atmosphere was oppressive" or "the tension was thick". Fix: give one concrete detail that can be touched, smelled or heard (better than pure sight).
+- **Labelling the emotion**: writing "he was nervous / furious / heartbroken" outright. Fix: render it through physical reaction and choice ("his knuckles went white", "his throat tightened") without naming the feeling.
+- **Off-the-shelf expression and body-reaction templates**: "her eyes narrowed", "his jaw tightened", "his lips quirked", "she raised an eyebrow"; "his heart clenched", "a shiver ran down her spine", "a sharp intake of breath". Fix: use the gesture this particular character would actually make, in this particular room.
 
-## 四、对话 AI 味
+## 4. Dialogue AI tone
 
-- **角色同质化**:去掉说话人标记后无法分辨谁在说——人人句式、用词、文化层次一样。改法:给每个角色稳定的句长、口头禅、潜台词比例。
-- **过度解释动机**:角色把自己的心理和盘托出,或叙述者紧跟着解释"他这么说是因为……"。改法:让动机藏在选择和言外之意里,信任读者。
-- **书面腔**:所有人都说完整、规整、带逻辑连接词的句子。改法:口语有停顿、省略、答非所问。
+- **Homogenized voices**: with the attributions removed you cannot tell who is speaking — everyone shares the same sentence shapes, vocabulary and register. Fix: give each character a stable sentence length, verbal habit and ratio of subtext.
+- **Over-explained motive**: the character lays out their own psychology in full, or the narrator immediately explains "he said this because…". Fix: hide the motive in the choice and in what is implied, and trust the reader.
+- **Written-register speech**: everyone speaks in complete, tidy sentences with logical connectives. Fix: real speech has pauses, elisions and answers to a different question than the one asked.
+- **The silence beat as a default**: "he said nothing", "she fell silent", "he did not look back" used as the closing gesture of scene after scene. Fix: rotate the move, or let the silence be shown by what the character does with their hands.
 
-## 五、节奏与情感 AI 味
+## 5. Pacing and emotional AI tone
 
-- **事事交代完整**:每个动作、因果都写满,不留想象空间。改法:该藏的藏,用留白制造追读。
-- **强行升华 / 结尾点题**:章末拔高到人生感悟或主题金句。改法:停在具体的画面、选择或情绪余波上,不替读者总结意义。
+- **Everything spelled out**: every action and every causal link written to the full, leaving no room to imagine. Fix: hide what should be hidden, and use the gap to pull the reader on.
+- **Forced elevation / thematic sign-off**: the chapter climbs at the last moment into a life lesson or a thematic aphorism ("a testament to…", "little did he know…"). Fix: stop on a concrete image, a choice or emotional aftershock, and do not summarize the meaning for the reader.

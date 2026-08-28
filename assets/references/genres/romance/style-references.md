@@ -1,25 +1,25 @@
-# 言情风格补充参考
+# Romance style: supplementary reference
 
-## 情感递进
+## Emotional progression
 
-- 感情发展遵循"排斥→好奇→动摇→确认→考验→稳固"曲线
-- 每章推进一个情感阶段，禁止跳跃式发展
-- 心动瞬间要通过具体细节呈现，不用"心跳加速"等抽象描写
+- The relationship follows the curve "aversion → curiosity → wavering → certainty → testing → stability"
+- Advance one emotional stage per chapter; skipping ahead is forbidden
+- Render the moment of falling through concrete detail, not abstractions like "her heart raced"
 
-## 关系张力
+## Relational tension
 
-- 核心CP之间必须有持续的阻力源（性格、身份、误会、外部）
-- 阻力要合理且难以轻易解决，不能为虐而虐
-- 配角感情线不能抢主线篇幅，每章配角互动不超过 20%
+- The central pair must face a sustained source of resistance (temperament, station, misunderstanding, outside pressure)
+- The resistance must be credible and not easily dissolved; do not inflict pain for its own sake
+- A supporting character's romance cannot take space from the main line; keep supporting-cast interaction under 20% of any chapter
 
-## 对话质量
+## Dialogue quality
 
-- 暧昧期对话要有潜台词，角色说的和想的应该不一样
-- 吵架/冲突场景双方都要有道理，不能一方全错
-- 甜蜜场景要有克制，过度撒糖会降低读者感受
+- Dialogue in the ambiguous phase carries subtext: what a character says and what they think should differ
+- In an argument or a confrontation both sides have a point; one side is never simply wrong
+- Keep the sweet scenes restrained — laying it on too thick dulls the reader's response
 
-## 常见陷阱
+## Common traps
 
-- 降智推剧情：不让角色为了制造误会而突然变笨
-- 工具人配角：每个配角都应有自己的动机
-- 人设崩塌：感情中的行为必须符合角色已建立的性格特征
+- Dumbing down to drive the plot: never make a character suddenly stupid just to manufacture a misunderstanding
+- Utility supporting characters: every supporting character has their own motive
+- Characterization collapse: behavior inside the relationship must fit the character already established

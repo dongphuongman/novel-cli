@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/voocel/ainovel-cli/internal/lang"
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
@@ -11,7 +12,7 @@ import (
 // 复用 store 访问点，只取规划方向所需的高层事实（进度 / 罗盘 / 最近卷 / 主要人物 / 活跃伏笔）；
 // 不拉正文、不喂 novel_context 的全量 JSON——共创是对话，要的是可读概览，不是写作上下文。
 // 任一项缺失都跳过（best-effort），返回空串表示尚无可用进度。
-func buildStoryStateSummary(s *store.Store) string {
+func buildStoryStateSummary(s *store.Store, lp lang.Profile) string {
 	if s == nil {
 		return ""
 	}
@@ -19,31 +20,31 @@ func buildStoryStateSummary(s *store.Store) string {
 	var warnings []string
 	warn := func(scope string, err error) {
 		if err != nil {
-			warnings = append(warnings, fmt.Sprintf("%s 读取失败: %v", scope, err))
+			warnings = append(warnings, fmt.Sprintf("%s failed to load: %v", scope, err))
 		}
 	}
 
 	if book, err := s.Book.Load(); book != nil {
-		fmt.Fprintf(&b, "- 书名：《%s》\n", book.Title)
+		fmt.Fprintf(&b, "- Title: %s\n", book.Title)
 	} else {
 		warn("book", err)
 	}
 
 	if progress, err := s.Progress.Load(); progress != nil {
-		fmt.Fprintf(&b, "- 进度：已完成 %d 章", len(progress.CompletedChapters))
+		fmt.Fprintf(&b, "- Progress: %d chapters completed", len(progress.CompletedChapters))
 		if progress.Layered {
 			outline, outlineErr := s.Outline.LoadOutline()
 			if outlineErr != nil {
 				warn("outline", outlineErr)
 			} else if len(outline) > 0 {
-				fmt.Fprintf(&b, " / 当前已细化 %d 章（后续按弧动态规划）", len(outline))
+				fmt.Fprintf(&b, " / %d chapters detailed so far (the rest is planned dynamically, arc by arc)", len(outline))
 			}
 		} else if progress.TotalChapters > 0 {
-			fmt.Fprintf(&b, " / 规划 %d 章", progress.TotalChapters)
+			fmt.Fprintf(&b, " / %d chapters planned", progress.TotalChapters)
 		}
-		fmt.Fprintf(&b, "，约 %d 字，下一章为第 %d 章\n", progress.TotalWordCount, progress.NextChapter())
+		fmt.Fprintf(&b, ", about %d %s; the next chapter is %d\n", progress.TotalWordCount, lp.CountUnit(), progress.NextChapter())
 		if progress.Layered && progress.CurrentVolume > 0 {
-			fmt.Fprintf(&b, "- 当前位置：第 %d 卷 第 %d 弧\n", progress.CurrentVolume, progress.CurrentArc)
+			fmt.Fprintf(&b, "- Currently at: volume %d, arc %d\n", progress.CurrentVolume, progress.CurrentArc)
 		}
 	} else {
 		warn("progress", err)
@@ -51,13 +52,13 @@ func buildStoryStateSummary(s *store.Store) string {
 
 	if compass, err := s.Outline.LoadCompass(); compass != nil {
 		if dir := strings.TrimSpace(compass.EndingDirection); dir != "" {
-			fmt.Fprintf(&b, "- 终局方向：%s\n", dir)
+			fmt.Fprintf(&b, "- Ending direction: %s\n", dir)
 		}
 		if compass.EstimatedScale != "" {
-			fmt.Fprintf(&b, "- 预估规模：%s\n", compass.EstimatedScale)
+			fmt.Fprintf(&b, "- Estimated scale: %s\n", compass.EstimatedScale)
 		}
 		if len(compass.OpenThreads) > 0 {
-			fmt.Fprintf(&b, "- 活跃长线：%s\n", strings.Join(compass.OpenThreads, "；"))
+			fmt.Fprintf(&b, "- Live long threads: %s\n", strings.Join(compass.OpenThreads, "; "))
 		}
 	} else {
 		warn("story_compass", err)
@@ -66,7 +67,7 @@ func buildStoryStateSummary(s *store.Store) string {
 	// 最近一卷摘要，让助手知道故事刚走到哪
 	if vols, err := s.Summaries.LoadAllVolumeSummaries(); len(vols) > 0 {
 		last := vols[len(vols)-1]
-		fmt.Fprintf(&b, "- 最近《%s》：%s\n", last.Title, truncate(last.Summary, 200))
+		fmt.Fprintf(&b, "- Most recent volume, %s: %s\n", last.Title, truncate(last.Summary, 200))
 	} else {
 		warn("volume_summaries", err)
 	}
@@ -80,7 +81,7 @@ func buildStoryStateSummary(s *store.Store) string {
 			}
 			line := c.Name
 			if role := strings.TrimSpace(c.Role); role != "" {
-				line += "（" + role + "）"
+				line += " (" + role + ")"
 			}
 			names = append(names, line)
 			if len(names) >= 8 {
@@ -88,7 +89,7 @@ func buildStoryStateSummary(s *store.Store) string {
 			}
 		}
 		if len(names) > 0 {
-			fmt.Fprintf(&b, "- 主要人物：%s\n", strings.Join(names, "、"))
+			fmt.Fprintf(&b, "- Main characters: %s\n", strings.Join(names, ", "))
 		}
 	} else {
 		warn("characters", err)
@@ -103,13 +104,13 @@ func buildStoryStateSummary(s *store.Store) string {
 				break
 			}
 		}
-		fmt.Fprintf(&b, "- 未收伏笔：%s\n", strings.Join(items, "；"))
+		fmt.Fprintf(&b, "- Unresolved foreshadowing: %s\n", strings.Join(items, "; "))
 	} else {
 		warn("foreshadow", err)
 	}
 
 	if len(warnings) > 0 {
-		fmt.Fprintf(&b, "- 数据告警：%s\n", strings.Join(warnings, "；"))
+		fmt.Fprintf(&b, "- Data warnings: %s\n", strings.Join(warnings, "; "))
 	}
 
 	return strings.TrimSpace(b.String())
@@ -117,10 +118,10 @@ func buildStoryStateSummary(s *store.Store) string {
 
 // stageSystemPrompt 组装阶段共创的完整系统提示：阶段 prompt + 当前故事状态摘要。
 // 摘要作为数据附录挂在末尾（用分隔线与格式规范隔开），呼应 prompt 里"进度见下方"的指引。
-func stageSystemPrompt(s *store.Store) string {
+func stageSystemPrompt(s *store.Store, lp lang.Profile) string {
 	prompt := stageCoCreateSystemPrompt
-	if summary := buildStoryStateSummary(s); summary != "" {
-		prompt += "\n\n---\n## 当前故事状态\n（以下是已写内容的客观摘要，供你规划后续时参照，不要在 <draft> 里照抄原文）\n" + summary
+	if summary := buildStoryStateSummary(s, lp); summary != "" {
+		prompt += "\n\n---\n## Current story state\n(An objective summary of what is already written, for you to plan against. Do not copy it verbatim into <draft>.)\n" + summary
 	}
 	return prompt
 }

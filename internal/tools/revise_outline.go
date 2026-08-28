@@ -22,11 +22,11 @@ func NewReviseOutlineTool(store *store.Store) *ReviseOutlineTool {
 }
 
 func (t *ReviseOutlineTool) Name() string  { return "revise_outline" }
-func (t *ReviseOutlineTool) Label() string { return "修订大纲" }
+func (t *ReviseOutlineTool) Label() string { return "Revise outline" }
 func (t *ReviseOutlineTool) Description() string {
-	return "修订尚未发生的大纲。从 from_chapter 起，用 replacement 完整替换后续计划：" +
-		"扁平大纲替换全书尾段，分层大纲替换该章所在弧的尾段；已完成或正在写作的章节不可移动。" +
-		"需要保留的后续章节必须一并放入 replacement。"
+	return "Revise the part of the outline that has not happened yet. From from_chapter onward, replacement fully replaces the downstream plan: " +
+		"for a flat outline it replaces the tail of the book, for a layered outline the tail of the arc that chapter belongs to. Chapters already completed or in progress cannot be moved. " +
+		"Any later chapters you want to keep must be included in replacement."
 }
 
 func (t *ReviseOutlineTool) ReadOnly(json.RawMessage) bool        { return false }
@@ -35,15 +35,15 @@ func (t *ReviseOutlineTool) StrictSchema() bool                   { return true 
 
 func (t *ReviseOutlineTool) Schema() map[string]any {
 	entry := schema.Object(
-		schema.Property("title", schema.String("章节标题")).Required(),
-		schema.Property("core_event", schema.String("本章核心事件")).Required(),
-		schema.Property("hook", schema.String("章末钩子")).Required(),
-		schema.Property("scenes", schema.Array("计划场景；无则为空数组", schema.String(""))).Required(),
+		schema.Property("title", schema.String("Chapter title")).Required(),
+		schema.Property("core_event", schema.String("The chapter core event")).Required(),
+		schema.Property("hook", schema.String("Chapter-ending hook")).Required(),
+		schema.Property("scenes", schema.Array("Planned scenes; an empty array when there are none", schema.String(""))).Required(),
 	)
 	return schema.Object(
-		schema.Property("from_chapter", schema.Int("从这一章开始替换尚未发生的计划")).Required(),
-		schema.Property("replacement", schema.Array("完整替换尾段；需要保留的后续章节也必须包含", entry)).Required(),
-		schema.Property("reason", schema.String("本次修订原因")).Required(),
+		schema.Property("from_chapter", schema.Int("Replace the not-yet-written plan starting at this chapter")).Required(),
+		schema.Property("replacement", schema.Array("The complete replacement tail; later chapters you want to keep must be included too", entry)).Required(),
+		schema.Property("reason", schema.String("Reason for this revision")).Required(),
 	)
 }
 
@@ -60,7 +60,7 @@ func (t *ReviseOutlineTool) Execute(_ context.Context, args json.RawMessage) (js
 		return nil, fmt.Errorf("from_chapter must be > 0: %w", errs.ErrToolArgs)
 	}
 	if strings.TrimSpace(input.Reason) == "" {
-		return nil, fmt.Errorf("reason 不能为空: %w", errs.ErrToolArgs)
+		return nil, fmt.Errorf("reason cannot be empty: %w", errs.ErrToolArgs)
 	}
 
 	total, err := t.store.ReviseOutline(input.FromChapter, input.Replacement)

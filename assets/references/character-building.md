@@ -1,220 +1,220 @@
-# 人物塑造原则
+# Principles of characterization
 
-好的人物是故事的灵魂。读者记住的是人，不是情节。
+Good characters are the soul of a story. What readers remember is people, not plot.
 
-## 人物档案模板
+## Character profile template
 
-每个主要角色都应建立完整档案：
+Every major character should have a complete profile:
 
-### 基本信息
+### Basics
 
 ```text
-姓名：（有意义的名字更好）
-年龄：
-职业：
-外貌特征：（2-3个显著特征，避免泛泛而谈）
+Name: (a name that means something is better)
+Age:
+Occupation:
+Appearance: (2–3 distinctive features; avoid generalities)
 ```
 
-### 性格核心
+### Core temperament
 
 ```text
-核心价值观：（他最相信什么）
-最大恐惧：（他最害怕什么）
-致命缺陷：（什么会导致他失败）
-内心渴望：（他真正想要什么）
+Core values: (what they believe in most)
+Greatest fear: (what frightens them most)
+Fatal flaw: (what will bring them down)
+Deepest want: (what they actually want)
 ```
 
-### 背景故事
+### Backstory
 
 ```text
-成长环境：
-创伤经历：（过去伤害他的事）
-关键记忆：（塑造他现在的关键事件）
-秘密：（别人不知道的事）
+Upbringing:
+Wound: (what hurt them in the past)
+Formative memory: (the event that made them who they are)
+Secret: (what nobody else knows)
 ```
 
-### 行为模式
+### Behavioral patterns
 
 ```text
-说话方式：（口头禅、语速、用词习惯）
-肢体语言：（习惯动作、紧张时的小动作）
-社交风格：（内向/外向、如何对待陌生人）
-压力反应：（压力下如何表现）
+Manner of speech: (verbal habits, tempo, word choices)
+Body language: (habitual gestures, small tells under stress)
+Social style: (introverted/extroverted, how they treat strangers)
+Stress response: (how they behave under pressure)
 ```
 
 ---
 
-## 人物类型塑造
+## Building by character type
 
-### 主角（Protagonist）
+### Protagonist
 
-**必须有：**
-- **明确目标** - 他想要什么
-- **强大动机** - 为什么想要
-- **可共情性** - 读者能理解他的感受
-- **成长空间** - 故事中会改变
+**Must have:**
+- **A clear goal** — what they want
+- **A strong motive** — why they want it
+- **Something to empathize with** — the reader can understand how they feel
+- **Room to grow** — they change over the story
 
-**主角原型：**
-| 类型 | 特征 | 故事作用 |
+**Protagonist archetypes:**
+| Type | Traits | Function in the story |
 |-----|------|---------|
-| 英雄型 | 勇敢、正义、利他 | 战胜外在威胁 |
-| 成长型 | 从弱小到强大 | 克服内在缺陷 |
-| 反英雄型 | 道德灰色、复杂 | 挑战传统道德 |
-| 平凡型 | 普通人卷入非凡事 | 读者代入感强 |
+| Hero | Brave, just, altruistic | Overcomes an external threat |
+| Growth | From weak to strong | Overcomes an internal flaw |
+| Anti-hero | Morally grey, complicated | Challenges conventional morality |
+| Everyman | An ordinary person swept into extraordinary events | Strong reader identification |
 
-### 反派（Antagonist）
+### Antagonist
 
-**好反派的特点：**
-- **强大可信** - 不应该是草台班子
-- **有自己的逻辑** - 他相信自己在做正确的事
-- **与主角有深层联系** - 不是单纯为了作恶
-- **揭示主题** - 挑战主角的信念
+**What makes a good one:**
+- **Formidable and credible** — never a paper tiger
+- **Their own logic** — they believe they are doing the right thing
+- **A deep tie to the protagonist** — not evil purely for its own sake
+- **Illuminates the theme** — they challenge the protagonist's convictions
 
-**反派动机类型：**
-- 理想主义扭曲（"为了大局必须牺牲"）
-- 过去创伤（"世界伤害了我，我要报复"）
-- 权力渴望（"我配得上更多"）
-- 与主角相同目标（不同方法）
+**Types of antagonist motive:**
+- Idealism gone crooked ("sacrifices must be made for the greater good")
+- Past trauma ("the world hurt me, and I will hurt it back")
+- Hunger for power ("I deserve more than this")
+- The same goal as the protagonist, by different means
 
-### 配角（Supporting Characters）
+### Supporting characters
 
-**配角功能：**
-- **导师型** - 指引主角，传递信息
-- **盟友型** - 协助主角，提供情感支持
-- **搞笑型** - 缓解紧张，提供喜剧元素
-- **爱情型** - 制造浪漫线索，增加个人利害
-- **叛徒型** - 制造背叛和转折
+**Functions:**
+- **Mentor** — guides the protagonist, delivers information
+- **Ally** — assists the protagonist, provides emotional support
+- **Comic** — releases tension, supplies humour
+- **Love interest** — creates the romantic thread and raises the personal stakes
+- **Traitor** — supplies betrayal and reversal
 
-**配角原则：**
-- 每个配角必须有明确作用
-- 删除"只是存在"的角色
-- 避免刻板印象（除非是有意为之）
+**Principles:**
+- Every supporting character needs an explicit function
+- Cut characters who merely exist
+- Avoid stereotypes (unless the stereotype is the point)
 
 ---
 
-## 人物深度塑造技巧
+## Techniques for depth
 
-### 1. 矛盾性
+### 1. Contradiction
 
-真实的人是复杂的，充满矛盾。
+Real people are complicated and full of contradictions.
 
-**示例：**
-- 暴力的黑帮成员但爱护流浪猫
-- 无神论的牧师
-- 害怕黑暗的侦探
-- 重视友情但总是背叛朋友
+**Examples:**
+- A violent gang member who looks after stray cats
+- An atheist priest
+- A detective afraid of the dark
+- Someone who prizes friendship and keeps betraying their friends
 
-### 2. 侧面揭示
+### 2. Showing obliquely
 
-不要直接陈述性格，通过行为展示。
+Do not state the temperament; show it through behavior.
 
-| 错误（直接陈述） | 正确（侧面展示） |
+| Wrong (stated directly) | Right (shown obliquely) |
 |----------------|----------------|
-| 他很愤怒 | 他捏碎手中的纸杯 |
-| 她很紧张 | 她反复调整眼镜位置 |
-| 他很傲慢 | 他从不直视下属的眼睛 |
-| 她很善良 | 她偷偷喂流浪狗三年 |
+| He was furious | He crushed the paper cup in his hand |
+| She was nervous | She kept adjusting her glasses |
+| He was arrogant | He never looked a subordinate in the eye |
+| She was kind | She had been quietly feeding the stray dogs for three years |
 
-### 3. 声音独特性
+### 3. A distinct voice
 
-每个人说话方式不同，对话中能分辨角色。
+Everyone speaks differently; the reader can tell characters apart in dialogue.
 
-**区分要素：**
-- 用词选择（正式/俚语/方言）
-- 句子长度
-- 是否打断别人
-- 是否喜欢隐喻
-- 情绪表达方式
+**What distinguishes a voice:**
+- Word choice (formal / slang / dialect)
+- Sentence length
+- Whether they interrupt others
+- Whether they reach for metaphor
+- How they express feeling
 
-### 4. 动机合理化
+### 4. Motives that hold up
 
-每个角色行为必须有合理动机，即使动机扭曲。
+Every character's behavior needs a motive that holds up — even a warped one.
 
-**反派动机合理化示例：**
-- "我想毁灭世界" → 乏味
-- "我失去了一切，世界对我没有意义" → 可理解但扭曲
-- "人类是地球的病毒，我必须清除" → 有哲学支撑
+**Making an antagonist's motive hold up:**
+- "I want to destroy the world" → dull
+- "I lost everything; the world means nothing to me now" → warped but comprehensible
+- "Humanity is a virus on this planet and I have to excise it" → has a philosophy behind it
 
-### 5. 缺陷致命化
+### 5. A flaw that costs
 
-主角必须有缺陷，缺陷在关键时刻导致失败。
+The protagonist must have a flaw, and it must cause the failure at the decisive moment.
 
-**经典缺陷模式：**
-| 缺陷 | 导致的失败 |
+**Classic flaw patterns:**
+| Flaw | The failure it causes |
 |-----|----------|
-| 傲慢 | 低估对手，落入陷阱 |
-| 信任问题 | 拒绝帮助，孤立无援 |
-| 完美主义 | 无法及时行动，错失机会 |
-| 复仇心 | 被利用，失去理智 |
+| Arrogance | Underestimates the opponent and walks into the trap |
+| Inability to trust | Refuses help and ends up alone |
+| Perfectionism | Cannot act in time and loses the opportunity |
+| Vengefulness | Gets used, loses judgment |
 
 ---
 
-## 人物关系设计
+## Designing relationships
 
-### 关系类型
+### Types of relationship
 
-| 关系 | 戏剧潜力 | 应用 |
+| Relationship | Dramatic potential | Where it works |
 |-----|---------|-----|
-| 亦敌亦友 | 高 | 悬疑、动作 |
-| 禁忌之爱 | 高 | 言情、悲剧 |
-| 师徒关系 | 中 | 成长故事 |
-| 兄弟竞争 | 中 | 家庭剧 |
-| 陌生人联盟 | 中 | 冒险、悬疑 |
+| Enemy and friend at once | High | Suspense, action |
+| Forbidden love | High | Romance, tragedy |
+| Mentor and student | Medium | Growth stories |
+| Sibling rivalry | Medium | Family drama |
+| Alliance of strangers | Medium | Adventure, suspense |
 
-### 关系动态变化
+### Relationships that change
 
-**好的关系会随故事发展：**
+**A good relationship develops with the story:**
 ```text
-第一章：陌生人
-第三章：不情愿的盟友
-第五章：建立信任
-第七章：背叛/考验
-终章：真正的友谊（或决裂）
+Chapter 1: strangers
+Chapter 3: reluctant allies
+Chapter 5: trust established
+Chapter 7: betrayal / a test
+Final chapter: real friendship (or a permanent break)
 ```
 
-### 关系揭示
+### Revealing a relationship
 
-**逐步揭示关系深度：**
-- 表层：表面互动
-- 中层：共同经历
-- 深层：真实感受/秘密
-
----
-
-## 人物一致性检查
-
-角色行为必须符合已建立的性格。
-
-**检查问题：**
-- 这件事符合他的核心价值观吗？
-- 以他的背景，会有这样的反应吗？
-- 他的恐惧会如何影响这个决定？
-- 他的缺陷会导致他犯什么错？
-
-**例外处理：**
-- 如果角色"不符合性格"行事，必须有原因
-- 解释应该在相同/下一章提供
-- 可以是成长的标志（角色克服缺陷）
+**Disclose its depth by degrees:**
+- Surface: how they interact in public
+- Middle: what they have been through together
+- Deep: what they actually feel, and what they hide
 
 ---
 
-## 人物出场设计
+## Consistency check
 
-### 首次出场原则
+A character's behavior must fit the temperament already established.
 
-**有效的出场方式：**
-- **行动中** - 展示能力或性格
-- **冲突中** - 立即建立关系/对立
-- **误解中** - 建立悬念
+**Questions to ask:**
+- Does this fit their core values?
+- Given their background, would they react this way?
+- How would their fear shape this decision?
+- What mistake would their flaw lead them into?
 
-**避免：**
-- 镜子自照描写外貌
-- 姓名+年龄+职业的简历式介绍
-- 无意义的日常活动
+**Handling exceptions:**
+- If a character acts "out of character", there must be a reason
+- The explanation should come in the same chapter or the next
+- It can mark growth (the character overcoming the flaw)
 
-### 出场示例对比
+---
 
-| 无效出场 | 有效出场 |
+## Designing an entrance
+
+### Principles for a first appearance
+
+**Effective entrances:**
+- **In action** — showing capability or temperament
+- **In conflict** — establishing a relationship or an opposition immediately
+- **In misunderstanding** — establishing suspense
+
+**Avoid:**
+- Describing appearance via a mirror
+- A résumé-style introduction of name plus age plus job
+- Meaningless everyday activity
+
+### Entrances compared
+
+| Ineffective | Effective |
 |---------|---------|
-| 李明，28岁，是一名侦探。他走进办公室。| 李明跨过警戒线，警官试图拦住他。"市刑警队，李明。"他亮出证件，径直走向尸体。|
-| 美丽的女孩坐在窗边，她叫小红。| 她已经三天没睡了，咖啡杯里的液体在颤抖。当门铃响起时，她几乎把杯子摔在地上。|
+| Li Ming, 28, is a detective. He walked into the office. | Li Ming stepped over the tape and an officer moved to stop him. "City homicide. Li Ming." He held up the badge and walked straight to the body. |
+| A beautiful girl sat by the window. Her name was Xiaohong. | She had not slept in three days, and the coffee in the cup was trembling. When the doorbell rang she nearly dropped it. |

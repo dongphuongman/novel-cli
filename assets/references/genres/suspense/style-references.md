@@ -1,25 +1,25 @@
-# 悬疑风格补充参考
+# Suspense style: supplementary reference
 
-## 线索布局
+## Laying clues
 
-- 每章至少埋设一条线索（实线索或红鲱鱼）
-- 关键线索必须在揭晓前至少出现两次
-- 线索首次出现要自然融入场景，不能刻意强调
+- Plant at least one clue per chapter (a real one or a red herring)
+- A key clue must appear at least twice before the reveal
+- The first appearance of a clue blends into the scene naturally; never underline it
 
-## 误导技法
+## Misdirection
 
-- 红鲱鱼要有独立的合理性，不能事后看完全无意义
-- 叙述性诡计需要严格遵守"不说谎但可以省略"原则
-- 嫌疑人转移要有动机支撑，不能为了误导而误导
+- A red herring must stand up on its own; in hindsight it cannot be entirely pointless
+- Unreliable narration must obey the rule strictly: you may omit, you may not lie
+- Shifting suspicion needs motive behind it; do not misdirect for the sake of misdirecting
 
-## 节奏控制
+## Pacing
 
-- 紧张→舒缓→更紧张的波浪式节奏
-- 信息释放要节制，每次只给读者"刚好不够"的信息量
-- 章末必须有悬念钩子，禁止"平静收尾"
+- A wave pattern: tension → release → greater tension
+- Ration the information: give the reader just barely too little each time
+- Every chapter must close on a hook; "ending on a quiet note" is forbidden
 
-## 逻辑严密性
+## Logical rigour
 
-- 时间线必须可回溯验证
-- 不在场证明、动机、手法三要素缺一不可
-- 揭晓时读者应该能用已知线索自行推导出结论
+- The timeline must be verifiable in retrospect
+- Alibi, motive and method — all three are required, none may be missing
+- At the reveal, the reader should be able to reach the conclusion themselves from the clues already given

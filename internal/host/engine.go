@@ -21,6 +21,8 @@ import (
 	"github.com/voocel/ainovel-cli/internal/notify"
 	storepkg "github.com/voocel/ainovel-cli/internal/store"
 	"github.com/voocel/ainovel-cli/internal/tools"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
 )
 
 // engine 是确定性执行引擎:读事实 → Route → 前置校验 → 直接运行 Worker →
@@ -167,13 +169,13 @@ func (e *engine) run(ctx context.Context) {
 					}
 				}
 				e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Level: "warn",
-					Summary: "引擎已停,裁定派单未执行;干预已保留,继续创作时自动重新裁定"})
+					Summary: i18n.T("ev.engine.stopped")})
 				op.dispatch = nil
 			}
 			if op.hold != nil || op.reopen != nil {
 				if err := e.applyControlOp(context.Background(), op); err != nil {
 					e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Level: "error",
-						Summary: "引擎退出时补提干预失败: " + err.Error()})
+						Summary: i18n.T("ev.engine.exit.steer") + err.Error()})
 				}
 			}
 		}
@@ -338,7 +340,7 @@ func (e *engine) planStartFallback(ctx context.Context) (*flow.Instruction, erro
 // retryPlanStart 补裁启动决策并固化(裁定先落事实再执行,与 StartPrepared 同构)。
 func (e *engine) retryPlanStart(ctx context.Context, prompt string) *flow.Instruction {
 	start := time.Now()
-	decision, derr := runObservedDecision(e.observer, "启动补裁", func() (arbiter.PlanStartDecision, error) {
+	decision, derr := runObservedDecision(e.observer, i18n.T("ev.dec.start.retry"), func() (arbiter.PlanStartDecision, error) {
 		return arbiter.DecidePlanStart(ctx, e.arbiterModel, e.planStartPrompt, prompt, e.style)
 	})
 	rec := storepkg.DecisionRecord{Kind: "plan_start", Decider: "arbiter", Input: prompt,
@@ -365,7 +367,7 @@ func (e *engine) retryPlanStart(ctx context.Context, prompt string) *flow.Instru
 		return nil
 	}
 	e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Level: "info",
-		Summary: fmt.Sprintf("启动裁定已补齐(规划师: %s——%s)", decision.Planner, decision.Reason)})
+		Summary: fmt.Sprintf(i18n.T("ev.start.filled"), decision.Planner, decision.Reason)})
 	return &flow.Instruction{Agent: decision.Planner, Task: decision.Task, Reason: decision.Reason}
 }
 
@@ -452,7 +454,7 @@ func (e *engine) trackDeadlock(ctx context.Context, inst **flow.Instruction) (st
 	}
 	// Arbiter 僵局咨询(repeats ∈ [consultAt, abortAt))。裁定 retry 不清零计数。
 	facts := e.failureFacts("deadlock", in, e.workerErrorFor(in))
-	decision, err := runObservedDecision(e.observer, "僵局裁定", func() (arbiter.FailureDecision, error) {
+	decision, err := runObservedDecision(e.observer, i18n.T("ev.dec.deadlock"), func() (arbiter.FailureDecision, error) {
 		return arbiter.DecideFailure(ctx, e.arbiterModel, e.failurePrompt, facts)
 	})
 	e.recordFailureDecision("deadlock", in, facts, decision, err)
@@ -516,7 +518,7 @@ func (e *engine) handleWorkerError(ctx context.Context, inst *flow.Instruction, 
 	}
 	e.failedKey = ""
 	facts := e.failureFacts("worker_failure", inst, werr)
-	decision, err := runObservedDecision(e.observer, "失败裁定", func() (arbiter.FailureDecision, error) {
+	decision, err := runObservedDecision(e.observer, i18n.T("ev.dec.failure"), func() (arbiter.FailureDecision, error) {
 		return arbiter.DecideFailure(ctx, e.arbiterModel, e.failurePrompt, facts)
 	})
 	e.recordFailureDecision("worker_failure", inst, facts, decision, err)
@@ -710,7 +712,7 @@ func (e *engine) applyPendingOps(ctx context.Context) (deferGate bool) {
 					}
 				}
 				e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Level: "warn",
-					Summary: "干预动作执行失败,已保留;恢复/继续时自动重试"})
+					Summary: i18n.T("ev.steer.retry.b")})
 			} else if pairedHoldDispatch && e.nextDefersGate() {
 				// 只有 hold 与配对派单都成功落地，才允许绕过本次 Gate。
 				// hold 写入失败或派单因事实过期被丢弃时继续绕过，都会让
@@ -741,7 +743,7 @@ func (e *engine) applyControlOp(ctx context.Context, op controlOp) error {
 		if fresh.Phase != op.facts.Phase || fresh.Flow != op.facts.Flow ||
 			fresh.QueueHead() != op.facts.QueueHead() {
 			e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Level: "warn",
-				Summary: "裁定派单已过时(事实推进),以最新事实重新裁定"})
+				Summary: i18n.T("ev.dispatch.stale")})
 			e.recordStale(op)
 			if op.text != "" && e.reconsult != nil {
 				// 同步重询:干预必须先于后续创作生效——异步会让引擎在新裁定
@@ -755,33 +757,33 @@ func (e *engine) applyControlOp(ctx context.Context, op controlOp) error {
 		if op.hold.Cancel {
 			meta, err := e.store.RunMeta.Load()
 			if err != nil {
-				e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: "读取一次性暂停失败: " + err.Error(), Level: "error"})
+				e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: i18n.T("ev.hold.read.failed") + err.Error(), Level: "error"})
 				return err
 			}
 			if meta != nil && meta.AdvanceHold != nil {
 				if err := e.store.RunMeta.ClearAdvanceHold(*meta.AdvanceHold); err != nil {
-					e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: "取消一次性暂停失败: " + err.Error(), Level: "error"})
+					e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: i18n.T("ev.hold.clear.failed") + err.Error(), Level: "error"})
 					return err
 				}
 			}
-			e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Summary: "已取消一次性暂停", Level: "info"})
+			e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Summary: i18n.T("ev.hold.cleared"), Level: "info"})
 		} else {
 			hold := domain.AdvanceHold{After: op.hold.After, TargetChapter: op.hold.TargetChapter, Reason: op.hold.Reason}
 			if err := e.store.RunMeta.SetAdvanceHold(hold); err != nil {
-				e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: "设置一次性暂停失败: " + err.Error(), Level: "error"})
+				e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: i18n.T("ev.hold.set.failed") + err.Error(), Level: "error"})
 				return err // hold 未落盘时关联 dispatch 不得执行
 			}
-			e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Summary: "已设置一次性暂停: " + op.hold.Reason, Level: "info"})
+			e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM", Summary: i18n.T("ev.hold.set") + op.hold.Reason, Level: "info"})
 		}
 	}
 	if op.reopen != nil {
 		args, _ := json.Marshal(map[string]any{"chapters": op.reopen.Chapters, "reason": op.reopen.Reason})
 		if _, err := tools.NewReopenBookTool(e.store).Execute(ctx, args); err != nil {
-			e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: "重开返工失败: " + err.Error(), Level: "error"})
+			e.emitEvent(Event{Time: time.Now(), Category: "ERROR", Summary: i18n.T("ev.reopen.failed") + err.Error(), Level: "error"})
 			fail(err)
 		} else {
 			e.emitEvent(Event{Time: time.Now(), Category: "SYSTEM",
-				Summary: fmt.Sprintf("已重开全书返工: 第 %v 章入队", op.reopen.Chapters), Level: "info"})
+				Summary: fmt.Sprintf(i18n.T("ev.reopen.queue"), op.reopen.Chapters), Level: "info"})
 		}
 	}
 	if op.dispatch != nil {
@@ -791,7 +793,7 @@ func (e *engine) applyControlOp(ctx context.Context, op controlOp) error {
 		// 已知窗口(best-effort 边界,见 engine-arbiter.md 澄清③):派单自此存于内存,
 		// worker 启动前被硬杀(kill -9,defer 不执行)会丢失本次派单意图——
 		// 正常退出/Abort 由 run 的 defer 回存 PendingSteer 兜底。
-		e.next = &flow.Instruction{Agent: op.dispatch.Agent, Task: interventionDispatchTask(op.dispatch.Task, op.text), Reason: "用户干预裁定"}
+		e.next = &flow.Instruction{Agent: op.dispatch.Agent, Task: interventionDispatchTask(op.dispatch.Task, op.text), Reason: i18n.T("ev.dec.steer")}
 		e.deferGateForNext = op.hold != nil && !op.hold.Cancel
 		e.mu.Unlock()
 	}
@@ -805,7 +807,7 @@ func interventionDispatchTask(task, original string) string {
 	if strings.TrimSpace(original) == "" {
 		return task
 	}
-	return task + "\n\n用户原始干预（本次修改授权的唯一来源；上下文只用于理解，不得扩大目标或范围）：\n" + original
+	return task + "\n\nUser's original intervention (the sole source of authorization for this change; context is for understanding only and must not widen the target or the scope):\n" + original
 }
 
 func (e *engine) recordStale(op controlOp) {

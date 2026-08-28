@@ -1,6 +1,10 @@
 package tui
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
+)
 
 // 主题色板 — 暖调书卷气
 // AdaptiveColor: Light = 亮底色值, Dark = 暗底色值
@@ -54,18 +58,25 @@ var statusColors = map[string]lipgloss.AdaptiveColor{
 
 // 状态展示：图标 + 中文标签。与整体暖调主题一致，避免实心色块突兀。
 // RUNNING 的 icon 留空，由 spinner frame 动态填充，让动态感融入状态指示本身。
-var statusDisplay = map[string]struct {
+// 必须是函数：包级 var 在 init 期求值，那时 i18n.Use 还没跑，
+// 语言会被永久钉死在默认值上（真实踩过：界面全越南语，唯独状态徽章是中文）。
+func statusDisplay() map[string]struct {
 	icon  string
 	label string
-}{
-	"READY":    {"○", "就绪"},
-	"RUNNING":  {"", "运行中"},
-	"REVIEW":   {"◆", "审阅"},
-	"REWRITE":  {"◆", "返工"},
-	"COMPLETE": {"●", "完成"},
-	"PAUSED":   {"⏸", "暂停"},
-	"PAUSING":  {"⏸", "暂停中"},
-	"ERROR":    {"✕", "错误"},
+} {
+	return map[string]struct {
+		icon  string
+		label string
+	}{
+		"READY":    {"○", i18n.T("badge.ready")},
+		"RUNNING":  {"", i18n.T("badge.running")},
+		"REVIEW":   {"◆", i18n.T("badge.review")},
+		"REWRITE":  {"◆", i18n.T("badge.rework")},
+		"COMPLETE": {"●", i18n.T("badge.done")},
+		"PAUSED":   {"⏸", i18n.T("badge.paused")},
+		"PAUSING":  {"⏸", i18n.T("badge.pausing")},
+		"ERROR":    {"✕", i18n.T("badge.error")},
+	}
 }
 
 // 事件分类颜色映射

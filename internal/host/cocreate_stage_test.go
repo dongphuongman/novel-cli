@@ -7,6 +7,7 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/host/imp"
+	"github.com/voocel/ainovel-cli/internal/lang"
 	"github.com/voocel/ainovel-cli/internal/store"
 )
 
@@ -185,7 +186,7 @@ func TestStageCoCreate_OccupancyBlocksConcurrentEntries(t *testing.T) {
 }
 
 func TestBuildStoryStateSummary_NilStore(t *testing.T) {
-	if got := buildStoryStateSummary(nil); got != "" {
+	if got := buildStoryStateSummary(nil, lang.Resolve("en")); got != "" {
 		t.Errorf("nil store 应返回空串，得 %q", got)
 	}
 }
@@ -216,8 +217,8 @@ func TestBuildStoryStateSummary_Populated(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := buildStoryStateSummary(st)
-	for _, want := range []string{"影之诗", "已完成 3 章", "下一章为第 4 章", "主角登临绝巅", "师门血仇未报", "预计 4-6 卷"} {
+	got := buildStoryStateSummary(st, lang.Resolve("en"))
+	for _, want := range []string{"影之诗", "3 chapters completed", "the next chapter is 4", "主角登临绝巅", "师门血仇未报", "预计 4-6 卷"} {
 		if !strings.Contains(got, want) {
 			t.Errorf("摘要应含 %q，实际:\n%s", want, got)
 		}
@@ -249,11 +250,11 @@ func TestBuildStoryStateSummaryUsesDynamicPlanningWording(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := buildStoryStateSummary(st)
-	if !strings.Contains(got, "当前已细化 2 章（后续按弧动态规划）") {
+	got := buildStoryStateSummary(st, lang.Resolve("en"))
+	if !strings.Contains(got, "2 chapters detailed so far (the rest is planned dynamically, arc by arc)") {
 		t.Fatalf("动态规划摘要口径错误:\n%s", got)
 	}
-	if strings.Contains(got, "66") || strings.Contains(got, "规划 2 章") {
+	if strings.Contains(got, "66") || strings.Contains(got, "2 chapters planned") {
 		t.Fatalf("动态规划摘要不得暗示固定总章数:\n%s", got)
 	}
 }

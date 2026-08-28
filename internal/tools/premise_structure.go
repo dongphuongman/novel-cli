@@ -6,25 +6,75 @@ import (
 	"github.com/voocel/ainovel-cli/internal/domain"
 )
 
+// 故事前提的二级标题是**机械解析键**：premiseStructure 按此判断哪一节缺失，
+// architect 据此补齐，audit_foundation 据此放行。写错一个字 = 该节对系统不存在。
+//
+// 规范名为英文（与 assets/prompts 同语言）；中文名保留为别名，存量中文作品
+// 逐字不变地继续解析。新增语言只需在 premiseHeadingAliases 里加一行。
+const (
+	headingGenreTone      = "Genre and Tone"
+	headingGenrePosition  = "Genre Positioning"
+	headingCoreConflict   = "Central Conflict"
+	headingProtagGoal     = "Protagonist Goal"
+	headingEndingDir      = "Ending Direction"
+	headingNoGoZones      = "Writing No-Go Zones"
+	headingSellingPoints  = "Differentiating Selling Points"
+	headingDiffHook       = "Differentiating Hook"
+	headingCorePromise    = "Core Promise"
+	headingStoryEngine    = "Story Engine"
+	headingThroughline    = "Relationship and Growth Throughline"
+	headingEscalationPath = "Escalation Path"
+	headingMidPivot       = "Mid-Game Pivot"
+	headingEndgameQ       = "Endgame Question"
+	headingShortFormFit   = "Short-Form Fit"
+)
+
+// premiseHeadingAliases 把任意书写形式映射到规范名。键在查表前统一小写，
+// 因此英文大小写差异（"Genre and tone"）不会让整节静默丢失。
 var premiseHeadingAliases = map[string]string{
-	"题材定位":    "题材定位",
-	"题材和基调":   "题材和基调",
-	"核心冲突":    "核心冲突",
-	"主角目标":    "主角目标",
-	"结局方向":    "终局方向",
-	"终局方向":    "终局方向",
-	"写作禁区":    "写作禁区",
-	"差异化卖点":   "差异化卖点",
-	"差异化钩子":   "差异化钩子",
-	"核心兑现承诺":  "核心兑现承诺",
-	"故事引擎":    "故事引擎",
-	"关系/成长主线": "关系/成长主线",
-	"升级路径":    "升级路径",
-	"中段转折":    "中段转折",
-	"中期转向":    "中段转折",
-	"终局命题":    "终局命题",
-	"短篇适配性":   "短篇适配性",
-	"本作为什么适合短篇/单卷收束": "短篇适配性",
+	// 规范名自身
+	"genre and tone":                      headingGenreTone,
+	"genre positioning":                   headingGenrePosition,
+	"central conflict":                    headingCoreConflict,
+	"protagonist goal":                    headingProtagGoal,
+	"ending direction":                    headingEndingDir,
+	"writing no-go zones":                 headingNoGoZones,
+	"differentiating selling points":      headingSellingPoints,
+	"differentiating hook":                headingDiffHook,
+	"core promise":                        headingCorePromise,
+	"story engine":                        headingStoryEngine,
+	"relationship and growth throughline": headingThroughline,
+	"escalation path":                     headingEscalationPath,
+	"mid-game pivot":                      headingMidPivot,
+	"endgame question":                    headingEndgameQ,
+	"short-form fit":                      headingShortFormFit,
+
+	// 英文常见变体
+	"protagonist's goal":                headingProtagGoal,
+	"writing no go zones":               headingNoGoZones,
+	"mid game pivot":                    headingMidPivot,
+	"short form fit":                    headingShortFormFit,
+	"relationship / growth throughline": headingThroughline,
+
+	// 中文别名：存量作品与中文创作语言下的产出
+	"题材定位":    headingGenrePosition,
+	"题材和基调":   headingGenreTone,
+	"核心冲突":    headingCoreConflict,
+	"主角目标":    headingProtagGoal,
+	"结局方向":    headingEndingDir,
+	"终局方向":    headingEndingDir,
+	"写作禁区":    headingNoGoZones,
+	"差异化卖点":   headingSellingPoints,
+	"差异化钩子":   headingDiffHook,
+	"核心兑现承诺":  headingCorePromise,
+	"故事引擎":    headingStoryEngine,
+	"关系/成长主线": headingThroughline,
+	"升级路径":    headingEscalationPath,
+	"中段转折":    headingMidPivot,
+	"中期转向":    headingMidPivot,
+	"终局命题":    headingEndgameQ,
+	"短篇适配性":   headingShortFormFit,
+	"本作为什么适合短篇/单卷收束": headingShortFormFit,
 }
 
 func parsePremiseSections(premise string) map[string]string {
@@ -67,7 +117,7 @@ func canonicalPremiseHeading(line string) (string, bool) {
 	if title == "" {
 		return "", false
 	}
-	canonical, ok := premiseHeadingAliases[title]
+	canonical, ok := premiseHeadingAliases[strings.ToLower(title)]
 	return canonical, ok
 }
 
@@ -97,34 +147,34 @@ func premiseStructure(premise string, tier domain.PlanningTier) map[string]any {
 
 func requiredPremiseHeadings(tier domain.PlanningTier) []string {
 	common := []string{
-		"题材和基调",
-		"题材定位",
-		"核心冲突",
-		"主角目标",
-		"终局方向",
-		"写作禁区",
-		"差异化卖点",
-		"差异化钩子",
-		"核心兑现承诺",
+		headingGenreTone,
+		headingGenrePosition,
+		headingCoreConflict,
+		headingProtagGoal,
+		headingEndingDir,
+		headingNoGoZones,
+		headingSellingPoints,
+		headingDiffHook,
+		headingCorePromise,
 	}
 
 	switch tier {
 	case domain.PlanningTierLong:
 		return append(common,
-			"故事引擎",
-			"关系/成长主线",
-			"升级路径",
-			"中段转折",
-			"终局命题",
+			headingStoryEngine,
+			headingThroughline,
+			headingEscalationPath,
+			headingMidPivot,
+			headingEndgameQ,
 		)
 	case domain.PlanningTierMid:
 		return append(common,
-			"故事引擎",
-			"中段转折",
+			headingStoryEngine,
+			headingMidPivot,
 		)
 	case domain.PlanningTierShort:
 		return append(common,
-			"短篇适配性",
+			headingShortFormFit,
 		)
 	default:
 		return common

@@ -10,6 +10,8 @@ import (
 
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/errs"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // Store 是状态管理的组合根，持有所有子存储。
@@ -50,13 +52,24 @@ type projectFormat struct {
 }
 
 // NewStore 创建状态管理器，dir 为小说输出根目录。
-func NewStore(dir string) *Store {
+//
+// 创作语言取零值（等价中文）。只读用途——诊断导出、评测采集——用这个就够；
+// 它们不写 book.md 这类需要按语言排版的产物。
+func NewStore(dir string) *Store { return newStoreWith(dir, lang.Profile{}) }
+
+// NewStoreForBook 创建带创作语言的状态管理器，供真正写产物的宿主使用。
+//
+// 单独开一个构造器而不是改 NewStore 的签名：后者有 230+ 处测试调用，
+// 为一个只有宿主用得上的参数去改它们，是纯粹的噪音。
+func NewStoreForBook(dir string, lp lang.Profile) *Store { return newStoreWith(dir, lp) }
+
+func newStoreWith(dir string, lp lang.Profile) *Store {
 	io := newIO(dir)
 	outline := NewOutlineStore(io)
 	return &Store{
 		dir:            dir,
 		Progress:       NewProgressStore(newIO(dir)),
-		Book:           NewBookStore(newIO(dir)),
+		Book:           NewBookStore(newIO(dir), lp),
 		Outline:        outline,
 		Drafts:         NewDraftStore(newIO(dir)),
 		Summaries:      NewSummaryStore(newIO(dir), outline),

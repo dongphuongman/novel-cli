@@ -3,6 +3,8 @@ package rules
 import (
 	"strings"
 	"testing"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 func TestBuildSnapshot_FieldOverridePrecedence(t *testing.T) {
@@ -87,7 +89,7 @@ func TestBuildSnapshot_DegradedPropagates(t *testing.T) {
 }
 
 func TestSystemDefaults_MatchesLegacyDefaultMD(t *testing.T) {
-	d := SystemDefaults().Structured
+	d := SystemDefaults(lang.Resolve("zh")).Structured
 	if len(d.ForbiddenPhrases) != 4 {
 		t.Fatalf("默认禁语应为 4 条，得到 %d", len(d.ForbiddenPhrases))
 	}

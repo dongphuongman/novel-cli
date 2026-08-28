@@ -12,6 +12,8 @@ import (
 	"github.com/voocel/agentcore/llm"
 	"github.com/voocel/ainovel-cli/internal/errs"
 	"github.com/voocel/ainovel-cli/internal/llmcontract"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
 )
 
 // FailoverEvent 表示一次显式 provider 切换。
@@ -207,7 +209,7 @@ func (ms *ModelSet) Swap(role, provider, model string) error {
 	}
 	next, err := createModelFromConfig(provider, model, pc, make(map[string]agentcore.ChatModel))
 	if err != nil {
-		return fmt.Errorf("切换模型失败: %w", err)
+		return fmt.Errorf(i18n.T("mdl.err.switch"), err)
 	}
 
 	jsonSchema := ms.config.ModelJSONSchema(provider, model)
@@ -328,7 +330,7 @@ func NewModelSet(cfg Config) (*ModelSet, error) {
 			return nil, fmt.Errorf("role %s model: %w", role, err)
 		}
 		ms.models[role] = NewSwappableModel(rc.Provider, rc.Model, m, cfg.ModelJSONSchema(rc.Provider, rc.Model))
-		slog.Info("角色模型分配", "module", "config", "role", role, "provider", rc.Provider, "model", rc.Model)
+		slog.Info(i18n.T("mdl.assignment"), "module", "config", "role", role, "provider", rc.Provider, "model", rc.Model)
 		if len(rc.Fallbacks) == 0 {
 			continue
 		}
@@ -365,7 +367,7 @@ func createModelFromConfig(providerKey, model string, pc ProviderConfig, cache m
 
 	providerType, err := pc.ProviderType(providerKey)
 	if err != nil {
-		return nil, fmt.Errorf("解析 provider 类型失败: %w", err)
+		return nil, fmt.Errorf(i18n.T("mdl.err.providertype"), err)
 	}
 	providerExtra := cloneMap(pc.Extra)
 	if pc.API != "" {

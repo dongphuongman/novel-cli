@@ -6,7 +6,11 @@
 // 当前支持 TXT 与 EPUB。
 package exp
 
-import "github.com/voocel/ainovel-cli/internal/store"
+import (
+	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
+)
 
 // Format 标识导出格式。
 type Format string
@@ -39,9 +43,13 @@ type Options struct {
 	Overwrite bool
 }
 
-// Deps 是 Run 所需依赖。仅 store；导出无需 LLM、prompt、bundle。
+// Deps 是 Run 所需依赖。导出无需 LLM、prompt、bundle。
 type Deps struct {
 	Store *store.Store
+
+	// Lang 决定章节标题的语言化与 EPUB 的 dc:language。零值 = 中文，
+	// 保证既有调用方与既有产物逐字节不变。
+	Lang lang.Profile
 }
 
 // Result 是一次成功导出的产物摘要。

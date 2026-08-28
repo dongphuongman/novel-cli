@@ -5,29 +5,33 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
-	"unicode/utf8"
 
 	"github.com/voocel/agentcore/schema"
 	"github.com/voocel/ainovel-cli/internal/domain"
 	"github.com/voocel/ainovel-cli/internal/errs"
 	"github.com/voocel/ainovel-cli/internal/store"
+
+	"github.com/voocel/ainovel-cli/internal/lang"
 )
 
 // DraftChapterTool 写入整章草稿，替代旧的 write_scene + polish_chapter 流水线。
 // Agent 自主决定一次写完还是分批续写。
 type DraftChapterTool struct {
 	store *store.Store
+	// lp 决定回给 Writer 的 word_count 口径。它必须与 commit_chapter 和用户
+	// 字数规则同源——回报字符数而规则说的是"词"，Writer 会照着错的信号收笔。
+	lp lang.Profile
 }
 
-func NewDraftChapterTool(store *store.Store) *DraftChapterTool {
-	return &DraftChapterTool{store: store}
+func NewDraftChapterTool(store *store.Store, lp lang.Profile) *DraftChapterTool {
+	return &DraftChapterTool{store: store, lp: lp}
 }
 
 func (t *DraftChapterTool) Name() string { return "draft_chapter" }
 func (t *DraftChapterTool) Description() string {
-	return "写入章节正文。mode=write 覆盖写入整章，mode=append 追加到现有草稿（续写/修改）"
+	return "Write the chapter's prose. mode=write overwrites the whole chapter; mode=append appends to the existing draft (continuing or revising)"
 }
-func (t *DraftChapterTool) Label() string { return "写入章节" }
+func (t *DraftChapterTool) Label() string { return "Write chapter" }
 
 // 写工具，禁止并发（读-改-写竞态）。
 func (t *DraftChapterTool) ReadOnly(_ json.RawMessage) bool        { return false }
@@ -38,9 +42,9 @@ func (t *DraftChapterTool) Schema() map[string]any {
 	// 要求所有 properties 都在 required 列表中。原来的"省略 mode 走 write
 	// 默认"行为现在需要模型显式传 mode="write"，Execute 的 default 分支不变。
 	return schema.Object(
-		schema.Property("chapter", schema.Int("章节号")).Required(),
-		schema.Property("content", schema.String("章节正文")).Required(),
-		schema.Property("mode", schema.Enum("写入模式", "write", "append")).Required(),
+		schema.Property("chapter", schema.Int("Chapter number")).Required(),
+		schema.Property("content", schema.String("The chapter's prose")).Required(),
+		schema.Property("mode", schema.Enum("Write mode", "write", "append")).Required(),
 	)
 }
 
@@ -84,7 +88,7 @@ func (t *DraftChapterTool) Execute(_ context.Context, args json.RawMessage) (jso
 				"chapter":   a.Chapter,
 				"skipped":   true,
 				"completed": true,
-				"reason":    fmt.Sprintf("第 %d 章已提交完成，不能覆盖", a.Chapter),
+				"reason":    fmt.Sprintf("chapter %d is already committed and cannot be overwritten", a.Chapter),
 			})
 		}
 	}
@@ -111,8 +115,8 @@ func (t *DraftChapterTool) Execute(_ context.Context, args json.RawMessage) (jso
 			"written":    true,
 			"chapter":    a.Chapter,
 			"mode":       "append",
-			"word_count": utf8.RuneCountInString(full),
-			"next_step":  "先 read_chapter(source=draft) 回读草稿，再调用 check_consistency，最后 commit_chapter",
+			"word_count": t.lp.CountWords(full),
+			"next_step":  "read the draft back with read_chapter(source=draft), then call check_consistency, then commit_chapter",
 		})
 	default: // write
 		if err := t.store.Drafts.SaveDraft(a.Chapter, a.Content); err != nil {
@@ -128,8 +132,8 @@ func (t *DraftChapterTool) Execute(_ context.Context, args json.RawMessage) (jso
 			"written":    true,
 			"chapter":    a.Chapter,
 			"mode":       "write",
-			"word_count": utf8.RuneCountInString(a.Content),
-			"next_step":  "先 read_chapter(source=draft) 回读草稿，再调用 check_consistency，最后 commit_chapter",
+			"word_count": t.lp.CountWords(a.Content),
+			"next_step":  "read the draft back with read_chapter(source=draft), then call check_consistency, then commit_chapter",
 		})
 	}
 }

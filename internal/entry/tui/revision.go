@@ -8,6 +8,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/voocel/ainovel-cli/internal/host"
 	"github.com/voocel/ainovel-cli/internal/revision"
+
+	"github.com/voocel/ainovel-cli/internal/i18n"
 )
 
 type revisionDoneMsg struct {
@@ -24,7 +26,7 @@ func startRevisionSync(rt *host.Host, args []string) (tea.Cmd, bool, error) {
 		case "--check":
 			checkOnly = true
 		default:
-			return nil, false, fmt.Errorf("未知参数 %q（支持：--check）", arg)
+			return nil, false, fmt.Errorf(i18n.T("rev.err.arg"), arg)
 		}
 	}
 	return func() tea.Msg {
@@ -39,25 +41,25 @@ func startRevisionSync(rt *host.Host, args []string) (tea.Cmd, bool, error) {
 
 func formatRevisionResult(result *revision.Result) string {
 	if result == nil || len(result.Applied) == 0 {
-		return "未检测到章节外部修改"
+		return i18n.T("ui.sync.none")
 	}
 	parts := make([]string, 0, len(result.Analyses))
 	for i, analysis := range result.Analyses {
 		if i >= len(result.Applied) {
 			break
 		}
-		part := fmt.Sprintf("第%d章：%s", result.Applied[i], analysis.ChangeSummary)
+		part := fmt.Sprintf(i18n.T("rev.chapter"), result.Applied[i], analysis.ChangeSummary)
 		if analysis.StoryChanged {
-			part += "（剧情事实已更新）"
+			part += i18n.T("rev.facts")
 		}
 		if len(analysis.DownstreamIssues) > 0 {
-			part += fmt.Sprintf("（发现%d项后续冲突）", len(analysis.DownstreamIssues))
+			part += fmt.Sprintf(i18n.T("rev.conflicts"), len(analysis.DownstreamIssues))
 		}
 		parts = append(parts, part)
 	}
-	summary := fmt.Sprintf("已接纳章节修订：%v", result.Applied)
+	summary := fmt.Sprintf(i18n.T("rev.accepted"), result.Applied)
 	if len(parts) > 0 {
-		summary += "；" + strings.Join(parts, "；")
+		summary += i18n.T("sep.semi") + strings.Join(parts, i18n.T("sep.semi"))
 	}
 	return summary
 }

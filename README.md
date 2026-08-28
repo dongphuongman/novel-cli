@@ -481,7 +481,7 @@ output/novel/meta/simulation_profile.json
 }
 ```
 
-支持的 Provider：`openrouter` / `anthropic` / `gemini` / `openai` / `deepseek` / `qwen` / `glm` / `grok` / `ollama` / `bedrock` 及任意自定义代理。
+支持的 Provider：`openrouter` / `anthropic` / `gemini` / `openai` / `deepseek` / `qwen` / `glm` / `grok` / `ollama` / `bedrock` / `freellmapi`（自建聚合网关，见下）及任意自定义代理。
 
 如果代理是 Anthropic 协议，并限制只能由 Claude Code 客户端访问，`type` 应设为 `anthropic`，`anthropic_beta` 放在 `extra` 顶层，Stainless 等 HTTP 头放在 `extra.headers` 中：
 
@@ -543,6 +543,7 @@ output/novel/meta/simulation_profile.json
 - `openrouter` / `anthropic` / `gemini` / `openai` / `deepseek` / `qwen` / `glm` / `grok` 这类托管接口通常需要填写 `api_key`
 - `ollama` 和 `bedrock` 允许不填 `api_key`；Bedrock 需在 `extra` 中配置 `region`、`access_key_id`、`secret_access_key`（可选 `session_token`）
 - 显式指定了 `type` 的自定义代理允许不填 `api_key`
+- `freellmapi` 在校验层被归入自定义代理（`type` 显式为 `openai`），因此不强制 `api_key`，但它**实际需要** unified key；留空只会在真正发请求时报 401，不会在配置阶段拦下
 
 例如本地 `ollama` 配置：
 
@@ -557,6 +558,35 @@ output/novel/meta/simulation_profile.json
   }
 }
 ```
+
+#### FreeLLMAPI（自建免费额度聚合网关）
+
+[FreeLLMAPI](https://github.com/tashfeenahmed/freellmapi) 把几十家提供商的免费额度聚合到一个 OpenAI 兼容的 `/v1` 后面，自己用 Docker 跑在本机。
+
+```bash
+curl -fsSL https://freellmapi.co/install.sh | bash
+```
+
+打开 `http://localhost:3001`，在 **Keys** 页填入各家的 key，再从页头复制 unified key。回到 ainovel-cli，首次引导或 `/config` 里选 **FreeLLMAPI (localhost:3001)**——协议、地址、模型都已预填，只需粘贴 unified key。生成的配置形如：
+
+```jsonc
+"freellmapi": {
+  "type": "openai",
+  "api_key": "freellmapi-your-unified-key",
+  "base_url": "http://localhost:3001/v1",
+  "models": [{ "name": "auto", "json_schema": false }]
+}
+```
+
+模型名可用 `auto`（路由器自己挑）、`auto:fast`、`auto:smart` 或具体 model id。它同时实现了 `/v1/chat/completions` 和 `/v1/responses`，因此 `api` 字段两个值都能用。
+
+**接入前请知情**，以下三点来自其官方文档，与本项目的运行方式有真实冲突：
+
+1. **路由器逐请求切换后端** → 请求前缀不稳定，[提示词缓存](docs/prompt-cache-design.md)基本失效，TUI 缓存面板会频繁报"链路断裂"。这是长跑成本的第二大杠杆。
+2. **其 API 文档未提及返回 `usage`** → 用量、费用与预算可能全部为 0，TUI 会显示"上游未返 usage"。预算保险丝届时形同虚设。接入后请先看一眼用量面板确认。
+3. **官方自述**"没有前沿模型、越到日末质量越低（UTC 零点重置）、仅供个人试验"。连写 200~500 章恰恰是最容易撞上额度天花板的场景——**拿来试跑很合适，长篇主力配置要谨慎**。
+
+`json_schema` 默认关掉正是因为第 1 点：既然实际执行的模型逐次变化，就无法承诺它支持原生结构化输出，让 Arbiter 走提示词契约更稳。确认你的固定链路支持原生 schema 时，可以自行改成 `true`。
 
 ### 写作风格
 
