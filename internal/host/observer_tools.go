@@ -8,7 +8,7 @@ import (
 
 	"github.com/voocel/agentcore"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 // handleToolUpdate 处理 Worker 的进度中继(ProgressPayload):TOOL 行、流式正文、

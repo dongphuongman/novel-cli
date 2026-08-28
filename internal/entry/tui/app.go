@@ -6,12 +6,12 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/voocel/ainovel-cli/assets"
-	"github.com/voocel/ainovel-cli/internal/bootstrap"
-	"github.com/voocel/ainovel-cli/internal/host"
-	buildversion "github.com/voocel/ainovel-cli/internal/version"
+	"github.com/dongphuongman/novel-cli/assets"
+	"github.com/dongphuongman/novel-cli/internal/bootstrap"
+	"github.com/dongphuongman/novel-cli/internal/host"
+	buildversion "github.com/dongphuongman/novel-cli/internal/version"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 // Run 启动 TUI。

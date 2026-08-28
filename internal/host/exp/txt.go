@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/domain"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 // chapterTitleIndex 给定章号查标题，缺失返回空串。

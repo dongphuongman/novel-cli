@@ -1257,8 +1257,8 @@ type Checkpoint struct {
 
     <h3>Khởi động</h3>
 <pre><span class="c"># Cài đặt (macOS / Linux, không cần Go)</span>
-curl -fsSL https://raw.githubusercontent.com/voocel/ainovel-cli/main/scripts/install.sh | sh
-go install github.com/voocel/ainovel-cli/cmd/ainovel-cli@latest
+curl -fsSL https://raw.githubusercontent.com/dongphuongman/novel-cli/main/scripts/install.sh | sh
+go install github.com/dongphuongman/novel-cli/cmd/ainovel-cli@latest
 
 ainovel-cli                 <span class="c"># TUI; lần đầu tự vào luồng hướng dẫn cấu hình</span>
 ainovel-cli --version
@@ -1688,7 +1688,7 @@ go vet ./...</pre>
         <tbody>
           <tr><td><code>.github/workflows/ci.yml</code></td><td>Build + test trên mỗi lần đẩy</td></tr>
           <tr><td><code>.github/workflows/release.yml</code> + <code>.goreleaser.yml</code></td><td>Đóng gói đa nền tảng, sinh SHA256 manifest mà <code>scripts/install.sh</code> kiểm tra trước khi cài</td></tr>
-          <tr><td><code>.github/workflows/docker.yml</code> + <code>Dockerfile</code></td><td>Ảnh <code>ghcr.io/voocel/ainovel-cli:latest</code>, hợp với chạy headless dài ngày trên server/NAS</td></tr>
+          <tr><td><code>.github/workflows/docker.yml</code> + <code>Dockerfile</code></td><td>Ảnh <code>ghcr.io/dongphuongman/novel-cli:latest</code>, hợp với chạy headless dài ngày trên server/NAS</td></tr>
           <tr><td><code>scripts/check_chapter_wordcount.py</code></td><td>Tiện ích kiểm tra số từ theo chương</td></tr>
         </tbody>
       </table>
@@ -1697,7 +1697,7 @@ go vet ./...</pre>
 docker run --rm -it \
   -v "$PWD/config:/root/.ainovel" \
   -v "$PWD/workspace:/workspace" \
-  ghcr.io/voocel/ainovel-cli:latest</pre>
+  ghcr.io/dongphuongman/novel-cli:latest</pre>
 
     <h3>Chiến lược kiểm chứng</h3>
     <ul>
@@ -1735,7 +1735,7 @@ docker run --rm -it \
       <code>observability.md</code>, <code>prompt-cache-design.md</code>, <code>user-rules-runtime.md</code>, <code>voice-layer.md</code>.
       Với các quyết định thiết kế đã bị thay thế, xem <code>refactor-flow-driven.md</code> (đã ngừng dùng, chỉ giữ làm hồ sơ tiến hóa).
     </p>
-    <p class="fmono" style="margin-top:1.25rem">ainovel-cli · MIT · github.com/voocel/ainovel-cli</p>
+    <p class="fmono" style="margin-top:1.25rem">ainovel-cli · MIT · github.com/dongphuongman/novel-cli</p>
   </footer>
 
   </main>

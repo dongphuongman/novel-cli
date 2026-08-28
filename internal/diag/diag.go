@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // ── 诊断阈值 ─────────────────────────────────────────────

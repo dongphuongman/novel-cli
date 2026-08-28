@@ -5,9 +5,9 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/voocel/ainovel-cli/internal/diag"
-	"github.com/voocel/ainovel-cli/internal/host"
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/diag"
+	"github.com/dongphuongman/novel-cli/internal/host"
+	"github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // 消息类型

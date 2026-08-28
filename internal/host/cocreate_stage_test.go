@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/host/imp"
-	"github.com/voocel/ainovel-cli/internal/lang"
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/host/imp"
+	"github.com/dongphuongman/novel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // newFlagTestHost 造一个最小 Host，只够驱动 cocreating 标记状态机与并发守卫。

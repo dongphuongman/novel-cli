@@ -7,7 +7,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 type commandPaletteItem struct {

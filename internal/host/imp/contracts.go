@@ -2,8 +2,8 @@ package imp
 
 import (
 	"github.com/voocel/agentcore/schema"
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/llmcontract"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/llmcontract"
 )
 
 func nullableString(description string) map[string]any {

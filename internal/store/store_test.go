@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/domain"
 )
 
 func TestSummaryTitleCacheTracksSave(t *testing.T) {

@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/voocel/agentcore/schema"
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // References 嵌入的参考资料。

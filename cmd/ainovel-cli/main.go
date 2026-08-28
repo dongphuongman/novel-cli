@@ -8,15 +8,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/voocel/ainovel-cli/assets"
-	"github.com/voocel/ainovel-cli/internal/bootstrap"
-	"github.com/voocel/ainovel-cli/internal/entry/headless"
-	"github.com/voocel/ainovel-cli/internal/entry/startup"
-	"github.com/voocel/ainovel-cli/internal/entry/tui"
-	"github.com/voocel/ainovel-cli/internal/eval"
-	"github.com/voocel/ainovel-cli/internal/i18n"
-	"github.com/voocel/ainovel-cli/internal/rules"
-	buildversion "github.com/voocel/ainovel-cli/internal/version"
+	"github.com/dongphuongman/novel-cli/assets"
+	"github.com/dongphuongman/novel-cli/internal/bootstrap"
+	"github.com/dongphuongman/novel-cli/internal/entry/headless"
+	"github.com/dongphuongman/novel-cli/internal/entry/startup"
+	"github.com/dongphuongman/novel-cli/internal/entry/tui"
+	"github.com/dongphuongman/novel-cli/internal/eval"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/rules"
+	buildversion "github.com/dongphuongman/novel-cli/internal/version"
 )
 
 var (
@@ -214,7 +214,7 @@ func versionInfo() buildversion.Info {
 func runSelfUpdate(target string) error {
 	info := versionInfo()
 	result, err := buildversion.Update(context.Background(), buildversion.UpdateOptions{
-		Repo:           "voocel/ainovel-cli",
+		Repo:           "dongphuongman/novel-cli",
 		BinaryName:     "ainovel-cli",
 		TargetVersion:  target,
 		CurrentVersion: info.Version,

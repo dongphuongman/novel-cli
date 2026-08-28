@@ -4,15 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 	"log/slog"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/llmcontract"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/llmcontract"
 )
 
 const maxSourceRunes = 60000

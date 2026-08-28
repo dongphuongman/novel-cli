@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/bootstrap"
-	"github.com/voocel/ainovel-cli/internal/lang"
-	"github.com/voocel/ainovel-cli/internal/rules"
-	"github.com/voocel/ainovel-cli/internal/stylestat"
+	"github.com/dongphuongman/novel-cli/internal/bootstrap"
+	"github.com/dongphuongman/novel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/rules"
+	"github.com/dongphuongman/novel-cli/internal/stylestat"
 )
 
 // 本文件验证的是"接线是否真的通了"，而不是 lang 包内部逻辑。

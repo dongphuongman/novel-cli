@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/voocel/agentcore"
-	"github.com/voocel/ainovel-cli/internal/rules"
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/rules"
+	"github.com/dongphuongman/novel-cli/internal/store"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 // Service 编排用户规则快照的生成与更新：归一化各来源 → 确定性合并 → 落盘。

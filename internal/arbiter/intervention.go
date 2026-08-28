@@ -7,9 +7,9 @@ import (
 
 	"github.com/voocel/agentcore"
 	"github.com/voocel/agentcore/schema"
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/llmcontract"
-	storepkg "github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/llmcontract"
+	storepkg "github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // InterventionFacts 干预分诊的事实包(Collect 时刻快照)。

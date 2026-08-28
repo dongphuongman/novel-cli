@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 	"strings"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/domain"
 )
 
 // 故事状态闭集（RFC §10.4）。

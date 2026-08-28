@@ -10,10 +10,10 @@ import (
 
 	"github.com/voocel/agentcore"
 	"github.com/voocel/agentcore/llm"
-	"github.com/voocel/ainovel-cli/internal/errs"
-	"github.com/voocel/ainovel-cli/internal/llmcontract"
+	"github.com/dongphuongman/novel-cli/internal/errs"
+	"github.com/dongphuongman/novel-cli/internal/llmcontract"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 // FailoverEvent 表示一次显式 provider 切换。

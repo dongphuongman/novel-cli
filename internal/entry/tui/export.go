@@ -8,10 +8,10 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/voocel/ainovel-cli/internal/host"
-	"github.com/voocel/ainovel-cli/internal/host/exp"
+	"github.com/dongphuongman/novel-cli/internal/host"
+	"github.com/dongphuongman/novel-cli/internal/host/exp"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 // exportDoneMsg 是 /export 命令的最终结果。

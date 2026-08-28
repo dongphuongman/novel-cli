@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/bootstrap"
+	"github.com/dongphuongman/novel-cli/internal/bootstrap"
 )
 
 func newModelConfigTestHost(t *testing.T) (*Host, string) {

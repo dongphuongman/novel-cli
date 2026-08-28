@@ -3,7 +3,7 @@ package tools
 import (
 	"strings"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/domain"
 )
 
 // 故事前提的二级标题是**机械解析键**：premiseStructure 按此判断哪一节缺失，

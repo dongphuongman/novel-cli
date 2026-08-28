@@ -8,10 +8,10 @@ import (
 	"strings"
 
 	"github.com/voocel/agentcore/schema"
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/errs"
-	"github.com/voocel/ainovel-cli/internal/flow"
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/errs"
+	"github.com/dongphuongman/novel-cli/internal/flow"
+	"github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // SaveVolumeSummaryTool 保存卷级摘要，Editor 在卷结束时调用。

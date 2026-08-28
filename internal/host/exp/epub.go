@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/domain"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 // renderEPUB 把章节集合打包成 EPUB 3 字节流。

@@ -5,10 +5,10 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/voocel/ainovel-cli/internal/store"
-	"github.com/voocel/ainovel-cli/internal/stylestat"
+	"github.com/dongphuongman/novel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/stylestat"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 // StyleStatsIndex 把 Store 中的已完成章节同步到增量统计器。

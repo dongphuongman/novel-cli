@@ -7,7 +7,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/domain"
 )
 
 const chapterRecordsDir = "meta/chapter_records"

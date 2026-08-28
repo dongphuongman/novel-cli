@@ -182,13 +182,13 @@ ToolResultMicrocompact → LightTrim → StoreSummaryCompact → FullSummary
 
 ```bash
 # Cài một lệnh (macOS / Linux, không cần Go)
-curl -fsSL https://raw.githubusercontent.com/voocel/ainovel-cli/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/dongphuongman/novel-cli/main/scripts/install.sh | sh
 
 # Cài phiên bản chỉ định
-curl -fsSL https://raw.githubusercontent.com/voocel/ainovel-cli/v1.2.3/scripts/install.sh | sh -s -- v1.2.3
+curl -fsSL https://raw.githubusercontent.com/dongphuongman/novel-cli/v1.2.3/scripts/install.sh | sh -s -- v1.2.3
 
 # Hoặc cài qua Go
-go install github.com/voocel/ainovel-cli/cmd/ainovel-cli@latest
+go install github.com/dongphuongman/novel-cli/cmd/ainovel-cli@latest
 
 # Xem phiên bản / cập nhật lên bản mới nhất
 ainovel-cli --version
@@ -198,7 +198,7 @@ ainovel-cli update
 ainovel-cli
 ```
 
-> Windows hoặc cài thủ công: tải gói tương ứng ở [Releases](https://github.com/voocel/ainovel-cli/releases/latest).
+> Windows hoặc cài thủ công: tải gói tương ứng ở [Releases](https://github.com/dongphuongman/novel-cli/releases/latest).
 > Script cài sẽ tải bảng kê SHA256 từ cùng GitHub Release, xác thực xong mới giải nén và cài binary.
 
 Build từ mã nguồn:
@@ -233,13 +233,13 @@ mkdir -p config workspace
 docker run --rm -it \
   -v "$PWD/config:/root/.ainovel" \
   -v "$PWD/workspace:/workspace" \
-  ghcr.io/voocel/ainovel-cli:latest
+  ghcr.io/dongphuongman/novel-cli:latest
 
 # Headless
 docker run --rm \
   -v "$PWD/config:/root/.ainovel" \
   -v "$PWD/workspace:/workspace" \
-  ghcr.io/voocel/ainovel-cli:latest \
+  ghcr.io/dongphuongman/novel-cli:latest \
   --headless --prompt "Viết một bộ huyền huyễn phương Đông"
 ```
 

@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/voocel/agentcore"
-	"github.com/voocel/ainovel-cli/internal/domain"
-	storepkg "github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	storepkg "github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // errorKind classifies a runtime error into a stable, short label for log

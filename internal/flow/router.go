@@ -14,8 +14,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
-	storepkg "github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	storepkg "github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // plannerForTier 从已落盘的规划级别推导规划师身份:short 归短篇规划师,

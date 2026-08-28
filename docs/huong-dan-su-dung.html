@@ -164,15 +164,15 @@ footer{border-top:1px solid var(--line);margin-top:3.5rem;padding:1.75rem 0 3rem
   <h2>1. Cài đặt</h2>
   <p>Chọn một trong ba cách. Cách đầu không cần cài Go.</p>
 <pre><span class="c"># macOS / Linux — cài sẵn, không cần Go</span>
-curl -fsSL https://raw.githubusercontent.com/voocel/ainovel-cli/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/dongphuongman/novel-cli/main/scripts/install.sh | sh
 
 <span class="c"># hoặc qua Go</span>
-go install github.com/voocel/ainovel-cli/cmd/ainovel-cli@latest
+go install github.com/dongphuongman/novel-cli/cmd/ainovel-cli@latest
 
 <span class="c"># kiểm tra / cập nhật</span>
 ainovel-cli --version
 ainovel-cli update</pre>
-  <p>Windows: tải gói ở <a href="https://github.com/voocel/ainovel-cli/releases/latest">Releases</a>.</p>
+  <p>Windows: tải gói ở <a href="https://github.com/dongphuongman/novel-cli/releases/latest">Releases</a>.</p>
 
   <h3>Build từ mã nguồn</h3>
 <pre>cd đường/dẫn/tới/ainovel-cli
@@ -428,7 +428,7 @@ ainovel-cli --headless                 <span class="c"># tiếp tục việc d�
 docker run --rm -it \
   -v "$PWD/config:/root/.ainovel" \
   -v "$PWD/workspace:/workspace" \
-  ghcr.io/voocel/ainovel-cli:latest</pre>
+  ghcr.io/dongphuongman/novel-cli:latest</pre>
 
   <h3>Chạy lâu mà vẫn theo dõi được</h3>
 <pre>tmux new-session -d -s truyen -c ~/truyen-cua-toi ainovel-cli
@@ -498,7 +498,7 @@ tmux attach -t truyen        <span class="c"># xem trực tiếp</span>
 </section>
 
 <footer>
-  <p>ainovel-cli · MIT · <a href="https://github.com/voocel/ainovel-cli">github.com/voocel/ainovel-cli</a><br>
+  <p>ainovel-cli · MIT · <a href="https://github.com/dongphuongman/novel-cli">github.com/dongphuongman/novel-cli</a><br>
   Cần chi tiết kỹ thuật bên trong? Xem tài liệu kiến trúc codebase.</p>
 </footer>
 

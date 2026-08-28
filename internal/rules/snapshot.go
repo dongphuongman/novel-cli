@@ -5,7 +5,7 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 // Snapshot 是本书归一化后的用户规则快照（meta/user_rules.json）。

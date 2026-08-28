@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/voocel/agentcore"
-	"github.com/voocel/ainovel-cli/internal/bootstrap"
+	"github.com/dongphuongman/novel-cli/internal/bootstrap"
 )
 
 type APIKeyAction string

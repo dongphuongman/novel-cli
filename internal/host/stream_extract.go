@@ -1,7 +1,7 @@
 package host
 
 import (
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 	"strings"
 	"unicode/utf8"
 )

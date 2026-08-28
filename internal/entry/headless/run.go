@@ -2,18 +2,18 @@ package headless
 
 import (
 	"fmt"
-	"github.com/voocel/ainovel-cli/assets"
-	"github.com/voocel/ainovel-cli/internal/bootstrap"
-	"github.com/voocel/ainovel-cli/internal/diag"
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/entry/startup"
-	"github.com/voocel/ainovel-cli/internal/host"
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/assets"
+	"github.com/dongphuongman/novel-cli/internal/bootstrap"
+	"github.com/dongphuongman/novel-cli/internal/diag"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/entry/startup"
+	"github.com/dongphuongman/novel-cli/internal/host"
+	"github.com/dongphuongman/novel-cli/internal/store"
 	"io"
 	"os"
 	"strings"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 type Options struct {

@@ -3,7 +3,7 @@ package diag
 import (
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/domain"
 )
 
 func TestPlanActionsOnlyHighConfSafe(t *testing.T) {

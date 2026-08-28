@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 // 汉字之外还要盯全角标点：真正让界面"看起来还是中文"的往往是 （）、。「」，

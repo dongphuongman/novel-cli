@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/errs"
+	"github.com/dongphuongman/novel-cli/internal/errs"
 )
 
 // TestEveryPresetResolvesAProtocol 是本文件最重要的一条，也是新增预设时最容易踩的坑。

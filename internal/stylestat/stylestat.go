@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 // minChapters 少于此章数不出统计——样本太小，频率没有意义。

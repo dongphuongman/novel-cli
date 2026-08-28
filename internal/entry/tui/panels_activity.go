@@ -7,10 +7,10 @@ import (
 
 	"github.com/charmbracelet/bubbles/viewport"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/voocel/ainovel-cli/internal/host"
-	"github.com/voocel/ainovel-cli/internal/utils"
+	"github.com/dongphuongman/novel-cli/internal/host"
+	"github.com/dongphuongman/novel-cli/internal/utils"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 // renderEventContent 将事件列表渲染为层次化事件流。

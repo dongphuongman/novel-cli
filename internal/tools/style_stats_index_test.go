@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/store"
-	"github.com/voocel/ainovel-cli/internal/stylestat"
+	"github.com/dongphuongman/novel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/stylestat"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 func TestStyleStatsIndexAppendRewriteAndRemove(t *testing.T) {

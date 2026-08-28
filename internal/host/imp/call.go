@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/voocel/agentcore"
-	"github.com/voocel/ainovel-cli/internal/llmcontract"
-	"github.com/voocel/ainovel-cli/internal/llmretry"
+	"github.com/dongphuongman/novel-cli/internal/llmcontract"
+	"github.com/dongphuongman/novel-cli/internal/llmretry"
 	"github.com/voocel/litellm"
 )
 

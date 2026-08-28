@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/voocel/ainovel-cli/internal/domain"
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/domain"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 // BookStore 管理作品对外信息，meta/book.json 是唯一事实源，book.md 是可读投影。

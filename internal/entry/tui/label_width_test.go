@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 )
 
 // 侧栏字段标签走 fieldLabelStyle 的固定列宽。标签超宽时 lipgloss 会**折行**

@@ -6,7 +6,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/voocel/ainovel-cli/internal/lang"
+	"github.com/dongphuongman/novel-cli/internal/lang"
 )
 
 func TestTrackerMatchesComputeAcrossUpdates(t *testing.T) {

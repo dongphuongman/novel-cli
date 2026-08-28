@@ -2,10 +2,10 @@ package imp
 
 import (
 	"fmt"
-	"github.com/voocel/ainovel-cli/internal/i18n"
+	"github.com/dongphuongman/novel-cli/internal/i18n"
 	"os"
 
-	"github.com/voocel/ainovel-cli/internal/store"
+	"github.com/dongphuongman/novel-cli/internal/store"
 )
 
 // Action 是 NextAction 从工作区事实推导出的下一步确定性动作。

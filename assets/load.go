@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/voocel/ainovel-cli/internal/tools"
+	"github.com/dongphuongman/novel-cli/internal/tools"
 )
 
 //go:embed prompts/*.md
