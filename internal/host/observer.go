@@ -85,6 +85,7 @@ type observer struct {
 	retryEvents         map[string]string          // retry scope → event ID，用同一行原地更新 (2/7)
 	streamHasContent    bool                       // 当前 streamRound 是否已输出过内容（判断是否需要段落分隔）
 	streamLastByte      byte                       // 最近一次流式输出的末字节（用于精确补齐换行）
+	thinkTags           thinkTagFilter             // 正文通道里的 <think> 标签过滤（零值可用）
 }
 
 // agentExtractor 记录某个 agent 当前正在抽取的工具名与抽取器实例。

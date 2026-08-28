@@ -63,7 +63,22 @@ func (o *observer) handleSubagentDelta(p *agentcore.ProgressPayload) {
 	}
 }
 
+// emitStreamDelta 是流式面板的唯一出口。普通文本通道先过 thinkTagFilter：
+// 把中转塞在正文里的空 <think></think> 挡掉（详见 stream_think_tags.go）。
+// thinking=true 是模型规范返回的 reasoning 字段，不做任何过滤，只在插入前把
+// 文本通道扣住的尾巴放掉，保证两个通道的先后顺序不被打乱。
 func (o *observer) emitStreamDelta(delta string, thinking bool) {
+	if thinking {
+		o.writeStreamDelta(o.thinkTags.flush(), false)
+		o.writeStreamDelta(delta, true)
+		return
+	}
+	o.writeStreamDelta(o.thinkTags.feed(delta), false)
+}
+
+// writeStreamDelta 真正落笔：按需插入 ThinkingSep 切换渲染样式，并记录段落状态。
+// 被过滤掉的 delta 不应触碰这些状态，所以过滤发生在调用它之前。
+func (o *observer) writeStreamDelta(delta string, thinking bool) {
 	if delta == "" {
 		return
 	}
@@ -150,6 +165,9 @@ func streamHeaderFallback(tool string) string {
 // 抢先占头，renderStreamContent 的 HasPrefix("✻") 失配，整段落到正文路径
 // 再被 ThinkingSep 切分为思考段，title 颜色被画成思考色。
 func (o *observer) streamClear() {
+	// 先把 thinkTagFilter 扣住的尾巴补进旧轮次，再开新轮次；否则半截标签
+	// （或以 "<" 结尾的正文）会一直悬在缓冲里，直到下一段 delta 才露面。
+	o.writeStreamDelta(o.thinkTags.flush(), false)
 	o.emitC()
 	o.streamHasContent = false
 	o.streamLastByte = 0
